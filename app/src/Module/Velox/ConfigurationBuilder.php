@@ -30,16 +30,9 @@ final readonly class ConfigurationBuilder
      */
     public function buildConfiguration(
         array $selectedPluginNames,
-        ?string $githubToken = null,
-        ?string $gitlabToken = null,
-        ?string $gitlabEndpoint = null,
     ): VeloxConfig {
         return $this->generator->buildConfigFromSelection(
             selectedPluginNames: $selectedPluginNames,
-            pluginProvider: $this->pluginProvider,
-            githubToken: $githubToken,
-            gitlabToken: $gitlabToken,
-            gitlabEndpoint: $gitlabEndpoint,
         );
     }
 
@@ -104,7 +97,7 @@ final readonly class ConfigurationBuilder
      */
     public function generateToml(VeloxConfig $config): string
     {
-        return $this->generator->generateVeloxToml($config);
+        return $this->generator->generateToml($config);
     }
 
     /**

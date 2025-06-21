@@ -11,21 +11,25 @@ use App\Module\Velox\Plugin\DTO\PluginSource;
 use App\Module\Velox\Plugin\Service\CompositePluginProvider;
 use App\Module\Velox\Plugin\Service\ConfigPluginProvider;
 use App\Module\Velox\Plugin\Service\PluginProviderInterface;
-use Spiral\Boot\Attribute\SingletonMethod;
 use Spiral\Boot\Bootloader\Bootloader;
 use Spiral\Boot\EnvironmentInterface;
 
 final class PluginsBootloader extends Bootloader
 {
-    #[SingletonMethod]
-    public function initPlugins(EnvironmentInterface $env): PluginProviderInterface
+    public function defineSingletons(): array
     {
-        return new CompositePluginProvider(providers: [
-            new ConfigPluginProvider([
-                ...$this->initCorePlugins($env),
-                ...$this->initCommonPlugins($env),
-            ]),
-        ]);
+        return [
+            PluginProviderInterface::class => fn(
+                EnvironmentInterface $env,
+            ) => new CompositePluginProvider(
+                providers: [
+                    new ConfigPluginProvider([
+                        ...$this->initCorePlugins($env),
+                        ...$this->initCommonPlugins($env),
+                    ]),
+                ],
+            ),
+        ];
     }
 
     private function initCommonPlugins(EnvironmentInterface $env): array
@@ -64,6 +68,7 @@ final class PluginsBootloader extends Bootloader
                 repository: 'app-logger',
                 repositoryType: PluginRepository::Github,
                 source: PluginSource::Official,
+                dependencies: ['logger'],
                 description: 'Application logger plugin for RoadRunner',
                 category: PluginCategory::Logging,
             ),
@@ -74,7 +79,6 @@ final class PluginsBootloader extends Bootloader
                 repository: 'logger',
                 repositoryType: PluginRepository::Github,
                 source: PluginSource::Official,
-                dependencies: ['server'],
                 description: 'Core logging functionality',
                 category: PluginCategory::Logging,
             ),
@@ -260,7 +264,6 @@ final class PluginsBootloader extends Bootloader
                 repository: 'metrics',
                 repositoryType: PluginRepository::Github,
                 source: PluginSource::Official,
-                dependencies: ['server'],
                 description: 'Metrics collection and reporting',
                 category: PluginCategory::Metrics,
             ),
@@ -293,7 +296,6 @@ final class PluginsBootloader extends Bootloader
                 repository: 'rpc',
                 repositoryType: PluginRepository::Github,
                 source: PluginSource::Official,
-                dependencies: ['server'],
                 description: 'RPC communication plugin',
                 category: PluginCategory::Core,
             ),
@@ -304,7 +306,6 @@ final class PluginsBootloader extends Bootloader
                 repository: 'status',
                 repositoryType: PluginRepository::Github,
                 source: PluginSource::Official,
-                dependencies: ['server'],
                 description: 'Health checks and readiness probes',
                 category: PluginCategory::Monitoring,
             ),
@@ -315,7 +316,7 @@ final class PluginsBootloader extends Bootloader
                 repository: 'fileserver',
                 repositoryType: PluginRepository::Github,
                 source: PluginSource::Official,
-                dependencies: ['server'],
+                dependencies: ['http'],
                 description: 'Static file server',
                 category: PluginCategory::Http,
             ),
@@ -359,7 +360,6 @@ final class PluginsBootloader extends Bootloader
                 repository: 'otel',
                 repositoryType: PluginRepository::Github,
                 source: PluginSource::Official,
-                dependencies: ['server'],
                 description: 'OpenTelemetry tracing',
                 category: PluginCategory::Observability,
             ),
@@ -370,7 +370,6 @@ final class PluginsBootloader extends Bootloader
                 repository: 'service',
                 repositoryType: PluginRepository::Github,
                 source: PluginSource::Official,
-                dependencies: ['server'],
                 description: 'Lightweight systemd-like service manager',
                 category: PluginCategory::Core,
             ),
@@ -381,7 +380,6 @@ final class PluginsBootloader extends Bootloader
                 repository: 'lock',
                 repositoryType: PluginRepository::Github,
                 source: PluginSource::Official,
-                dependencies: ['server'],
                 description: 'Distributed locking mechanism',
                 category: PluginCategory::Core,
             ),

@@ -16,7 +16,14 @@ use Devium\Toml\Toml;
 
 final readonly class ConfigurationGeneratorService
 {
-    public function generateVeloxToml(VeloxConfig $config): string
+    public function __construct(
+        private PluginProviderInterface $pluginProvider,
+        private ?string $githubToken = null,
+        private ?string $gitlabToken = null,
+        private ?string $gitlabEndpoint = null,
+    ) {}
+
+    public function generateToml(VeloxConfig $config): string
     {
         return Toml::encode(\json_decode(\json_encode($config), true));
     }
@@ -65,18 +72,20 @@ final readonly class ConfigurationGeneratorService
     /**
      * @param array<string> $selectedPluginNames
      */
-    public function buildConfigFromSelection(
-        array $selectedPluginNames,
-        PluginProviderInterface $pluginProvider,
-        ?string $githubToken = null,
-        ?string $gitlabToken = null,
-        ?string $gitlabEndpoint = null,
-    ): VeloxConfig {
+    public function buildConfigFromSelection(array $selectedPluginNames): VeloxConfig
+    {
         $githubPlugins = [];
         $gitlabPlugins = [];
 
+        if ($selectedPluginNames === []) {
+            $selectedPluginNames = \array_map(
+                static fn($plugin) => $plugin->name,
+                $this->pluginProvider->getOfficialPlugins(),
+            );
+        }
+
         foreach ($selectedPluginNames as $pluginName) {
-            $plugin = $pluginProvider->getPluginByName($pluginName);
+            $plugin = $this->pluginProvider->getPluginByName($pluginName);
             if ($plugin === null) {
                 continue;
             }
@@ -90,12 +99,12 @@ final readonly class ConfigurationGeneratorService
 
         return new VeloxConfig(
             github: new GitHubConfig(
-                token: $githubToken ? new GitHubToken($githubToken) : null,
+                token: $this->githubToken ? new GitHubToken($this->githubToken) : null,
                 plugins: $githubPlugins,
             ),
             gitlab: new GitLabConfig(
-                token: $gitlabToken ? new GitLabToken($gitlabToken) : null,
-                endpoint: $gitlabEndpoint ? new GitLabEndpoint($gitlabEndpoint) : null,
+                token: $this->gitlabToken ? new GitLabToken($this->gitlabToken) : null,
+                endpoint: $this->gitlabEndpoint ? new GitLabEndpoint($this->gitlabEndpoint) : null,
                 plugins: $gitlabPlugins,
             ),
         );

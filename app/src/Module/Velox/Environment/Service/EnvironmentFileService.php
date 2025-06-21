@@ -68,6 +68,7 @@ final readonly class EnvironmentFileService
     {
         $variables = $this->readEnvironmentFile();
         $variables = \array_merge($variables, $updates);
+
         $this->writeEnvironmentFile($variables);
     }
 

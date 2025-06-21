@@ -18,7 +18,6 @@ final readonly class PluginVersionManager
         private PluginProviderInterface $pluginProvider,
         private GitHubVersionChecker $versionChecker,
         private VersionComparisonService $comparisonService,
-        private EnvironmentFileService $environmentService,
         private ExceptionReporterInterface $reporter,
     ) {}
 
@@ -52,42 +51,18 @@ final readonly class PluginVersionManager
 
     /**
      * Update plugin versions in environment file
-     *
-     * @param array<string> $pluginNames Empty array means update all recommended plugins
+     * @param VersionUpdateInfo[] $updates
      */
-    public function updatePluginVersions(array $pluginNames = []): array
+    public function updatePluginVersions(array $updates): array
     {
-        $updates = $this->checkForUpdates();
         $envUpdates = [];
-        $results = [];
 
         foreach ($updates as $updateInfo) {
-            // Skip if specific plugins requested and this plugin is not in the list
-            if (!empty($pluginNames) && !\in_array($updateInfo->pluginName, $pluginNames)) {
-                continue;
-            }
-
-            // Only update recommended updates by default
-            if (!$updateInfo->isRecommended && empty($pluginNames)) {
-                continue;
-            }
-
             $envKey = $this->getEnvironmentKey($updateInfo->pluginName);
             $envUpdates[$envKey] = $updateInfo->latestVersion;
-
-            $results[] = [
-                'plugin' => $updateInfo->pluginName,
-                'from' => $updateInfo->currentVersion,
-                'to' => $updateInfo->latestVersion,
-                'type' => $updateInfo->updateType,
-            ];
         }
 
-        if (!empty($envUpdates)) {
-            $this->environmentService->updateEnvironmentVariables($envUpdates);
-        }
-
-        return $results;
+        return $envUpdates;
     }
 
     /**
@@ -100,6 +75,7 @@ final readonly class PluginVersionManager
         }
 
         $latestVersion = $this->versionChecker->getLatestVersion($plugin);
+
         if ($latestVersion === null) {
             return null;
         }
@@ -126,63 +102,6 @@ final readonly class PluginVersionManager
             isRecommended: $recommendation['recommended'],
             reason: $recommendation['reason'],
         );
-    }
-
-    /**
-     * Get GitHub API rate limit information
-     */
-    public function getRateLimitInfo(): array
-    {
-        return $this->versionChecker->getRateLimitInfo();
-    }
-
-    /**
-     * Validate all plugin repositories exist
-     *
-     * @return array<string, bool> Plugin name => exists
-     */
-    public function validatePluginRepositories(): array
-    {
-        $plugins = $this->pluginProvider->getAllPlugins();
-        $results = [];
-
-        foreach ($plugins as $plugin) {
-            if ($plugin->repositoryType !== PluginRepository::Github) {
-                continue;
-            }
-
-            $results[$plugin->name] = $this->versionChecker->repositoryExists($plugin);
-        }
-
-        return $results;
-    }
-
-    /**
-     * Get outdated plugins summary
-     *
-     * @return array{total: int, outdated: int, recommended_updates: int, major_updates: int}
-     */
-    public function getUpdatesSummary(): array
-    {
-        $updates = $this->checkForUpdates();
-
-        $summary = [
-            'total' => \count($this->pluginProvider->getAllPlugins()),
-            'outdated' => \count($updates),
-            'recommended_updates' => 0,
-            'major_updates' => 0,
-        ];
-
-        foreach ($updates as $update) {
-            if ($update->isRecommended) {
-                $summary['recommended_updates']++;
-            }
-            if ($update->updateType === 'major') {
-                $summary['major_updates']++;
-            }
-        }
-
-        return $summary;
     }
 
     /**
