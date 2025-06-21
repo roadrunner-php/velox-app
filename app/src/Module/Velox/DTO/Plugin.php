@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Module\Velox\DTO;
 
-final readonly class Plugin
+final readonly class Plugin implements \JsonSerializable
 {
     /**
      * @param array<string> $dependencies
@@ -22,4 +22,23 @@ final readonly class Plugin
         public string $description = '',
         public string $category = '',
     ) {}
+
+    public function jsonSerialize(): array
+    {
+        $data = [
+            'ref' => $this->ref,
+            'owner' => $this->owner,
+            'repository' => $this->repository,
+        ];
+
+        if ($this->folder !== null) {
+            $data['folder'] = $this->folder;
+        }
+
+        if ($this->replace !== null) {
+            $data['replace'] = $this->replace;
+        }
+
+        return $data;
+    }
 }

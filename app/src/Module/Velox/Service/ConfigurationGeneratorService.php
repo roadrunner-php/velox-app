@@ -9,130 +9,15 @@ use App\Module\Velox\DTO\GitHubToken;
 use App\Module\Velox\DTO\GitLabConfig;
 use App\Module\Velox\DTO\GitLabEndpoint;
 use App\Module\Velox\DTO\GitLabToken;
-use App\Module\Velox\DTO\Plugin;
 use App\Module\Velox\DTO\PluginRepository;
 use App\Module\Velox\DTO\VeloxConfig;
+use Devium\Toml\Toml;
 
-final class ConfigurationGeneratorService
+final readonly class ConfigurationGeneratorService
 {
     public function generateVeloxToml(VeloxConfig $config): string
     {
-        $toml = [];
-
-        // RoadRunner section
-        $toml[] = '[roadrunner]';
-        $toml[] = "ref = \"{$config->roadrunner->ref}\"";
-        $toml[] = '';
-
-        // Debug section
-        if ($config->debug->enabled) {
-            $toml[] = '[debug]';
-            $toml[] = 'enabled = true';
-            $toml[] = '';
-        }
-
-        // GitHub section
-        if (!empty($config->github->plugins) || $config->github->token !== null) {
-            $toml[] = '[github]';
-
-            if ($config->github->token !== null) {
-                $toml[] = '[github.token]';
-                $toml[] = "token = \"{$config->github->token->token}\"";
-                $toml[] = '';
-            }
-
-            if (!empty($config->github->plugins)) {
-                $toml[] = '[github.plugins]';
-                foreach ($config->github->plugins as $plugin) {
-                    $toml[] = $this->formatPluginLine($plugin);
-                }
-                $toml[] = '';
-            }
-        }
-
-        // GitLab section
-        if (!empty($config->gitlab->plugins) || $config->gitlab->token !== null) {
-            $toml[] = '[gitlab]';
-
-            if ($config->gitlab->token !== null) {
-                $toml[] = '[gitlab.token]';
-                $toml[] = "token = \"{$config->gitlab->token->token}\"";
-                $toml[] = '';
-            }
-
-            if ($config->gitlab->endpoint !== null) {
-                $toml[] = '[gitlab.endpoint]';
-                $toml[] = "endpoint = \"{$config->gitlab->endpoint->endpoint}\"";
-                $toml[] = '';
-            }
-
-            if (!empty($config->gitlab->plugins)) {
-                $toml[] = '[gitlab.plugins]';
-                foreach ($config->gitlab->plugins as $plugin) {
-                    $toml[] = $this->formatPluginLine($plugin);
-                }
-                $toml[] = '';
-            }
-        }
-
-        // Log section
-        $toml[] = '[log]';
-        $toml[] = "level = \"{$config->log->level->value}\"";
-        $toml[] = "mode = \"{$config->log->mode->value}\"";
-
-        return implode("\n", $toml);
-    }
-
-    public function generateVeloxJson(VeloxConfig $config): string
-    {
-        $data = [
-            'roadrunner' => [
-                'ref' => $config->roadrunner->ref,
-            ],
-            'debug' => [
-                'enabled' => $config->debug->enabled,
-            ],
-            'log' => [
-                'level' => $config->log->level->value,
-                'mode' => $config->log->mode->value,
-            ],
-        ];
-
-        if (!empty($config->github->plugins) || $config->github->token !== null) {
-            $data['github'] = [];
-
-            if ($config->github->token !== null) {
-                $data['github']['token'] = ['token' => $config->github->token->token];
-            }
-
-            if (!empty($config->github->plugins)) {
-                $data['github']['plugins'] = [];
-                foreach ($config->github->plugins as $plugin) {
-                    $data['github']['plugins'][$plugin->name] = $this->formatPluginArray($plugin);
-                }
-            }
-        }
-
-        if (!empty($config->gitlab->plugins) || $config->gitlab->token !== null) {
-            $data['gitlab'] = [];
-
-            if ($config->gitlab->token !== null) {
-                $data['gitlab']['token'] = ['token' => $config->gitlab->token->token];
-            }
-
-            if ($config->gitlab->endpoint !== null) {
-                $data['gitlab']['endpoint'] = ['endpoint' => $config->gitlab->endpoint->endpoint];
-            }
-
-            if (!empty($config->gitlab->plugins)) {
-                $data['gitlab']['plugins'] = [];
-                foreach ($config->gitlab->plugins as $plugin) {
-                    $data['gitlab']['plugins'][$plugin->name] = $this->formatPluginArray($plugin);
-                }
-            }
-        }
-
-        return json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        return Toml::encode(\json_decode(\json_encode($config), true));
     }
 
     public function generateDockerfile(VeloxConfig $config, string $baseImage = 'php:8.3-cli'): string
@@ -213,46 +98,5 @@ final class ConfigurationGeneratorService
                 plugins: $gitlabPlugins,
             ),
         );
-    }
-
-    private function formatPluginLine(Plugin $plugin): string
-    {
-        $parts = [
-            "ref = \"{$plugin->ref}\"",
-            "owner = \"{$plugin->owner}\"",
-            "repository = \"{$plugin->repository}\"",
-        ];
-
-        if ($plugin->folder !== null) {
-            $parts[] = "folder = \"{$plugin->folder}\"";
-        }
-
-        if ($plugin->replace !== null) {
-            $parts[] = "replace = \"{$plugin->replace}\"";
-        }
-
-        return "{$plugin->name} = { " . implode(', ', $parts) . ' }';
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    private function formatPluginArray(Plugin $plugin): array
-    {
-        $data = [
-            'ref' => $plugin->ref,
-            'owner' => $plugin->owner,
-            'repository' => $plugin->repository,
-        ];
-
-        if ($plugin->folder !== null) {
-            $data['folder'] = $plugin->folder;
-        }
-
-        if ($plugin->replace !== null) {
-            $data['replace'] = $plugin->replace;
-        }
-
-        return $data;
     }
 }

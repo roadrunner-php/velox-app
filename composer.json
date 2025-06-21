@@ -10,18 +10,19 @@
   },
   "require": {
     "php": ">=8.3",
-    "ext-sockets": "*",
-    "spiral/framework": "dev-master as 3.15.7",
-    "spiral/roadrunner-cli": "^2.5",
-    "spiral/http": "^3.15",
     "ext-mbstring": "*",
+    "ext-sockets": "*",
+    "devium/toml": "^1.0",
+    "spiral/cycle-bridge": "^2.11",
+    "spiral/framework": "dev-master as 3.15.7",
+    "spiral/http": "^3.15",
     "spiral/nyholm-bridge": "^1.3",
     "spiral/roadrunner-bridge": "^4.0",
-    "spiral/cycle-bridge": "^2.11",
-    "spiral/validator": "^1.5",
-    "spiral/twig-bridge": "^2.0.1",
+    "spiral/roadrunner-cli": "^2.5",
+    "spiral/sentry-bridge": "^2.3",
     "spiral/temporal-bridge": "^3.3",
-    "spiral/sentry-bridge": "^2.3"
+    "spiral/twig-bridge": "^2.0.1",
+    "spiral/validator": "^1.5"
   },
   "require-dev": {
     "spiral/code-style": "^2.2",

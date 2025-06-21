@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Module\Velox\DTO;
 
-final readonly class VeloxConfig
+final readonly class VeloxConfig implements \JsonSerializable
 {
     public function __construct(
         public RoadRunnerConfig $roadrunner = new RoadRunnerConfig(),
@@ -71,5 +71,27 @@ final readonly class VeloxConfig
         }
 
         return null;
+    }
+
+    public function jsonSerialize(): array
+    {
+        $data = [
+            'roadrunner' => $this->roadrunner,
+            'log' => $this->log,
+        ];
+
+        if ($this->debug->enabled) {
+            $data['debug'] = $this->debug;
+        }
+
+        if (!empty($this->github->plugins) || $this->github->token !== null) {
+            $data['github'] = $this->github;
+        }
+
+        if (!empty($this->gitlab->plugins) || $this->gitlab->token !== null) {
+            $data['gitlab'] = $this->gitlab;
+        }
+
+        return $data;
     }
 }
