@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Module\Velox\Service;
 
 use App\Module\Velox\DTO\Plugin;
+use App\Module\Velox\DTO\PluginCategory;
 
 interface PluginProviderInterface
 {
@@ -16,7 +17,7 @@ interface PluginProviderInterface
     /**
      * @return array<Plugin>
      */
-    public function getPluginsByCategory(string $category): array;
+    public function getPluginsByCategory(PluginCategory $category): array;
 
     /**
      * @return array<Plugin>

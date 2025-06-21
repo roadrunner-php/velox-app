@@ -6,6 +6,7 @@ namespace App\Module\Velox;
 
 use App\Module\Velox\DTO\DependencyResolution;
 use App\Module\Velox\DTO\Plugin;
+use App\Module\Velox\DTO\PluginCategory;
 use App\Module\Velox\DTO\ValidationResult;
 use App\Module\Velox\DTO\VeloxConfig;
 use App\Module\Velox\Service\ConfigurationGeneratorService;
@@ -57,7 +58,7 @@ final readonly class ConfigurationBuilder
      *
      * @return array<Plugin>
      */
-    public function getPluginsByCategory(string $category): array
+    public function getPluginsByCategory(PluginCategory $category): array
     {
         return $this->pluginProvider->getPluginsByCategory($category);
     }
@@ -133,8 +134,9 @@ final readonly class ConfigurationBuilder
         $categories = [];
 
         foreach ($allPlugins as $plugin) {
-            if (!empty($plugin->category)) {
-                $categories[$plugin->category] = ($categories[$plugin->category] ?? 0) + 1;
+            if ($plugin->category !== null) {
+                $categoryName = $plugin->category->value;
+                $categories[$categoryName] = ($categories[$categoryName] ?? 0) + 1;
             }
         }
 

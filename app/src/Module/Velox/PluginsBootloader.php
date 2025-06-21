@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Module\Velox;
 
 use App\Module\Velox\DTO\Plugin;
+use App\Module\Velox\DTO\PluginCategory;
 use App\Module\Velox\DTO\PluginRepository;
 use App\Module\Velox\DTO\PluginSource;
 use App\Module\Velox\Service\CompositePluginProvider;
@@ -38,7 +39,7 @@ final class PluginsBootloader extends Bootloader
                 repositoryType: PluginRepository::Github,
                 source: PluginSource::Community,
                 description: 'Sentry collector plugin allowing delegation of Sentry events delivery to the Sentry server through the RoadRunner server.',
-                category: 'Monitoring',
+                category: PluginCategory::Monitoring,
             ),
             new Plugin(
                 name: 'redis-queue',
@@ -48,7 +49,7 @@ final class PluginsBootloader extends Bootloader
                 repositoryType: PluginRepository::Github,
                 source: PluginSource::Community,
                 description: 'This is a plugin for roadrunner adding support for a redis backed queue. This plugin is still under development and should not be considered production ready.',
-                category: 'Jobs',
+                category: PluginCategory::Jobs,
             ),
         ];
     }
@@ -64,7 +65,7 @@ final class PluginsBootloader extends Bootloader
                 repositoryType: PluginRepository::Github,
                 source: PluginSource::Official,
                 description: 'Application logger plugin for RoadRunner',
-                category: 'Logging',
+                category: PluginCategory::Logging,
             ),
             new Plugin(
                 name: 'logger',
@@ -75,7 +76,7 @@ final class PluginsBootloader extends Bootloader
                 source: PluginSource::Official,
                 dependencies: ['server'],
                 description: 'Core logging functionality',
-                category: 'Logging',
+                category: PluginCategory::Logging,
             ),
             new Plugin(
                 name: 'server',
@@ -85,7 +86,7 @@ final class PluginsBootloader extends Bootloader
                 repositoryType: PluginRepository::Github,
                 source: PluginSource::Official,
                 description: 'Core server functionality',
-                category: 'Core',
+                category: PluginCategory::Core,
             ),
             new Plugin(
                 name: 'http',
@@ -96,7 +97,7 @@ final class PluginsBootloader extends Bootloader
                 source: PluginSource::Official,
                 dependencies: ['server'],
                 description: 'HTTP server plugin',
-                category: 'HTTP',
+                category: PluginCategory::Http,
             ),
             new Plugin(
                 name: 'gzip',
@@ -107,7 +108,7 @@ final class PluginsBootloader extends Bootloader
                 source: PluginSource::Official,
                 dependencies: ['http'],
                 description: 'GZIP compression middleware',
-                category: 'HTTP',
+                category: PluginCategory::Http,
             ),
             new Plugin(
                 name: 'headers',
@@ -118,7 +119,7 @@ final class PluginsBootloader extends Bootloader
                 source: PluginSource::Official,
                 dependencies: ['http'],
                 description: 'HTTP headers middleware',
-                category: 'HTTP',
+                category: PluginCategory::Http,
             ),
             new Plugin(
                 name: 'static',
@@ -129,7 +130,7 @@ final class PluginsBootloader extends Bootloader
                 source: PluginSource::Official,
                 dependencies: ['http'],
                 description: 'Static file serving middleware',
-                category: 'HTTP',
+                category: PluginCategory::Http,
             ),
             new Plugin(
                 name: 'jobs',
@@ -140,7 +141,7 @@ final class PluginsBootloader extends Bootloader
                 source: PluginSource::Official,
                 dependencies: ['server'],
                 description: 'Job queue management',
-                category: 'Jobs',
+                category: PluginCategory::Jobs,
             ),
             new Plugin(
                 name: 'amqp',
@@ -151,7 +152,7 @@ final class PluginsBootloader extends Bootloader
                 source: PluginSource::Official,
                 dependencies: ['jobs'],
                 description: 'AMQP job driver',
-                category: 'Jobs',
+                category: PluginCategory::Jobs,
             ),
             new Plugin(
                 name: 'sqs',
@@ -162,7 +163,7 @@ final class PluginsBootloader extends Bootloader
                 source: PluginSource::Official,
                 dependencies: ['jobs'],
                 description: 'AWS SQS job driver',
-                category: 'Jobs',
+                category: PluginCategory::Jobs,
             ),
             new Plugin(
                 name: 'beanstalk',
@@ -173,7 +174,7 @@ final class PluginsBootloader extends Bootloader
                 source: PluginSource::Official,
                 dependencies: ['jobs'],
                 description: 'Beanstalk job driver',
-                category: 'Jobs',
+                category: PluginCategory::Jobs,
             ),
             new Plugin(
                 name: 'nats',
@@ -184,7 +185,7 @@ final class PluginsBootloader extends Bootloader
                 source: PluginSource::Official,
                 dependencies: ['jobs'],
                 description: 'NATS job driver',
-                category: 'Jobs',
+                category: PluginCategory::Jobs,
             ),
             new Plugin(
                 name: 'kafka',
@@ -195,7 +196,7 @@ final class PluginsBootloader extends Bootloader
                 source: PluginSource::Official,
                 dependencies: ['jobs'],
                 description: 'Apache Kafka job driver',
-                category: 'Jobs',
+                category: PluginCategory::Jobs,
             ),
             new Plugin(
                 name: 'kv',
@@ -206,7 +207,7 @@ final class PluginsBootloader extends Bootloader
                 source: PluginSource::Official,
                 dependencies: ['server'],
                 description: 'Key-value storage interface',
-                category: 'KV',
+                category: PluginCategory::Kv,
             ),
             new Plugin(
                 name: 'redis',
@@ -217,7 +218,7 @@ final class PluginsBootloader extends Bootloader
                 source: PluginSource::Official,
                 dependencies: ['kv'],
                 description: 'Redis key-value storage',
-                category: 'KV',
+                category: PluginCategory::Kv,
             ),
             new Plugin(
                 name: 'memory',
@@ -228,7 +229,7 @@ final class PluginsBootloader extends Bootloader
                 source: PluginSource::Official,
                 dependencies: ['kv'],
                 description: 'In-memory key-value storage',
-                category: 'KV',
+                category: PluginCategory::Kv,
             ),
             new Plugin(
                 name: 'boltdb',
@@ -239,7 +240,7 @@ final class PluginsBootloader extends Bootloader
                 source: PluginSource::Official,
                 dependencies: ['kv'],
                 description: 'BoltDB key-value storage',
-                category: 'KV',
+                category: PluginCategory::Kv,
             ),
             new Plugin(
                 name: 'memcached',
@@ -250,7 +251,7 @@ final class PluginsBootloader extends Bootloader
                 source: PluginSource::Official,
                 dependencies: ['kv'],
                 description: 'Memcached key-value storage',
-                category: 'KV',
+                category: PluginCategory::Kv,
             ),
             new Plugin(
                 name: 'metrics',
@@ -261,7 +262,7 @@ final class PluginsBootloader extends Bootloader
                 source: PluginSource::Official,
                 dependencies: ['server'],
                 description: 'Metrics collection and reporting',
-                category: 'Metrics',
+                category: PluginCategory::Metrics,
             ),
             new Plugin(
                 name: 'prometheus',
@@ -272,7 +273,7 @@ final class PluginsBootloader extends Bootloader
                 source: PluginSource::Official,
                 dependencies: ['metrics'],
                 description: 'Prometheus metrics exporter',
-                category: 'Metrics',
+                category: PluginCategory::Metrics,
             ),
             new Plugin(
                 name: 'grpc',
@@ -283,7 +284,7 @@ final class PluginsBootloader extends Bootloader
                 source: PluginSource::Official,
                 dependencies: ['server'],
                 description: 'gRPC server plugin',
-                category: 'gRPC',
+                category: PluginCategory::Grpc,
             ),
             new Plugin(
                 name: 'rpc',
@@ -294,7 +295,7 @@ final class PluginsBootloader extends Bootloader
                 source: PluginSource::Official,
                 dependencies: ['server'],
                 description: 'RPC communication plugin',
-                category: 'Core',
+                category: PluginCategory::Core,
             ),
             new Plugin(
                 name: 'status',
@@ -305,7 +306,7 @@ final class PluginsBootloader extends Bootloader
                 source: PluginSource::Official,
                 dependencies: ['server'],
                 description: 'Health checks and readiness probes',
-                category: 'Monitoring',
+                category: PluginCategory::Monitoring,
             ),
             new Plugin(
                 name: 'fileserver',
@@ -316,7 +317,7 @@ final class PluginsBootloader extends Bootloader
                 source: PluginSource::Official,
                 dependencies: ['server'],
                 description: 'Static file server',
-                category: 'HTTP',
+                category: PluginCategory::Http,
             ),
             new Plugin(
                 name: 'tcp',
@@ -327,7 +328,7 @@ final class PluginsBootloader extends Bootloader
                 source: PluginSource::Official,
                 dependencies: ['server'],
                 description: 'Raw TCP payload handling',
-                category: 'Network',
+                category: PluginCategory::Network,
             ),
             new Plugin(
                 name: 'centrifuge',
@@ -338,7 +339,7 @@ final class PluginsBootloader extends Bootloader
                 source: PluginSource::Official,
                 dependencies: ['server'],
                 description: 'Centrifuge broadcasting platform',
-                category: 'Broadcasting',
+                category: PluginCategory::Broadcasting,
             ),
             new Plugin(
                 name: 'temporal',
@@ -349,7 +350,7 @@ final class PluginsBootloader extends Bootloader
                 source: PluginSource::Official,
                 dependencies: ['server'],
                 description: 'Temporal workflow engine',
-                category: 'Workflow',
+                category: PluginCategory::Workflow,
             ),
             new Plugin(
                 name: 'otel',
@@ -360,7 +361,7 @@ final class PluginsBootloader extends Bootloader
                 source: PluginSource::Official,
                 dependencies: ['server'],
                 description: 'OpenTelemetry tracing',
-                category: 'Observability',
+                category: PluginCategory::Observability,
             ),
             new Plugin(
                 name: 'service',
@@ -371,7 +372,7 @@ final class PluginsBootloader extends Bootloader
                 source: PluginSource::Official,
                 dependencies: ['server'],
                 description: 'Lightweight systemd-like service manager',
-                category: 'Core',
+                category: PluginCategory::Core,
             ),
             new Plugin(
                 name: 'lock',
@@ -382,7 +383,7 @@ final class PluginsBootloader extends Bootloader
                 source: PluginSource::Official,
                 dependencies: ['server'],
                 description: 'Distributed locking mechanism',
-                category: 'Core',
+                category: PluginCategory::Core,
             ),
             new Plugin(
                 name: 'proxy',
@@ -393,7 +394,7 @@ final class PluginsBootloader extends Bootloader
                 source: PluginSource::Official,
                 dependencies: ['http'],
                 description: 'Proxy IP parser middleware',
-                category: 'HTTP',
+                category: PluginCategory::Http,
             ),
             new Plugin(
                 name: 'send',
@@ -404,7 +405,7 @@ final class PluginsBootloader extends Bootloader
                 source: PluginSource::Official,
                 dependencies: ['http'],
                 description: 'Send file response middleware',
-                category: 'HTTP',
+                category: PluginCategory::Http,
             ),
             new Plugin(
                 name: 'googlepubsub',
@@ -415,9 +416,8 @@ final class PluginsBootloader extends Bootloader
                 source: PluginSource::Official,
                 dependencies: ['jobs'],
                 description: 'Google Pub/Sub job driver',
-                category: 'Jobs',
+                category: PluginCategory::Jobs,
             ),
         ];
     }
 }
-

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Module\Velox\Service;
 
 use App\Module\Velox\DTO\Plugin;
+use App\Module\Velox\DTO\PluginCategory;
 use App\Module\Velox\DTO\PluginSource;
 
 final readonly class ConfigPluginProvider implements PluginProviderInterface
@@ -21,7 +22,7 @@ final readonly class ConfigPluginProvider implements PluginProviderInterface
         return $this->plugins;
     }
 
-    public function getPluginsByCategory(string $category): array
+    public function getPluginsByCategory(PluginCategory $category): array
     {
         return \array_filter($this->plugins, static fn(Plugin $plugin) => $plugin->category === $category);
     }
@@ -43,7 +44,7 @@ final readonly class ConfigPluginProvider implements PluginProviderInterface
             $this->plugins,
             static fn(Plugin $plugin) => \str_contains(\strtolower($plugin->name), $query) ||
                 \str_contains(\strtolower($plugin->description), $query) ||
-                \str_contains(\strtolower($plugin->category), $query),
+                ($plugin->category && \str_contains(\strtolower($plugin->category->value), $query)),
         );
     }
 

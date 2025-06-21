@@ -20,7 +20,7 @@ final readonly class Plugin implements \JsonSerializable
         public ?string $replace = null,
         public array $dependencies = [],
         public string $description = '',
-        public string $category = '',
+        public ?PluginCategory $category = null,
     ) {}
 
     public function jsonSerialize(): array

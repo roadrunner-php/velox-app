@@ -7,6 +7,7 @@ namespace App\Module\Velox\Service;
 use App\Module\Velox\DTO\ConflictInfo;
 use App\Module\Velox\DTO\DependencyResolution;
 use App\Module\Velox\DTO\Plugin;
+use App\Module\Velox\DTO\PluginCategory;
 use App\Module\Velox\DTO\VersionSuggestion;
 use App\Module\Velox\Exception\DependencyConflictException;
 use App\Module\Velox\Exception\PluginNotFoundException;
@@ -83,7 +84,7 @@ final readonly class DependencyResolverService
         // Check for incompatible plugins (example: different job drivers might conflict)
         $jobDrivers = \array_filter(
             $selectedPlugins,
-            static fn(Plugin $plugin) => $plugin->category === 'Jobs' && $plugin->name !== 'jobs',
+            static fn(Plugin $plugin) => $plugin->category === PluginCategory::Jobs && $plugin->name !== 'jobs',
         );
 
         if (\count($jobDrivers) > 3) {

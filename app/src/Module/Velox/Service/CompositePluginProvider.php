@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Module\Velox\Service;
 
 use App\Module\Velox\DTO\Plugin;
+use App\Module\Velox\DTO\PluginCategory;
 
 final readonly class CompositePluginProvider implements PluginProviderInterface
 {
@@ -24,7 +25,7 @@ final readonly class CompositePluginProvider implements PluginProviderInterface
         return $this->deduplicatePlugins($plugins);
     }
 
-    public function getPluginsByCategory(string $category): array
+    public function getPluginsByCategory(PluginCategory $category): array
     {
         $plugins = [];
         foreach ($this->providers as $provider) {
