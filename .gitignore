@@ -5,6 +5,7 @@
 */runtime/
 
 /rr*
+/vx**
 /protoc-gen-php-grpc*
 
 /.env

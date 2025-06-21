@@ -1,13 +1,14 @@
 # Velox Preset System
 
-The Velox Preset System allows you to quickly configure RoadRunner servers using predefined plugin combinations for common use cases.
+The Velox Preset System allows you to quickly configure RoadRunner servers using predefined plugin combinations for
+common use cases.
 
 ## Available Presets
 
 ### Core Presets
 
 - **web-server**: Basic HTTP server with essential middleware
-- **queue-server**: Job processing server with multiple queue drivers  
+- **queue-server**: Job processing server with multiple queue drivers
 - **workflow-server**: Temporal workflow engine setup
 - **api-server**: REST API server with JSON handling
 - **microservices**: Service mesh ready with gRPC
@@ -61,6 +62,7 @@ $recommendations = $builder->getRecommendedPresets(['http', 'jobs', 'redis']);
 ## Preset Definitions
 
 Each preset contains:
+
 - **name**: Unique identifier
 - **displayName**: Human-readable name
 - **description**: What the preset is for
@@ -71,21 +73,25 @@ Each preset contains:
 ## Common Combinations
 
 ### Web Application Stack
+
 ```bash
 ./rr velox:generate-from-presets --presets=web-server --presets=monitoring
 ```
 
 ### Queue Processing System
+
 ```bash
 ./rr velox:generate-from-presets --presets=queue-server --presets=monitoring --presets=k8s
 ```
 
 ### Microservices Architecture
+
 ```bash
 ./rr velox:generate-from-presets --presets=microservices --presets=monitoring --presets=security
 ```
 
 ### Full Production Setup
+
 ```bash
 ./rr velox:generate-from-presets --presets=web-server --presets=queue-server --presets=monitoring --presets=security --presets=k8s
 ```
@@ -93,6 +99,7 @@ Each preset contains:
 ## Preset Validation
 
 The system automatically:
+
 - Validates preset combinations for conflicts
 - Provides warnings for potential issues
 - Suggests recommendations for better configurations

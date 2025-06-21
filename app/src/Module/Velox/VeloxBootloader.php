@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Module\Velox;
 
+use App\Module\Velox\BinaryBuilder\BinaryBuilderBootloader;
 use App\Module\Velox\Configuration\Service\ConfigurationGeneratorService;
 use App\Module\Velox\Configuration\Service\ConfigurationValidatorService;
 use App\Module\Velox\Dependency\Service\DependencyResolverService;
@@ -26,6 +27,7 @@ final class VeloxBootloader extends Bootloader
         return [
             PluginsBootloader::class,
             PresetBootloader::class,
+            BinaryBuilderBootloader::class,
         ];
     }
 
@@ -44,7 +46,6 @@ final class VeloxBootloader extends Bootloader
                 githubToken: $env->get('GITHUB_TOKEN'),
             ),
             ConfigurationBuilder::class => ConfigurationBuilder::class,
-
 
             EnvironmentFileService::class => static fn(
                 FilesInterface $files,

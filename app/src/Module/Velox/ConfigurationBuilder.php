@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Module\Velox;
 
+use App\Module\Velox\BinaryBuilder\DTO\BuildResult;
+use App\Module\Velox\BinaryBuilder\Service\BinaryBuilderService;
 use App\Module\Velox\Configuration\DTO\ValidationResult;
 use App\Module\Velox\Configuration\DTO\VeloxConfig;
 use App\Module\Velox\Configuration\Exception\ValidationException;
@@ -31,6 +33,7 @@ final readonly class ConfigurationBuilder
         private PresetProviderInterface $presetProvider,
         private PresetMergerService $presetMerger,
         private PresetValidatorService $presetValidator,
+        private BinaryBuilderService $binaryBuilder,
     ) {}
 
     /**
@@ -197,5 +200,63 @@ final readonly class ConfigurationBuilder
     public function getRecommendedPresets(array $selectedPlugins): array
     {
         return $this->presetMerger->getRecommendedPresets($selectedPlugins);
+    }
+
+    // ========== Binary Building Methods ==========
+
+    /**
+     * Build RoadRunner binary from configuration
+     */
+    public function buildBinary(VeloxConfig $config, string $outputDirectory): BuildResult
+    {
+        return $this->binaryBuilder->buildBinary($config, $outputDirectory);
+    }
+
+    /**
+     * Build binary from plugin selection
+     *
+     * @param array<string> $selectedPlugins
+     */
+    public function buildBinaryFromPlugins(array $selectedPlugins, string $outputDirectory): BuildResult
+    {
+        return $this->binaryBuilder->buildFromPluginSelection($selectedPlugins, $outputDirectory);
+    }
+
+    /**
+     * Build binary from presets
+     *
+     * @param array<string> $presetNames
+     */
+    public function buildBinaryFromPresets(array $presetNames, string $outputDirectory): BuildResult
+    {
+        $config = $this->buildConfigurationFromPresets($presetNames);
+        return $this->buildBinary($config, $outputDirectory);
+    }
+
+    /**
+     * Build binary with Dockerfile
+     */
+    public function buildBinaryWithDocker(
+        VeloxConfig $config,
+        string $outputDirectory,
+        string $baseImage = 'php:8.3-cli',
+    ): array {
+        return $this->binaryBuilder->buildWithDockerfile($config, $outputDirectory, $baseImage);
+    }
+
+    /**
+     * Estimate build time for configuration
+     */
+    public function estimateBuildTime(VeloxConfig $config): int
+    {
+        return $this->binaryBuilder->estimateBuildTime($config);
+    }
+
+    /**
+     * Check build requirements
+     */
+    public function checkBuildRequirements(): array
+    {
+        return $this->binaryBuilder->checkBuildRequirements();
     }
 }
