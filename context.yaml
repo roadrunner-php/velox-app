@@ -1,0 +1,17 @@
+$schema: 'https://raw.githubusercontent.com/context-hub/generator/refs/heads/main/json-schema.json'
+
+documents:
+  - description: 'Project structure overview'
+    outputPath: project-structure.md
+    sources:
+      - type: tree
+        sourcePaths:
+          - app/src
+        showCharCount: true
+
+  - description: Velox module
+    outputPath: modules/velox.md
+    sources:
+      - type: file
+        sourcePaths:
+          - app/src/Module/Velox
