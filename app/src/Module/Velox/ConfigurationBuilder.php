@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace App\Module\Velox;
 
-use App\Module\Velox\DTO\DependencyResolution;
-use App\Module\Velox\DTO\Plugin;
-use App\Module\Velox\DTO\PluginCategory;
-use App\Module\Velox\DTO\ValidationResult;
-use App\Module\Velox\DTO\VeloxConfig;
-use App\Module\Velox\Service\ConfigurationGeneratorService;
-use App\Module\Velox\Service\ConfigurationValidatorService;
-use App\Module\Velox\Service\DependencyResolverService;
-use App\Module\Velox\Service\PluginProviderInterface;
+use App\Module\Velox\Configuration\DTO\ValidationResult;
+use App\Module\Velox\Configuration\DTO\VeloxConfig;
+use App\Module\Velox\Configuration\Service\ConfigurationGeneratorService;
+use App\Module\Velox\Configuration\Service\ConfigurationValidatorService;
+use App\Module\Velox\Dependency\DTO\DependencyResolution;
+use App\Module\Velox\Dependency\Service\DependencyResolverService;
+use App\Module\Velox\Plugin\DTO\Plugin;
+use App\Module\Velox\Plugin\DTO\PluginCategory;
+use App\Module\Velox\Plugin\Service\PluginProviderInterface;
 
 final readonly class ConfigurationBuilder
 {
@@ -105,14 +105,6 @@ final readonly class ConfigurationBuilder
     public function generateToml(VeloxConfig $config): string
     {
         return $this->generator->generateVeloxToml($config);
-    }
-
-    /**
-     * Generate JSON configuration
-     */
-    public function generateJson(VeloxConfig $config): string
-    {
-        return $this->generator->generateVeloxJson($config);
     }
 
     /**

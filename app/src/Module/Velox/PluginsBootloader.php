@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Module\Velox;
 
-use App\Module\Velox\DTO\Plugin;
-use App\Module\Velox\DTO\PluginCategory;
-use App\Module\Velox\DTO\PluginRepository;
-use App\Module\Velox\DTO\PluginSource;
-use App\Module\Velox\Service\CompositePluginProvider;
-use App\Module\Velox\Service\ConfigPluginProvider;
-use App\Module\Velox\Service\PluginProviderInterface;
+use App\Module\Velox\Plugin\DTO\Plugin;
+use App\Module\Velox\Plugin\DTO\PluginCategory;
+use App\Module\Velox\Plugin\DTO\PluginRepository;
+use App\Module\Velox\Plugin\DTO\PluginSource;
+use App\Module\Velox\Plugin\Service\CompositePluginProvider;
+use App\Module\Velox\Plugin\Service\ConfigPluginProvider;
+use App\Module\Velox\Plugin\Service\PluginProviderInterface;
 use Spiral\Boot\Attribute\SingletonMethod;
 use Spiral\Boot\Bootloader\Bootloader;
 use Spiral\Boot\EnvironmentInterface;
