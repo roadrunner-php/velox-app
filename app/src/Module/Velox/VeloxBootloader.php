@@ -9,6 +9,8 @@ use App\Module\Velox\Configuration\Service\ConfigurationValidatorService;
 use App\Module\Velox\Dependency\Service\DependencyResolverService;
 use App\Module\Velox\Environment\Service\EnvironmentFileService;
 use App\Module\Velox\Plugin\Service\ConfigPluginProvider;
+use App\Module\Velox\Plugin\Service\PluginProviderInterface;
+use App\Module\Velox\Preset\PresetBootloader;
 use App\Module\Velox\Version\Service\GitHubVersionChecker;
 use Spiral\Boot\Bootloader\Bootloader;
 use Spiral\Boot\DirectoriesInterface;
@@ -23,6 +25,7 @@ final class VeloxBootloader extends Bootloader
     {
         return [
             PluginsBootloader::class,
+            PresetBootloader::class,
         ];
     }
 
@@ -33,8 +36,15 @@ final class VeloxBootloader extends Bootloader
             ConfigPluginProvider::class => ConfigPluginProvider::class,
             DependencyResolverService::class => DependencyResolverService::class,
             ConfigurationValidatorService::class => ConfigurationValidatorService::class,
-            ConfigurationGeneratorService::class => ConfigurationGeneratorService::class,
+            ConfigurationGeneratorService::class => static fn(
+                PluginProviderInterface $pluginProvider,
+                EnvironmentInterface $env,
+            ) => new ConfigurationGeneratorService(
+                pluginProvider: $pluginProvider,
+                githubToken: $env->get('GITHUB_TOKEN'),
+            ),
             ConfigurationBuilder::class => ConfigurationBuilder::class,
+
 
             EnvironmentFileService::class => static fn(
                 FilesInterface $files,

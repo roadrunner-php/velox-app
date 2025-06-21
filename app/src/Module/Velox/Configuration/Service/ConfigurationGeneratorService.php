@@ -9,6 +9,7 @@ use App\Module\Velox\Configuration\DTO\GitHubToken;
 use App\Module\Velox\Configuration\DTO\GitLabConfig;
 use App\Module\Velox\Configuration\DTO\GitLabEndpoint;
 use App\Module\Velox\Configuration\DTO\GitLabToken;
+use App\Module\Velox\Configuration\DTO\RoadRunnerConfig;
 use App\Module\Velox\Configuration\DTO\VeloxConfig;
 use App\Module\Velox\Plugin\DTO\PluginRepository;
 use App\Module\Velox\Plugin\Service\PluginProviderInterface;
@@ -18,6 +19,7 @@ final readonly class ConfigurationGeneratorService
 {
     public function __construct(
         private PluginProviderInterface $pluginProvider,
+        private string $roadRunnerVersion = 'v2025.1.1',
         private ?string $githubToken = null,
         private ?string $gitlabToken = null,
         private ?string $gitlabEndpoint = null,
@@ -66,7 +68,7 @@ final readonly class ConfigurationGeneratorService
         $dockerfile[] = '# Set RoadRunner as entrypoint';
         $dockerfile[] = 'ENTRYPOINT ["/usr/bin/rr", "serve"]';
 
-        return implode("\n", $dockerfile);
+        return \implode("\n", $dockerfile);
     }
 
     /**
@@ -98,6 +100,9 @@ final readonly class ConfigurationGeneratorService
         }
 
         return new VeloxConfig(
+            roadrunner: new RoadRunnerConfig(
+                ref: $this->roadRunnerVersion,
+            ),
             github: new GitHubConfig(
                 token: $this->githubToken ? new GitHubToken($this->githubToken) : null,
                 plugins: $githubPlugins,

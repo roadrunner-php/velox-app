@@ -6,6 +6,7 @@ namespace App\Module\Velox;
 
 use App\Module\Velox\Configuration\DTO\ValidationResult;
 use App\Module\Velox\Configuration\DTO\VeloxConfig;
+use App\Module\Velox\Configuration\Exception\ValidationException;
 use App\Module\Velox\Configuration\Service\ConfigurationGeneratorService;
 use App\Module\Velox\Configuration\Service\ConfigurationValidatorService;
 use App\Module\Velox\Dependency\DTO\DependencyResolution;
@@ -13,6 +14,12 @@ use App\Module\Velox\Dependency\Service\DependencyResolverService;
 use App\Module\Velox\Plugin\DTO\Plugin;
 use App\Module\Velox\Plugin\DTO\PluginCategory;
 use App\Module\Velox\Plugin\Service\PluginProviderInterface;
+use App\Module\Velox\Preset\DTO\PresetDefinition;
+use App\Module\Velox\Preset\DTO\PresetMergeResult;
+use App\Module\Velox\Preset\DTO\PresetValidationResult;
+use App\Module\Velox\Preset\Service\PresetMergerService;
+use App\Module\Velox\Preset\Service\PresetProviderInterface;
+use App\Module\Velox\Preset\Service\PresetValidatorService;
 
 final readonly class ConfigurationBuilder
 {
@@ -21,6 +28,9 @@ final readonly class ConfigurationBuilder
         private DependencyResolverService $dependencyResolver,
         private ConfigurationValidatorService $validator,
         private ConfigurationGeneratorService $generator,
+        private PresetProviderInterface $presetProvider,
+        private PresetMergerService $presetMerger,
+        private PresetValidatorService $presetValidator,
     ) {}
 
     /**
@@ -34,6 +44,25 @@ final readonly class ConfigurationBuilder
         return $this->generator->buildConfigFromSelection(
             selectedPluginNames: $selectedPluginNames,
         );
+    }
+
+    /**
+     * Build configuration from selected presets
+     *
+     * @param array<string> $presetNames
+     */
+    public function buildConfigurationFromPresets(array $presetNames): VeloxConfig
+    {
+        $mergeResult = $this->presetMerger->mergePresets($presetNames);
+
+        if (!$mergeResult->isValid) {
+            throw new ValidationException(
+                'Preset merge failed: ' . \implode(', ', $mergeResult->conflicts),
+                $mergeResult->conflicts,
+            );
+        }
+
+        return $this->buildConfiguration($mergeResult->finalPlugins);
     }
 
     /**
@@ -109,27 +138,64 @@ final readonly class ConfigurationBuilder
     }
 
     /**
-     * Get plugin statistics
+     * Get all available presets
      *
-     * @return array{total: int, official: int, community: int, categories: array<string, int>}
+     * @return array<PresetDefinition>
      */
-    public function getPluginStatistics(): array
+    public function getAvailablePresets(): array
     {
-        $allPlugins = $this->pluginProvider->getAllPlugins();
-        $categories = [];
+        return $this->presetProvider->getAllPresets();
+    }
 
-        foreach ($allPlugins as $plugin) {
-            if ($plugin->category !== null) {
-                $categoryName = $plugin->category->value;
-                $categories[$categoryName] = ($categories[$categoryName] ?? 0) + 1;
-            }
-        }
+    /**
+     * Get presets by tags
+     *
+     * @param array<string> $tags
+     * @return array<PresetDefinition>
+     */
+    public function getPresetsByTags(array $tags): array
+    {
+        return $this->presetProvider->getPresetsByTags($tags);
+    }
 
-        return [
-            'total' => \count($allPlugins),
-            'official' => \count($this->pluginProvider->getOfficialPlugins()),
-            'community' => \count($this->pluginProvider->getCommunityPlugins()),
-            'categories' => $categories,
-        ];
+    /**
+     * Search presets
+     *
+     * @return array<PresetDefinition>
+     */
+    public function searchPresets(string $query): array
+    {
+        return $this->presetProvider->searchPresets($query);
+    }
+
+    /**
+     * Validate preset combination
+     *
+     * @param array<string> $presetNames
+     */
+    public function validatePresets(array $presetNames): PresetValidationResult
+    {
+        return $this->presetValidator->validatePresets($presetNames);
+    }
+
+    /**
+     * Merge multiple presets
+     *
+     * @param array<string> $presetNames
+     */
+    public function mergePresets(array $presetNames): PresetMergeResult
+    {
+        return $this->presetMerger->mergePresets($presetNames);
+    }
+
+    /**
+     * Get recommended presets based on selected plugins
+     *
+     * @param array<string> $selectedPlugins
+     * @return array<string>
+     */
+    public function getRecommendedPresets(array $selectedPlugins): array
+    {
+        return $this->presetMerger->getRecommendedPresets($selectedPlugins);
     }
 }
