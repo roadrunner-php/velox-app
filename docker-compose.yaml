@@ -31,44 +31,12 @@ services:
     command: >
       sh -c "chmod +x /app/.docker/entrypoint.sh
       && /app/.docker/entrypoint.sh"
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.vx-app.entrypoints=web"
-      - "traefik.http.routers.vx-app.rule=Host(`app.${DOMAIN_NAME}`)"
-      - "traefik.http.services.vx-app.loadbalancer.server.port=8080"
+    ports:
+      - ${VX_HTTP_PORT:-8080}:8080
     environment:
       <<: *common-spiral-variables
       GITHUB_TOKEN: ${GITHUB_TOKEN}
       APP_HOST: ${APP_HOST}
-
-  vx-reverse-proxy:
-    image: traefik:v2.9
-    restart: always
-    command:
-      - "--accesslog"
-      - "--api.insecure=true"
-      - "--providers.docker=true"
-      - "--providers.docker.exposedbydefault=false"
-      - "--entrypoints.web.address=:80"
-      - "--entrypoints.websecure.address=:443"
-      - "--providers.file.directory=/configuration/"
-      - "--providers.file.watch=true"
-    ports:
-      - ${TRAEFIK_PORT:-80}:80
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.vx-reverse-proxy.entrypoints=web"
-      - "traefik.http.routers.vx-reverse-proxy.rule=Host(`traefik.${DOMAIN_NAME}`)"
-      - "traefik.http.services.vx-reverse-proxy.loadbalancer.server.port=8080"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - ./.docker/traefik/configuration:/configuration/
-      - ./.docker/traefik/certs:/etc/certs:ro
-    networks:
-      - vx-network
-    logging:
-      driver: none
-
 networks:
   vx-network:
     ipam:
