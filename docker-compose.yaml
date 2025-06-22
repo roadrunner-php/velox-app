@@ -25,12 +25,17 @@ x-php-service:
   restart: always
 
 services:
-  vx-velox-APP:
+  vx-app:
     <<: *php
     image: ghcr.io/roadrunner-php/velox-app:latest
     command: >
       sh -c "chmod +x /app/.docker/entrypoint.sh
       && /app/.docker/entrypoint.sh"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.vx-app.entrypoints=web"
+      - "traefik.http.routers.vx-app.rule=Host(`app.${DOMAIN_NAME}`)"
+      - "traefik.http.services.vx-app.loadbalancer.server.port=8080"
     environment:
       <<: *common-spiral-variables
       GITHUB_TOKEN: ${GITHUB_TOKEN}

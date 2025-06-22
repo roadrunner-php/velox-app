@@ -11,7 +11,7 @@ use Spiral\Router\Annotation\Route;
 
 final readonly class ShowAction
 {
-    #[Route(route: 'v1/plugins/<name>', name: 'plugin.show', methods: ['GET'], group: 'api')]
+    #[Route(route: 'v1/plugin/<name>', name: 'plugin.show', methods: ['GET'], group: 'api')]
     public function __invoke(ConfigurationBuilder $builder, string $name): ResourceInterface
     {
         $plugin = $builder->getAvailablePlugins();
