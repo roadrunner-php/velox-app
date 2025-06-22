@@ -6,6 +6,7 @@
 
 /rr*
 /vx**
+/temporal**
 /protoc-gen-php-grpc*
 
 /.env

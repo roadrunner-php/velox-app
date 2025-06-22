@@ -18,6 +18,6 @@
     <actions>
         <download software="rr"/>
         <download software="vx"/>
-        <!--        <download software="temporal"/>-->
+        <download software="temporal"/>
     </actions>
 </dload>
