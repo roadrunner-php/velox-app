@@ -43,8 +43,10 @@ final readonly class ConfigurationGeneratorService
         $dockerfile[] = 'ARG BUILD_TIME="undefined"';
         $dockerfile[] = '';
 
-        $dockerfile[] = '# Copy velox configuration';
-        $dockerfile[] = 'COPY velox.toml .';
+        // Generate TOML content and write it line by line
+        $tomlContent = $this->generateToml($config);
+        $dockerfile[] = '# Generate velox configuration';
+        $dockerfile = [...$dockerfile, ...$this->buildLineByLineWrites($tomlContent, 'velox.toml')];
         $dockerfile[] = '';
 
         $dockerfile[] = '# Build RoadRunner binary';
@@ -113,5 +115,31 @@ final readonly class ConfigurationGeneratorService
                 plugins: $gitlabPlugins,
             ),
         );
+    }
+
+    /**
+     * Build line-by-line echo commands for writing TOML content
+     *
+     * @return array<string>
+     */
+    private function buildLineByLineWrites(string $content, string $targetFile): array
+    {
+        $lines = explode("\n", $content);
+        $commands = [];
+
+        foreach ($lines as $index => $line) {
+            // Escape single quotes by replacing them with '\''
+            $escapedLine = str_replace("'", "'\\''", $line);
+
+            if ($index === 0) {
+                // First line - create/overwrite the file
+                $commands[] = "RUN echo '{$escapedLine}' > {$targetFile}";
+            } else {
+                // Subsequent lines - append to the file
+                $commands[] = "RUN echo '{$escapedLine}' >> {$targetFile}";
+            }
+        }
+
+        return $commands;
     }
 }
