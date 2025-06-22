@@ -31,6 +31,6 @@ RUN chmod +x .docker/entrypoint.sh
 RUN composer config --no-plugins allow-plugins.spiral/composer-publish-plugin false
 RUN composer install --no-dev --optimize-autoloader
 
-RUN venodr/bin/dload
+RUN vendor/bin/dload
 
 CMD [".docker/entrypoint.sh"]
