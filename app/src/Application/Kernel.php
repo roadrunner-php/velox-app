@@ -68,6 +68,7 @@ class Kernel extends \Spiral\Framework\Kernel
             CycleBridge\SchemaBootloader::class,
             CycleBridge\CycleOrmBootloader::class,
             CycleBridge\AnnotatedBootloader::class,
+            CycleBridge\DisconnectsBootloader::class,
 
             // Sentry and Data collectors
             SentryReporterBootloader::class,

@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 namespace App\Application\Bootloader;
 
+use App\Application\HTTP\Interceptor\ExceptionHandlerInterceptor;
+use App\Application\HTTP\Interceptor\JsonResourceInterceptor;
+use App\Application\HTTP\Interceptor\StringToIntParametersInterceptor;
+use App\Application\HTTP\Interceptor\UuidParametersConverterInterceptor;
 use Spiral\Bootloader\DomainBootloader;
-use Spiral\Cycle\Interceptor\CycleInterceptor;
 use Spiral\Interceptors\HandlerInterface;
 
 final class AppBootloader extends DomainBootloader
@@ -22,7 +25,10 @@ final class AppBootloader extends DomainBootloader
     protected static function defineInterceptors(): array
     {
         return [
-            CycleInterceptor::class,
+            ExceptionHandlerInterceptor::class,
+            JsonResourceInterceptor::class,
+            StringToIntParametersInterceptor::class,
+            UuidParametersConverterInterceptor::class,
         ];
     }
 }

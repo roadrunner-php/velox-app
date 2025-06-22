@@ -6,15 +6,12 @@ namespace App\Application\Bootloader;
 
 use Spiral\Bootloader\Http\HttpBootloader;
 use Spiral\Bootloader\Http\RoutesBootloader as BaseRoutesBootloader;
-use Spiral\Cookies\Middleware\CookiesMiddleware;
-use Spiral\Csrf\Middleware\CsrfMiddleware;
 use Spiral\Debug\StateCollector\HttpCollector;
 use Spiral\Filter\ValidationHandlerMiddleware;
 use Spiral\Http\Middleware\ErrorHandlerMiddleware;
 use Spiral\Http\Middleware\JsonPayloadMiddleware;
 use Spiral\Router\Bootloader\AnnotatedRoutesBootloader;
-use Spiral\Router\Loader\Configurator\RoutingConfigurator;
-use Spiral\Session\Middleware\SessionMiddleware;
+use Spiral\Router\GroupRegistry;
 use Spiral\Bootloader as Framework;
 use Spiral\RoadRunnerBridge\Bootloader as RoadRunnerBridge;
 use Spiral\Nyholm\Bootloader\NyholmBootloader;
@@ -52,23 +49,18 @@ final class RoutesBootloader extends BaseRoutesBootloader
     protected function middlewareGroups(): array
     {
         return [
-            'web' => [
-                CookiesMiddleware::class,
-                SessionMiddleware::class,
-                CsrfMiddleware::class,
+            'api' => [
                 ValidationHandlerMiddleware::class,
             ],
         ];
     }
 
     #[\Override]
-    protected function defineRoutes(RoutingConfigurator $routes): void
+    protected function configureRouteGroups(GroupRegistry $groups): void
     {
-        // Fallback route if no other route matched
-        // Will show 404 page
-        // $routes->default('/<path:.*>')
-        //    ->callable(function (ServerRequestInterface $r, ResponseInterface $response) {
-        //        return $response->withStatus(404)->withBody('Not found');
-        //    });
+        $groups
+            ->getGroup('api')
+            ->setPrefix('api')
+            ->setNamePrefix('api.');
     }
 }
