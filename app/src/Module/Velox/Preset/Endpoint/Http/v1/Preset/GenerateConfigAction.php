@@ -18,7 +18,7 @@ final readonly class GenerateConfigAction
         route: 'v1/presets/generate-config',
         name: 'preset.generate-config',
         methods: ['POST', 'GET'],
-        group: 'api'
+        group: 'api',
     )]
     public function __invoke(
         ConfigurationBuilder $builder,
@@ -45,7 +45,7 @@ final readonly class GenerateConfigAction
         }
 
         // Generate configuration
-        $config = $builder->buildConfigurationFromPresets($presetNames);
+        $config = $builder->buildConfigurationFromPresets($presetNames, '${RT_TOKEN}');
 
         $result = match ($format) {
             'toml' => $builder->generateToml($config),

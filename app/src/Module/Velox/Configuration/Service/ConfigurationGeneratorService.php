@@ -76,7 +76,7 @@ final readonly class ConfigurationGeneratorService
     /**
      * @param array<string> $selectedPluginNames
      */
-    public function buildConfigFromSelection(array $selectedPluginNames): VeloxConfig
+    public function buildConfigFromSelection(array $selectedPluginNames, ?string $githubToken = null): VeloxConfig
     {
         $githubPlugins = [];
         $gitlabPlugins = [];
@@ -101,12 +101,14 @@ final readonly class ConfigurationGeneratorService
             }
         }
 
+        $githubToken = $githubToken ?? $this->githubToken;
+
         return new VeloxConfig(
             roadrunner: new RoadRunnerConfig(
                 ref: $this->roadRunnerVersion,
             ),
             github: new GitHubConfig(
-                token: $this->githubToken ? new GitHubToken($this->githubToken) : null,
+                token: $githubToken ? new GitHubToken($githubToken) : null,
                 plugins: $githubPlugins,
             ),
             gitlab: new GitLabConfig(
@@ -124,12 +126,12 @@ final readonly class ConfigurationGeneratorService
      */
     private function buildLineByLineWrites(string $content, string $targetFile): array
     {
-        $lines = explode("\n", $content);
+        $lines = \explode("\n", $content);
         $commands = [];
 
         foreach ($lines as $index => $line) {
             // Escape single quotes by replacing them with '\''
-            $escapedLine = str_replace("'", "'\\''", $line);
+            $escapedLine = \str_replace("'", "'\\''", $line);
 
             if ($index === 0) {
                 // First line - create/overwrite the file

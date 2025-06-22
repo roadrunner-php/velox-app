@@ -169,6 +169,7 @@ final class PresetBootloader extends Bootloader
                     'metrics',
                     'prometheus',
                     'otel',
+                    'sentry-collector',
                 ],
                 tags: ['microservices', 'grpc', 'distributed'],
                 priority: 10,

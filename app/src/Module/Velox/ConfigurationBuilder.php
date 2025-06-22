@@ -41,11 +41,11 @@ final readonly class ConfigurationBuilder
      *
      * @param array<string> $selectedPluginNames
      */
-    public function buildConfiguration(
-        array $selectedPluginNames,
-    ): VeloxConfig {
+    public function buildConfiguration(array $selectedPluginNames, ?string $githubToken = null): VeloxConfig
+    {
         return $this->generator->buildConfigFromSelection(
             selectedPluginNames: $selectedPluginNames,
+            githubToken: $githubToken,
         );
     }
 
@@ -53,8 +53,9 @@ final readonly class ConfigurationBuilder
      * Build configuration from selected presets
      *
      * @param array<string> $presetNames
+     * @throws ValidationException
      */
-    public function buildConfigurationFromPresets(array $presetNames): VeloxConfig
+    public function buildConfigurationFromPresets(array $presetNames, ?string $githubToken = null): VeloxConfig
     {
         $mergeResult = $this->presetMerger->mergePresets($presetNames);
 
@@ -65,7 +66,7 @@ final readonly class ConfigurationBuilder
             );
         }
 
-        return $this->buildConfiguration($mergeResult->finalPlugins);
+        return $this->buildConfiguration($mergeResult->finalPlugins, $githubToken);
     }
 
     /**
@@ -127,17 +128,20 @@ final readonly class ConfigurationBuilder
     /**
      * Generate TOML configuration
      */
-    public function generateToml(VeloxConfig $config): string
+    public function generateToml(VeloxConfig $config, ?string $githubToken = null): string
     {
-        return $this->generator->generateToml($config);
+        return $this->generator->generateToml($config, $githubToken);
     }
 
     /**
      * Generate Dockerfile
      */
-    public function generateDockerfile(VeloxConfig $config, string $baseImage = 'php:8.3-cli'): string
-    {
-        return $this->generator->generateDockerfile($config, $baseImage);
+    public function generateDockerfile(
+        VeloxConfig $config,
+        string $baseImage = 'php:8.3-cli',
+        ?string $githubToken = null,
+    ): string {
+        return $this->generator->generateDockerfile($config, $baseImage, $githubToken);
     }
 
     /**
@@ -191,17 +195,6 @@ final readonly class ConfigurationBuilder
         return $this->presetMerger->mergePresets($presetNames);
     }
 
-    /**
-     * Get recommended presets based on selected plugins
-     *
-     * @param array<string> $selectedPlugins
-     * @return array<string>
-     */
-    public function getRecommendedPresets(array $selectedPlugins): array
-    {
-        return $this->presetMerger->getRecommendedPresets($selectedPlugins);
-    }
-
     // ========== Binary Building Methods ==========
 
     /**
@@ -210,53 +203,5 @@ final readonly class ConfigurationBuilder
     public function buildBinary(VeloxConfig $config, string $outputDirectory): BuildResult
     {
         return $this->binaryBuilder->buildBinary($config, $outputDirectory);
-    }
-
-    /**
-     * Build binary from plugin selection
-     *
-     * @param array<string> $selectedPlugins
-     */
-    public function buildBinaryFromPlugins(array $selectedPlugins, string $outputDirectory): BuildResult
-    {
-        return $this->binaryBuilder->buildFromPluginSelection($selectedPlugins, $outputDirectory);
-    }
-
-    /**
-     * Build binary from presets
-     *
-     * @param array<string> $presetNames
-     */
-    public function buildBinaryFromPresets(array $presetNames, string $outputDirectory): BuildResult
-    {
-        $config = $this->buildConfigurationFromPresets($presetNames);
-        return $this->buildBinary($config, $outputDirectory);
-    }
-
-    /**
-     * Build binary with Dockerfile
-     */
-    public function buildBinaryWithDocker(
-        VeloxConfig $config,
-        string $outputDirectory,
-        string $baseImage = 'php:8.3-cli',
-    ): array {
-        return $this->binaryBuilder->buildWithDockerfile($config, $outputDirectory, $baseImage);
-    }
-
-    /**
-     * Estimate build time for configuration
-     */
-    public function estimateBuildTime(VeloxConfig $config): int
-    {
-        return $this->binaryBuilder->estimateBuildTime($config);
-    }
-
-    /**
-     * Check build requirements
-     */
-    public function checkBuildRequirements(): array
-    {
-        return $this->binaryBuilder->checkBuildRequirements();
     }
 }

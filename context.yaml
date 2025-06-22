@@ -13,6 +13,13 @@ documents:
           - app/src
         showCharCount: true
 
+  - description: Http Resources
+    outputPath: modules/http-resources.md
+    sources:
+      - type: file
+        sourcePaths:
+          - app/src/Application/HTTP/Response
+
   - description: Velox module
     outputPath: modules/velox.md
     sources:

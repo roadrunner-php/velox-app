@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Module\Velox;
+namespace App\Module\Velox\Plugin;
 
 use App\Module\Velox\Plugin\DTO\Plugin;
 use App\Module\Velox\Plugin\DTO\PluginCategory;

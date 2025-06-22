@@ -9,6 +9,7 @@ use App\Module\Velox\Configuration\Service\ConfigurationGeneratorService;
 use App\Module\Velox\Configuration\Service\ConfigurationValidatorService;
 use App\Module\Velox\Dependency\Service\DependencyResolverService;
 use App\Module\Velox\Environment\Service\EnvironmentFileService;
+use App\Module\Velox\Plugin\PluginsBootloader;
 use App\Module\Velox\Plugin\Service\ConfigPluginProvider;
 use App\Module\Velox\Plugin\Service\PluginProviderInterface;
 use App\Module\Velox\Preset\PresetBootloader;
