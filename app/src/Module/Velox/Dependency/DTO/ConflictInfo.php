@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Module\Velox\Dependency\DTO;
 
-final readonly class ConflictInfo
+final readonly class ConflictInfo implements \JsonSerializable
 {
     /**
      * @param array<string> $conflictingPlugins
@@ -16,4 +16,15 @@ final readonly class ConflictInfo
         public array $conflictingPlugins = [],
         public string $severity = 'error',
     ) {}
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'plugin_name' => $this->pluginName,
+            'conflict_type' => $this->conflictType,
+            'message' => $this->message,
+            'conflicting_plugins' => $this->conflictingPlugins,
+            'severity' => $this->severity,
+        ];
+    }
 }
