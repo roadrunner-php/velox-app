@@ -1,0 +1,72 @@
+x-common-spiral-variables: &common-spiral-variables
+  APP_ENV: ${APP_ENV:-local}
+  DEBUG: ${APP_DEBUG:-true}
+  TEMPORAL_ADDRESS: ${TEMPORAL_SERVER_HOST}:${TEMPORAL_SERVER_PORT:-7233}
+  SENTRY_DSN: ${SENTRY_DSN}
+  RR_LOG_LEVEL: ${RR_LOG_LEVEL:-debug}
+  RR_APP_LOG_LEVEL: ${RR_APP_LOG_LEVEL:-debug}
+  MONOLOG_DEFAULT_CHANNEL: ${MONOLOG_DEFAULT_CHANNEL:-roadrunner}
+  MONOLOG_DEFAULT_LEVEL: ${MONOLOG_DEFAULT_LEVEL:-ERROR}
+  TOKENIZER_CACHE_TARGETS: ${TOKENIZER_CACHE_TARGETS:-true}
+  TEMPORAL_ACTIVITY_WORKERS: ${TEMPORAL_ACTIVITY_WORKERS:-2}
+  CYCLE_SCHEMA_CACHE: ${CYCLE_SCHEMA_CACHE:-true}
+
+x-php-service:
+  &php
+  env_file:
+    - .env.app
+  environment:
+    <<: *common-spiral-variables
+  networks:
+    - vx-network
+  healthcheck:
+    test: ""
+    disable: true
+  restart: always
+
+services:
+  vx-velox-APP:
+    <<: *php
+    image: ghcr.io/roadrunner-php/velox-app:latest
+    command: >
+      sh -c "chmod +x /app/.docker/entrypoint.sh
+      && /app/.docker/entrypoint.sh"
+    environment:
+      <<: *common-spiral-variables
+      GITHUB_TOKEN: ${GITHUB_TOKEN}
+      APP_HOST: ${APP_HOST}
+
+  vx-reverse-proxy:
+    image: traefik:v2.9
+    restart: always
+    command:
+      - "--accesslog"
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--providers.file.directory=/configuration/"
+      - "--providers.file.watch=true"
+    ports:
+      - ${TRAEFIK_PORT:-80}:80
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.vx-reverse-proxy.entrypoints=web"
+      - "traefik.http.routers.vx-reverse-proxy.rule=Host(`traefik.${DOMAIN_NAME}`)"
+      - "traefik.http.services.vx-reverse-proxy.loadbalancer.server.port=8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./.docker/traefik/configuration:/configuration/
+      - ./.docker/traefik/certs:/etc/certs:ro
+    networks:
+      - vx-network
+    logging:
+      driver: none
+
+networks:
+  vx-network:
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.0.61.0/24

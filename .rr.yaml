@@ -8,9 +8,9 @@ http:
   middleware:
     - gzip
   pool:
-    debug: true
+    num_workers: ${RR_HTTP_NUM_WORKERS:-4}
     supervisor:
-      max_worker_memory: 100
+      max_worker_memory: ${RR_HTTP_MAX_WORKER_MEMORY:-128}
 
 server:
   command: 'php app.php'

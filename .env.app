@@ -1,0 +1,46 @@
+# Verbosity level
+VERBOSITY_LEVEL=basic
+
+# Set to an application specific value, used to encrypt/decrypt cookies etc
+ENCRYPTER_KEY=def00000d2a7322a44d9015f5d4dca3109a682ec7d3ad13e58a6724358574d04e7b7d3bd58085f6edd040970a27c57a332f8bbd57f5b24580049006cffefa8d0aa82ba39
+
+# Mail
+MAILER_DSN=${MAILER_DSN}
+MAILER_FROM=${MAILER_FROM}
+
+# Telemetry
+TELEMETRY_DRIVER=null
+
+# Set to TRUE to disable confirmation in `migrate` commands
+SAFE_MIGRATIONS=true
+
+# Database
+DB_HOST=${POSTGRES_HOST}
+DB_PORT=${POSTGRES_PORT}
+DB_USERNAME=${POSTGRES_USER}
+DB_PASSWORD=${POSTGRES_PASSWORD}
+#DB_LOGGER=roadrunner
+
+# Temporal
+TEMPORAL_ADDRESS=${TEMPORAL_SERVER_HOST}:${TEMPORAL_SERVER_PORT:-7233}
+
+# S3
+AWS_KEY=${AWS_KEY}
+AWS_SECRET=${AWS_SECRET}
+AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION:-us-east-1}
+AWS_URL=${AWS_URL}
+AWS_ENDPOINT_URL=${AWS_ENDPOINT}
+AWS_USE_PATH_STYLE_ENDPOINT=${AWS_USE_PATH_STYLE_ENDPOINT}
+
+# Cycle Bridge (Don't forget to set `CYCLE_SCHEMA_CACHE` to `true` in production)
+CYCLE_SCHEMA_WARMUP=false
+
+# Temporal bridge configuration
+TEMPORAL_TASK_QUEUE=default
+
+# Buggregator
+VAR_DUMPER_FORMAT=server
+VAR_DUMPER_SERVER=vx-buggregator:9912
+
+# Sentry
+SENTRY_DSN=${SENTRY_DSN}
