@@ -1,5 +1,9 @@
 $schema: 'https://raw.githubusercontent.com/context-hub/generator/refs/heads/main/json-schema.json'
 
+import:
+  - type: url
+    url: https://gist.githubusercontent.com/butschster/29e84fb9c976ac837181141f88049a35/raw/2304dfa3b87aaf226c4d5f9c7a7fb30b509d1f01/01-dev-prompts.yaml
+
 documents:
   - description: 'Project structure overview'
     outputPath: project-structure.md
