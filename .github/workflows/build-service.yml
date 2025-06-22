@@ -31,7 +31,7 @@ jobs:
         id: service-git
         uses: docker/metadata-action@v5
         with:
-          images: ghcr.io/context-hub/service-git
+          images: ghcr.io/roadrunner-php/velox-app
           tags: |
             type=semver,pattern={{version}}
 
