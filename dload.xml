@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<dload xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/php-internal/dload/refs/heads/1.x/dload.xsd"
+       temp-dir="./runtime">
+    <registry overwrite="false">
+        <software name="RoadRunner builder" alias="vx"
+                  homepage="https://roadrunner.dev"
+                  description="Velox is a builder of RoadRunner binaries based on provided configuration files.">
+            <repository type="github" uri="roadrunner-server/velox" asset-pattern="/^velox-.*/"/>
+            <binary
+                    name="vx"
+                    pattern="/^(vx)(?:\\.exe)?$/"
+                    version-command="--version"
+            />
+        </software>
+    </registry>
+
+    <actions>
+        <download software="rr"/>
+        <download software="vx"/>
+        <!--        <download software="temporal"/>-->
+    </actions>
+</dload>
