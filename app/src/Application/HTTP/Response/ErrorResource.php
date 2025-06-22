@@ -17,6 +17,7 @@ final class ErrorResource extends JsonResource
         parent::__construct($data);
     }
 
+    #[\Override]
     protected function mapData(): array|\JsonSerializable
     {
         return [
@@ -25,6 +26,7 @@ final class ErrorResource extends JsonResource
         ];
     }
 
+    #[\Override]
     protected function getCode(): int
     {
         return match (true) {

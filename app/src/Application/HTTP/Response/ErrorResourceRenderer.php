@@ -53,7 +53,7 @@ final readonly class ErrorResourceRenderer implements RendererInterface
 
         if ($softMatch) {
             foreach ($acceptHeader->getAll() as $item) {
-                $itemValue = \strtolower($item->getValue());
+                $itemValue = \strtolower((string) $item->getValue());
                 if (\str_ends_with($itemValue, '/json') || \str_ends_with($itemValue, '+json')) {
                     return true;
                 }

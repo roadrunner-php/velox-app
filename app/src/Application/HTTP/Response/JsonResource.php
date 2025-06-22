@@ -13,17 +13,13 @@ class JsonResource implements ResourceInterface
 {
     use JsonTrait;
 
-    /** @var TData */
-    protected readonly mixed $data;
-
     protected array $headers = [];
 
     /**
      * @param TData $data
      */
-    public function __construct(mixed $data = [])
+    public function __construct(protected readonly mixed $data = [])
     {
-        $this->data = $data;
     }
 
     public function toResponse(ResponseInterface $response): ResponseInterface

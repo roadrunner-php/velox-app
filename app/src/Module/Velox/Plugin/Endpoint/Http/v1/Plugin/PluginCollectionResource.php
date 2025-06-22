@@ -20,6 +20,7 @@ final class PluginCollectionResource extends ResourceCollection
         parent::__construct($data, $resource, $args);
     }
 
+    #[\Override]
     protected function wrapData(array $data): array
     {
         $plugins = $this->data;

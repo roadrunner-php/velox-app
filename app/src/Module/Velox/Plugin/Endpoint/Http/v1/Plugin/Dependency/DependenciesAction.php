@@ -30,8 +30,8 @@ final readonly class DependenciesAction
         }
 
         return new PluginDependenciesResource(
-            $builder->resolveDependencies([$name]),
-            $name
+            $name,
+            $builder->resolveDependencies([$name])
         );
     }
 }

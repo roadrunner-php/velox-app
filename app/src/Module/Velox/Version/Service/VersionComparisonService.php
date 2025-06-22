@@ -56,13 +56,13 @@ final readonly class VersionComparisonService
      */
     public function getLatestStableVersion(array $versions): ?string
     {
-        $stableVersions = \array_filter($versions, [$this, 'isStableVersion']);
+        $stableVersions = \array_filter($versions, $this->isStableVersion(...));
 
         if (empty($stableVersions)) {
             return null;
         }
 
-        \usort($stableVersions, [$this, 'compareVersions']);
+        \usort($stableVersions, $this->compareVersions(...));
 
         return \end($stableVersions);
     }

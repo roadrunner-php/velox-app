@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Module\Velox\Dependency\Service;
 
 use App\Module\Velox\Dependency\DTO\ConflictInfo;
+use App\Module\Velox\Dependency\DTO\ConflictSeverity;
+use App\Module\Velox\Dependency\DTO\ConflictType;
 use App\Module\Velox\Dependency\DTO\DependencyResolution;
 use App\Module\Velox\Dependency\DTO\VersionSuggestion;
 use App\Module\Velox\Dependency\Exception\DependencyConflictException;
@@ -34,14 +36,14 @@ final readonly class DependencyResolverService
             } catch (DependencyConflictException $e) {
                 $conflicts[] = new ConflictInfo(
                     pluginName: $plugin->name,
-                    conflictType: 'circular_dependency',
+                    conflictType: ConflictType::CircularDependency,
                     message: $e->getMessage(),
                     conflictingPlugins: $e->conflictingPlugins,
                 );
             } catch (PluginNotFoundException $e) {
                 $conflicts[] = new ConflictInfo(
                     pluginName: $plugin->name,
-                    conflictType: 'missing_dependency',
+                    conflictType: ConflictType::MissingDependency,
                     message: $e->getMessage(),
                     conflictingPlugins: [],
                 );
@@ -73,7 +75,7 @@ final readonly class DependencyResolverService
                 if ($pluginVersions[$plugin->name] !== $plugin->ref) {
                     $conflicts[] = new ConflictInfo(
                         pluginName: $plugin->name,
-                        conflictType: 'version_conflict',
+                        conflictType: ConflictType::VersionConflict,
                         message: "Plugin {$plugin->name} has conflicting versions: {$pluginVersions[$plugin->name]} and {$plugin->ref}",
                         conflictingPlugins: [$plugin->name],
                     );
@@ -91,10 +93,10 @@ final readonly class DependencyResolverService
         if (\count($jobDrivers) > 3) {
             $conflicts[] = new ConflictInfo(
                 pluginName: 'jobs',
-                conflictType: 'resource_conflict',
+                conflictType: ConflictType::ResourceConflict,
                 message: 'Too many job drivers selected, this might cause resource conflicts',
                 conflictingPlugins: \array_map(static fn(Plugin $plugin) => $plugin->name, $jobDrivers),
-                severity: 'warning',
+                severity: ConflictSeverity::Warning,
             );
         }
 
@@ -142,7 +144,7 @@ final readonly class DependencyResolverService
         $conflicts = $this->detectConflicts($plugins);
         $errorConflicts = \array_filter(
             $conflicts,
-            static fn(ConflictInfo $conflict) => $conflict->severity === 'error',
+            static fn(ConflictInfo $conflict) => $conflict->severity === ConflictSeverity::Error,
         );
 
         return empty($errorConflicts);

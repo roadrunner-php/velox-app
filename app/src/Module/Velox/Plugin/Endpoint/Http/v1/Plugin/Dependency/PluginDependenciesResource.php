@@ -14,12 +14,13 @@ use App\Module\Velox\Plugin\Endpoint\Http\v1\Plugin\PluginResource;
 final class PluginDependenciesResource extends JsonResource
 {
     public function __construct(
+        private readonly string $plugin,
         mixed $data = [],
-        private string $plugin,
     ) {
         parent::__construct($data);
     }
 
+    #[\Override]
     protected function mapData(): array|\JsonSerializable
     {
         $dependencyResult = $this->data;

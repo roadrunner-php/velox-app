@@ -11,6 +11,7 @@ use App\Application\HTTP\Response\JsonResource;
  */
 final class PluginCategoryResource extends JsonResource
 {
+    #[\Override]
     protected function mapData(): array|\JsonSerializable
     {
         return [

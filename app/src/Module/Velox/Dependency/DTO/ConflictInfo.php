@@ -11,20 +11,20 @@ final readonly class ConflictInfo implements \JsonSerializable
      */
     public function __construct(
         public string $pluginName,
-        public string $conflictType,
+        public ConflictType $conflictType,
         public string $message,
         public array $conflictingPlugins = [],
-        public string $severity = 'error',
+        public ConflictSeverity $severity = ConflictSeverity::Error,
     ) {}
 
     public function jsonSerialize(): array
     {
         return [
             'plugin_name' => $this->pluginName,
-            'conflict_type' => $this->conflictType,
+            'conflict_type' => $this->conflictType->value,
             'message' => $this->message,
             'conflicting_plugins' => $this->conflictingPlugins,
-            'severity' => $this->severity,
+            'severity' => $this->severity->value,
         ];
     }
 }

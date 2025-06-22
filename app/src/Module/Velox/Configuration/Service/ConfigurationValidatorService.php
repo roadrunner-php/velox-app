@@ -6,6 +6,7 @@ namespace App\Module\Velox\Configuration\Service;
 
 use App\Module\Velox\Configuration\DTO\ValidationResult;
 use App\Module\Velox\Configuration\DTO\VeloxConfig;
+use App\Module\Velox\Dependency\DTO\ConflictSeverity;
 use App\Module\Velox\Dependency\Service\DependencyResolverService;
 
 final readonly class ConfigurationValidatorService
@@ -24,7 +25,7 @@ final readonly class ConfigurationValidatorService
 
         if (!$resolution->isValid) {
             foreach ($resolution->conflicts as $conflict) {
-                if ($conflict->severity === 'error') {
+                if ($conflict->severity === ConflictSeverity::Error) {
                     $errors[] = $conflict->message;
                 } else {
                     $warnings[] = $conflict->message;

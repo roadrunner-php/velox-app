@@ -15,6 +15,7 @@ use Spiral\Files\FilesInterface;
 
 final class BinaryBuilderBootloader extends Bootloader
 {
+    #[\Override]
     public function defineSingletons(): array
     {
         return [

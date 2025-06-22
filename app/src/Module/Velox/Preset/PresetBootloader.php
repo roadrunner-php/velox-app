@@ -13,6 +13,7 @@ use Spiral\Boot\Bootloader\Bootloader;
 
 final class PresetBootloader extends Bootloader
 {
+    #[\Override]
     public function defineSingletons(): array
     {
         return [

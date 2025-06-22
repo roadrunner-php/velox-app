@@ -14,6 +14,7 @@ use App\Module\Velox\Plugin\DTO\PluginSource;
  */
 final class PluginResource extends JsonResource
 {
+    #[\Override]
     protected function mapData(): array|\JsonSerializable
     {
         return [

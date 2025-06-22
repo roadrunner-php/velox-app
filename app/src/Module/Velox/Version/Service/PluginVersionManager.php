@@ -112,7 +112,7 @@ final readonly class PluginVersionManager
         // Convert plugin name to environment variable format
         // e.g., 'appLogger' -> 'RR_PLUGIN_APP_LOGGER'
 
-        $envName = \strtoupper(\preg_replace('/([a-z])([A-Z])/', '$1_$2', $pluginName));
+        $envName = \strtoupper((string) \preg_replace('/([a-z])([A-Z])/', '$1_$2', $pluginName));
         return "RR_PLUGIN_{$envName}";
     }
 }

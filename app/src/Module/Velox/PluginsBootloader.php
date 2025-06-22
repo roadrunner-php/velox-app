@@ -16,6 +16,7 @@ use Spiral\Boot\EnvironmentInterface;
 
 final class PluginsBootloader extends Bootloader
 {
+    #[\Override]
     public function defineSingletons(): array
     {
         return [
