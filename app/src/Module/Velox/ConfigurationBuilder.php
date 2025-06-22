@@ -136,12 +136,9 @@ final readonly class ConfigurationBuilder
     /**
      * Generate Dockerfile
      */
-    public function generateDockerfile(
-        VeloxConfig $config,
-        string $baseImage = 'php:8.3-cli',
-        ?string $githubToken = null,
-    ): string {
-        return $this->generator->generateDockerfile($config, $baseImage, $githubToken);
+    public function generateDockerfile(VeloxConfig $config, string $baseImage = 'php:8.3-cli'): string
+    {
+        return $this->generator->generateDockerfile(config: $config, baseImage: $baseImage);
     }
 
     /**

@@ -126,7 +126,7 @@ final readonly class BinaryBuilderService
     ): array {
         $buildResult = $this->buildBinary($config, $outputDirectory);
 
-        $dockerfile = $this->configGenerator->generateDockerfile($config, $baseImage);
+        $dockerfile = $this->configGenerator->generateDockerfile(config: $config, baseImage: $baseImage);
         $dockerfilePath = $outputDirectory . '/Dockerfile';
         $this->files->write($dockerfilePath, $dockerfile);
 

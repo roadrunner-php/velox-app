@@ -30,12 +30,15 @@ final readonly class ConfigurationGeneratorService
         return Toml::encode(\json_decode(\json_encode($config), true));
     }
 
-    public function generateDockerfile(VeloxConfig $config, string $baseImage = 'php:8.3-cli'): string
-    {
+    public function generateDockerfile(
+        VeloxConfig $config,
+        string $veloxVersion = '2025.1.1',
+        string $baseImage = 'php:8.3-cli',
+    ): string {
         $dockerfile = [];
 
         $dockerfile[] = '# Multi-stage build for RoadRunner with Velox';
-        $dockerfile[] = 'FROM ghcr.io/roadrunner-server/velox:latest as velox';
+        $dockerfile[] = 'FROM ghcr.io/roadrunner-server/velox:' . $veloxVersion . ' as velox';
         $dockerfile[] = '';
 
         $dockerfile[] = '# Build arguments';
