@@ -2,23 +2,20 @@
 
 declare(strict_types=1);
 
-namespace App\Module\Velox\Plugin\Endpoint\Http\v1\Plugin;
+namespace App\Module\Velox\Plugin\Endpoint\Http\v1\Plugin\Dependency;
 
 use App\Module\Velox\Plugin\DTO\Plugin;
 use App\Module\Velox\Plugin\Service\PluginProviderInterface;
-use Spiral\Filters\Attribute\Input\Post;
+use Spiral\Filters\Attribute\Input\Route;
 use Spiral\Filters\Model\Filter;
 use Spiral\Filters\Model\FilterDefinitionInterface;
 use Spiral\Filters\Model\HasFilterDefinition;
 use Spiral\Validator\FilterDefinition;
 
-final class GenerateConfigFilter extends Filter implements HasFilterDefinition
+final class GetDependenciesFilter extends Filter implements HasFilterDefinition
 {
-    #[Post]
-    public array $plugins = [];
-
-    #[Post]
-    public ConfigFormat $format = ConfigFormat::TOML;
+    #[Route(key: 'name')]
+    public string $name;
 
     public function __construct(
         private readonly PluginProviderInterface $provider,
@@ -32,13 +29,13 @@ final class GenerateConfigFilter extends Filter implements HasFilterDefinition
         );
 
         return new FilterDefinition([
-            'plugins' => [
+            'name' => [
                 'required',
-                'array',
+                'string',
                 'notEmpty',
-                ['array::expectedValues', $pluginNames],
+                ['string::shorter', 100],
+                ['in_array', $pluginNames, 'error' => 'Plugin not found'],
             ],
-            'format' => ['string'],
         ]);
     }
 }

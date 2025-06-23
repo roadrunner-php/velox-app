@@ -12,19 +12,19 @@ use Spiral\Router\Annotation\Route;
 final readonly class ShowAction
 {
     #[Route(route: 'v1/plugin/<name>', name: 'plugin.show', methods: ['GET'], group: 'api')]
-    public function __invoke(ConfigurationBuilder $builder, string $name): ResourceInterface
+    public function __invoke(ConfigurationBuilder $builder, ShowPluginFilter $filter): ResourceInterface
     {
-        $plugin = $builder->getAvailablePlugins();
+        $plugins = $builder->getAvailablePlugins();
 
         // Find plugin by name
-        foreach ($plugin as $p) {
-            if ($p->name === $name) {
-                return new PluginResource($p);
+        foreach ($plugins as $plugin) {
+            if ($plugin->name === $filter->name) {
+                return new PluginResource($plugin);
             }
         }
 
         return new ErrorResource(
-            new \Exception("Plugin '{$name}' not found", 404),
+            new \Exception("Plugin '{$filter->name}' not found", 404),
         );
     }
 }

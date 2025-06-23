@@ -12,12 +12,12 @@ use Spiral\Router\Annotation\Route;
 final readonly class DependenciesAction
 {
     #[Route(route: 'v1/plugin/<name>/dependencies', name: 'plugin.dependencies', methods: ['GET'], group: 'api')]
-    public function __invoke(ConfigurationBuilder $builder, string $name): ResourceInterface
+    public function __invoke(ConfigurationBuilder $builder, GetDependenciesFilter $filter): ResourceInterface
     {
         // Find the plugin
         $plugin = null;
         foreach ($builder->getAvailablePlugins() as $p) {
-            if ($p->name === $name) {
+            if ($p->name === $filter->name) {
                 $plugin = $p;
                 break;
             }
@@ -25,13 +25,13 @@ final readonly class DependenciesAction
 
         if ($plugin === null) {
             throw new NotFoundException(
-                message: "Plugin with name '{$name}' not found.",
+                message: "Plugin with name '{$filter->name}' not found.",
             );
         }
 
         return new PluginDependenciesResource(
-            $name,
-            $builder->resolveDependencies([$name])
+            $filter->name,
+            $builder->resolveDependencies([$filter->name]),
         );
     }
 }

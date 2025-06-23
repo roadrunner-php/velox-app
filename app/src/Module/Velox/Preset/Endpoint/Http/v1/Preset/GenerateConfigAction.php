@@ -5,38 +5,29 @@ declare(strict_types=1);
 namespace App\Module\Velox\Preset\Endpoint\Http\v1\Preset;
 
 use App\Module\Velox\ConfigurationBuilder;
+use App\Module\Velox\Plugin\Endpoint\Http\v1\Plugin\ConfigFormat;
 use Nyholm\Psr7\Stream;
 use Psr\Http\Message\ResponseInterface;
 use Spiral\Http\Exception\ClientException;
-use Spiral\Http\Request\InputManager;
 use Spiral\Http\ResponseWrapper;
 use Spiral\Router\Annotation\Route;
+use Spiral\Validation\Exception\ValidationException;
 
 final readonly class GenerateConfigAction
 {
     #[Route(
         route: 'v1/presets/generate-config',
         name: 'preset.generate-config',
-        methods: ['POST', 'GET'],
+        methods: ['POST'],
         group: 'api',
     )]
     public function __invoke(
         ConfigurationBuilder $builder,
-        InputManager $request,
+        GenerateConfigFromPresetsFilter $filter,
         ResponseWrapper $response,
     ): ResponseInterface {
-        $presetNames = $request->post('presets', $request->query('presets', []));
-        $format = $request->post('format', $request->query('format', 'toml'));
-
-        if (empty($presetNames) || !\is_array($presetNames)) {
-            throw new ClientException(
-                400,
-                'Presets array is required',
-            );
-        }
-
         // Validate presets first
-        $validationResult = $builder->validatePresets($presetNames);
+        $validationResult = $builder->validatePresets($filter->presets);
         if (!$validationResult->isValid) {
             throw new ClientException(
                 422,
@@ -45,16 +36,12 @@ final readonly class GenerateConfigAction
         }
 
         // Generate configuration
-        $config = $builder->buildConfigurationFromPresets($presetNames, '${RT_TOKEN}');
+        $config = $builder->buildConfigurationFromPresets($filter->presets, '${RT_TOKEN}');
 
-        $result = match ($format) {
-            'toml' => $builder->generateToml($config),
-            'json' => \json_encode($config, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES),
-            'dockerfile', 'docker' => $builder->generateDockerfile($config),
-            default => throw new ClientException(
-                400,
-                'Unsupported format: ' . $format,
-            ),
+        $result = match ($filter->format) {
+            ConfigFormat::TOML => $builder->generateToml($config),
+            ConfigFormat::JSON => \json_encode($config, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES),
+            ConfigFormat::Dockerfile, ConfigFormat::Docker => $builder->generateDockerfile($config),
         };
 
         return $response
