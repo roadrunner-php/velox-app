@@ -40,7 +40,7 @@ use OpenApi\Attributes as OA;
         'meta' => [
             'total' => 11,
         ],
-    ]
+    ],
 )]
 final class PluginCategoriesCollectionResource extends ResourceCollection
 {

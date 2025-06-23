@@ -14,10 +14,7 @@ use Spiral\RoadRunnerBridge\Bootloader as RoadRunnerBridge;
 
 final class LoggingBootloader extends Bootloader
 {
-    public function __construct(
-        private readonly ConfiguratorInterface $config,
-    ) {}
-
+    #[\Override]
     public function defineDependencies(): array
     {
         return [

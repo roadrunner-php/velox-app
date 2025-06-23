@@ -70,7 +70,7 @@ use OpenApi\Attributes as OA;
                 ],
             ),
         ),
-    ]
+    ],
 )]
 final readonly class ShowAction
 {

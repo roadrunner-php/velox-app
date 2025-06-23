@@ -104,7 +104,7 @@ use OpenApi\Attributes as OA;
         ],
         'conflicts' => [],
         'is_valid' => true,
-    ]
+    ],
 )]
 /**
  * @extends JsonResource<DependencyResolution>

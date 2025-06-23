@@ -20,7 +20,7 @@ use OpenApi\Attributes as OA;
             description: 'List of all available plugin categories',
             content: new OA\JsonContent(ref: PluginCategoriesCollectionResource::class),
         ),
-    ]
+    ],
 )]
 final class CategoriesAction
 {

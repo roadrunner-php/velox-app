@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace App\Module\Velox\Preset\Exception;
 
-use Exception;
-
-final class PresetException extends Exception
+final class PresetException extends \Exception
 {
     /**
      * @param array<string> $presetNames

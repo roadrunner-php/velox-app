@@ -41,7 +41,7 @@ use OpenApi\Attributes as OA;
     example: [
         'plugins' => ['server', 'logger', 'http', 'gzip', 'static'],
         'format' => 'toml',
-    ]
+    ],
 )]
 final class GenerateConfigFilter extends Filter implements HasFilterDefinition
 {

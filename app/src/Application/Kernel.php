@@ -10,7 +10,6 @@ use Spiral\Bootloader as Framework;
 use Spiral\Cycle\Bootloader as CycleBridge;
 use Spiral\Distribution\Bootloader\DistributionBootloader;
 use Spiral\DotEnv\Bootloader\DotenvBootloader;
-use Spiral\Monolog\Bootloader\MonologBootloader;
 use Spiral\RoadRunnerBridge\Bootloader as RoadRunnerBridge;
 use Spiral\Sentry\Bootloader\SentryReporterBootloader;
 use Spiral\Storage\Bootloader\StorageBootloader;

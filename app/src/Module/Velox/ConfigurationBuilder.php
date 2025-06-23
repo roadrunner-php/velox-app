@@ -130,7 +130,7 @@ final readonly class ConfigurationBuilder
      */
     public function generateToml(VeloxConfig $config, ?string $githubToken = null): string
     {
-        return $this->generator->generateToml($config, $githubToken);
+        return $this->generator->generateToml($config);
     }
 
     /**

@@ -119,7 +119,7 @@ use OpenApi\Attributes as OA;
             type: 'string',
             example: 'roadrunner-server/http',
         ),
-    ]
+    ],
 )]
 /**
  * @extends JsonResource<Plugin>

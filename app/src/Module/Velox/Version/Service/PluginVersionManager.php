@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Module\Velox\Version\Service;
 
-use App\Module\Velox\Environment\Service\EnvironmentFileService;
 use App\Module\Velox\Plugin\DTO\Plugin;
 use App\Module\Velox\Plugin\DTO\PluginRepository;
 use App\Module\Velox\Plugin\Service\PluginProviderInterface;

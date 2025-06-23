@@ -41,7 +41,7 @@ use OpenApi\Attributes as OA;
     example: [
         'value' => 'http',
         'label' => 'HTTP',
-    ]
+    ],
 )]
 /**
  * @extends JsonResource<\App\Module\Velox\Plugin\DTO\PluginCategory>
