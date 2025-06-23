@@ -33,8 +33,7 @@ final class ListPresetsFilter extends Filter implements HasFilterDefinition
                 ['string::shorter', 100],
             ],
             'official' => [
-                'string',
-                'accepted',
+                'mixed::accepted',
             ],
         ]);
     }
