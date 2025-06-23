@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace App\Module\Velox\BinaryBuilder\Exception;
 
-use Exception;
-
-final class BuildException extends Exception
+final class BuildException extends \Exception
 {
     /**
      * @param array<string> $buildLogs

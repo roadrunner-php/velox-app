@@ -6,41 +6,79 @@ namespace App\Module\Velox\Preset\Endpoint\Http\v1\Preset;
 
 use App\Application\HTTP\Response\ResourceInterface;
 use App\Module\Velox\ConfigurationBuilder;
-use Psr\Http\Message\ServerRequestInterface;
 use Spiral\Router\Annotation\Route;
+use OpenApi\Attributes as OA;
 
+#[OA\Get(
+    path: '/api/v1/presets',
+    tags: ['presets'],
+    parameters: [
+        new OA\Parameter(
+            name: 'tags',
+            description: 'Filter presets by tags, comma-separated',
+            in: 'query',
+            required: false,
+            schema: new OA\Schema(
+                type: 'string',
+                maxLength: 200,
+                example: 'web,api',
+            ),
+        ),
+        new OA\Parameter(
+            name: 'search',
+            description: 'Search presets by name',
+            in: 'query',
+            required: false,
+            schema: new OA\Schema(
+                type: 'string',
+                maxLength: 100,
+                example: 'search term',
+            ),
+        ),
+        new OA\Parameter(
+            name: 'official',
+            description: 'Filter by official presets',
+            in: 'query',
+            required: false,
+            schema: new OA\Schema(
+                type: 'string',
+                enum: ['yes', '1', 'on'],
+                example: 'true',
+            ),
+        ),
+    ],
+    responses: [
+        new OA\Response(
+            ref: PresetCollectionResource::class,
+            response: 200,
+        ),
+    ],
+)]
 final readonly class ListAction
 {
     #[Route(route: 'v1/presets', name: 'preset.list', methods: ['GET'], group: 'api')]
-    public function __invoke(ConfigurationBuilder $builder, ServerRequestInterface $request): ResourceInterface
+    public function __invoke(ConfigurationBuilder $builder, ListPresetsFilter $filter): ResourceInterface
     {
-        $params = $request->getQueryParams();
-
-        // Get filter parameters
-        $tags = $params['tags'] ?? null;
-        $search = $params['search'] ?? null;
-        $official = $params['official'] ?? null;
-
         // Start with all presets
         $presets = $builder->getAvailablePresets();
 
         // Apply tags filter
-        if ($tags !== null && $tags !== '') {
-            $tagArray = \explode(',', $tags);
-            $presets = $builder->getPresetsByTags($tagArray);
+        $tagsArray = $filter->getTagsArray();
+        if ($tagsArray !== null) {
+            $presets = $builder->getPresetsByTags($tagsArray);
         }
 
         // Apply search filter
-        if ($search !== null && $search !== '') {
-            $presets = $builder->searchPresets($search);
+        if ($filter->search !== null && $filter->search !== '') {
+            $presets = $builder->searchPresets($filter->search);
         }
 
         // Apply official filter
-        if ($official !== null && $official !== '') {
-            $isOfficial = \filter_var($official, FILTER_VALIDATE_BOOLEAN);
+        $officialBoolean = $filter->getOfficialBoolean();
+        if ($officialBoolean !== null) {
             $presets = \array_filter(
                 $presets,
-                static fn($preset) => $preset->isOfficial === $isOfficial,
+                static fn($preset) => $preset->isOfficial === $officialBoolean,
             );
         }
 

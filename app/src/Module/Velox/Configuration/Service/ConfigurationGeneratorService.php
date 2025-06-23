@@ -104,7 +104,7 @@ final readonly class ConfigurationGeneratorService
             }
         }
 
-        $githubToken = $githubToken ?? $this->githubToken;
+        $githubToken ??= $this->githubToken;
 
         return new VeloxConfig(
             roadrunner: new RoadRunnerConfig(

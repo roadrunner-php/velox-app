@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace App\Module\Velox\Dependency\Exception;
 
-use Exception;
-
-final class DependencyConflictException extends Exception
+final class DependencyConflictException extends \Exception
 {
     /**
      * @param array<string> $conflictingPlugins

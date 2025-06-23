@@ -6,16 +6,16 @@ namespace App\Module\Velox\Plugin\DTO;
 
 enum PluginCategory: string
 {
-    case Core = 'Core';
-    case Logging = 'Logging';
-    case Http = 'HTTP';
-    case Jobs = 'Jobs';
-    case Kv = 'KV';
-    case Metrics = 'Metrics';
-    case Grpc = 'gRPC';
-    case Monitoring = 'Monitoring';
-    case Network = 'Network';
-    case Broadcasting = 'Broadcasting';
-    case Workflow = 'Workflow';
-    case Observability = 'Observability';
+    case Core = 'core';
+    case Logging = 'logging';
+    case Http = 'http';
+    case Jobs = 'jobs';
+    case Kv = 'kv';
+    case Metrics = 'metrics';
+    case Grpc = 'grpc';
+    case Monitoring = 'monitoring';
+    case Network = 'network';
+    case Broadcasting = 'broadcasting';
+    case Workflow = 'workflow';
+    case Observability = 'observability';
 }

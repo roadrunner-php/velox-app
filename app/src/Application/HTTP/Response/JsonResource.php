@@ -18,9 +18,7 @@ class JsonResource implements ResourceInterface
     /**
      * @param TData $data
      */
-    public function __construct(protected readonly mixed $data = [])
-    {
-    }
+    public function __construct(protected readonly mixed $data = []) {}
 
     public function toResponse(ResponseInterface $response): ResponseInterface
     {
