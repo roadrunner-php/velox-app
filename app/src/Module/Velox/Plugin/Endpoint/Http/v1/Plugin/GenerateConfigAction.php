@@ -8,8 +8,6 @@ use App\Module\Velox\ConfigurationBuilder;
 use App\Module\Velox\Plugin\DTO\Plugin;
 use Nyholm\Psr7\Stream;
 use Psr\Http\Message\ResponseInterface;
-use Spiral\Http\Exception\ClientException;
-use Spiral\Http\Request\InputManager;
 use Spiral\Http\ResponseWrapper;
 use Spiral\Router\Annotation\Route;
 
@@ -23,18 +21,11 @@ final readonly class GenerateConfigAction
     )]
     public function __invoke(
         ConfigurationBuilder $builder,
-        InputManager $request,
+        GenerateConfigFilter $filter,
         ResponseWrapper $response,
     ): ResponseInterface {
-        $pluginNames = $request->post('plugins', $request->query('plugins', []));
-        $format = $request->post('format', $request->query('format', 'toml'));
-
-        if (empty($pluginNames) || !\is_array($pluginNames)) {
-            throw new ClientException(
-                400,
-                'Presets array is required',
-            );
-        }
+        $pluginNames = $filter->plugins;
+        $format = $filter->format;
 
         $deps = $builder->resolveDependencies($pluginNames);
 
@@ -52,13 +43,9 @@ final readonly class GenerateConfigAction
         $config = $builder->buildConfiguration($pluginNames, '${RT_TOKEN}');
 
         $result = match ($format) {
-            'toml' => $builder->generateToml($config),
-            'json' => \json_encode($config, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES),
-            'dockerfile', 'docker' => $builder->generateDockerfile($config),
-            default => throw new ClientException(
-                400,
-                'Unsupported format: ' . $format,
-            ),
+            ConfigFormat::TOML => $builder->generateToml($config),
+            ConfigFormat::JSON => \json_encode($config, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES),
+            ConfigFormat::Docker, ConfigFormat::Dockerfile => $builder->generateDockerfile($config),
         };
 
         return $response

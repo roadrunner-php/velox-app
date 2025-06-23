@@ -15,6 +15,8 @@ use Spiral\Router\GroupRegistry;
 use Spiral\Bootloader as Framework;
 use Spiral\RoadRunnerBridge\Bootloader as RoadRunnerBridge;
 use Spiral\Nyholm\Bootloader\NyholmBootloader;
+use Spiral\Validation\Bootloader\ValidationBootloader;
+use Spiral\Validator\Bootloader\ValidatorBootloader;
 
 final class RoutesBootloader extends BaseRoutesBootloader
 {
@@ -32,6 +34,12 @@ final class RoutesBootloader extends BaseRoutesBootloader
             Framework\Http\CsrfBootloader::class,
             Framework\Http\PaginationBootloader::class,
             AnnotatedRoutesBootloader::class,
+
+            Framework\Security\FiltersBootloader::class,
+            Framework\Security\GuardBootloader::class,
+
+            ValidationBootloader::class,
+            ValidatorBootloader::class,
         ];
     }
 

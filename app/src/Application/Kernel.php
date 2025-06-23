@@ -17,8 +17,6 @@ use Spiral\Storage\Bootloader\StorageBootloader;
 use Spiral\TemporalBridge\Bootloader as TemporalBridge;
 use Spiral\Tokenizer\Bootloader\TokenizerListenerBootloader;
 use Spiral\Twig\Bootloader\TwigBootloader;
-use Spiral\Validation\Bootloader\ValidationBootloader;
-use Spiral\Validator\Bootloader\ValidatorBootloader;
 use Spiral\Views\Bootloader\ViewsBootloader;
 
 /**
@@ -40,23 +38,16 @@ class Kernel extends \Spiral\Framework\Kernel
     public function defineBootloaders(): array
     {
         return [
-            // Logging and exceptions handling
-            MonologBootloader::class,
             Bootloader\ExceptionHandlerBootloader::class,
 
             // Application specific logs
             Bootloader\LoggingBootloader::class,
-
-            // RoadRunner
-            RoadRunnerBridge\LoggerBootloader::class,
 
             // Core Services
             Framework\SnapshotsBootloader::class,
 
             // Security and validation
             Framework\Security\EncrypterBootloader::class,
-            Framework\Security\FiltersBootloader::class,
-            Framework\Security\GuardBootloader::class,
 
             // HTTP extensions
 
@@ -85,11 +76,7 @@ class Kernel extends \Spiral\Framework\Kernel
             DistributionBootloader::class,
 
             // Temporal
-            TemporalBridge\PrototypeBootloader::class,
             TemporalBridge\TemporalBridgeBootloader::class,
-
-            ValidationBootloader::class,
-            ValidatorBootloader::class,
 
             // Console commands
             Framework\CommandBootloader::class,
