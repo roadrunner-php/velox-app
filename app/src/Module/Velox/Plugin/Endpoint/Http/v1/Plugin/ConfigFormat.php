@@ -8,7 +8,6 @@ enum ConfigFormat: string
 {
     case TOML = 'toml';
     case JSON = 'json';
-    case Dockerfile = 'dockerfile';
     case Docker = 'docker';
+    case Dockerfile = 'dockerfile';
 }
-

@@ -6,7 +6,87 @@ namespace App\Module\Velox\Plugin\Endpoint\Http\v1\Plugin;
 
 use App\Application\HTTP\Response\ResourceCollection;
 use App\Module\Velox\Plugin\DTO\Plugin;
+use OpenApi\Attributes as OA;
 
+#[OA\Schema(
+    schema: PluginCollectionResource::class,
+    description: 'Collection of RoadRunner plugins with metadata and statistics',
+    properties: [
+        new OA\Property(
+            property: 'data',
+            description: 'Array of plugin objects',
+            type: 'array',
+            items: new OA\Items(ref: PluginResource::class),
+        ),
+        new OA\Property(
+            property: 'meta',
+            description: 'Metadata about the plugin collection',
+            properties: [
+                new OA\Property(
+                    property: 'total',
+                    description: 'Total number of plugins in the result set',
+                    type: 'integer',
+                    example: 25,
+                ),
+                new OA\Property(
+                    property: 'statistics',
+                    description: 'Statistical breakdown of plugins',
+                    properties: [
+                        new OA\Property(
+                            property: 'by_category',
+                            description: 'Plugin count grouped by category',
+                            type: 'object',
+                            example: ['http' => 5, 'jobs' => 3, 'kv' => 4],
+                            additionalProperties: new OA\AdditionalProperties(type: 'integer'),
+                        ),
+                        new OA\Property(
+                            property: 'by_source',
+                            description: 'Plugin count grouped by source type',
+                            type: 'object',
+                            example: ['official' => 20, 'community' => 5],
+                            additionalProperties: new OA\AdditionalProperties(type: 'integer'),
+                        ),
+                        new OA\Property(
+                            property: 'with_dependencies',
+                            description: 'Number of plugins that have dependencies',
+                            type: 'integer',
+                            example: 12,
+                        ),
+                        new OA\Property(
+                            property: 'total_dependencies',
+                            description: 'Total count of all dependencies across all plugins',
+                            type: 'integer',
+                            example: 28,
+                        ),
+                    ],
+                    type: 'object',
+                ),
+                new OA\Property(
+                    property: 'filters',
+                    description: 'Available filter options based on current dataset',
+                    properties: [
+                        new OA\Property(
+                            property: 'available_categories',
+                            description: 'List of categories present in the current result set',
+                            type: 'array',
+                            items: new OA\Items(type: 'string'),
+                            example: ['http', 'jobs', 'kv', 'metrics'],
+                        ),
+                        new OA\Property(
+                            property: 'available_sources',
+                            description: 'List of sources present in the current result set',
+                            type: 'array',
+                            items: new OA\Items(type: 'string'),
+                            example: ['official', 'community'],
+                        ),
+                    ],
+                    type: 'object',
+                ),
+            ],
+            type: 'object',
+        ),
+    ]
+)]
 final class PluginCollectionResource extends ResourceCollection
 {
     /**

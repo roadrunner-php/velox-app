@@ -11,7 +11,38 @@ use Spiral\Filters\Model\Filter;
 use Spiral\Filters\Model\FilterDefinitionInterface;
 use Spiral\Filters\Model\HasFilterDefinition;
 use Spiral\Validator\FilterDefinition;
+use OpenApi\Attributes as OA;
 
+#[OA\Schema(
+    schema: GenerateConfigFilter::class,
+    description: 'Request body for generating RoadRunner configuration from plugins',
+    required: ['plugins'],
+    properties: [
+        new OA\Property(
+            property: 'plugins',
+            description: 'Array of plugin names to include in the configuration. Dependencies will be automatically resolved and included.',
+            type: 'array',
+            items: new OA\Items(
+                type: 'string',
+                pattern: '^[a-zA-Z0-9_-]+$',
+            ),
+            minItems: 1,
+            example: ['server', 'logger', 'http', 'gzip', 'static'],
+        ),
+        new OA\Property(
+            property: 'format',
+            description: 'Output format for the generated configuration file',
+            type: 'string',
+            default: 'toml',
+            enum: ['toml', 'json', 'docker', 'dockerfile'],
+            example: 'toml',
+        ),
+    ],
+    example: [
+        'plugins' => ['server', 'logger', 'http', 'gzip', 'static'],
+        'format' => 'toml',
+    ]
+)]
 final class GenerateConfigFilter extends Filter implements HasFilterDefinition
 {
     #[Post]
