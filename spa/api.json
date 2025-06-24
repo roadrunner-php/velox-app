@@ -1,0 +1,827 @@
+{
+  "openapi": "3.0.0",
+  "info": { "title": "Velox API", "description": "", "version": "1.0.0" },
+  "paths": {
+    "\/api\/v1\/plugins\/categories": {
+      "get": {
+        "tags": ["plugins", "categories"],
+        "summary": "List all available plugin categories",
+        "description": "Retrieve a complete list of all available plugin categories with their display names and values. Categories are used to group plugins by functionality.",
+        "operationId": "cea93acd39eaf16b4710a022af53697e",
+        "responses": {
+          "200": {
+            "description": "List of all available plugin categories",
+            "content": {
+              "application\/json": {
+                "schema": {
+                  "$ref": "#\/components\/schemas\/App\\Module\\Velox\\Plugin\\Endpoint\\Http\\v1\\Plugin\\Category\\PluginCategoriesCollectionResource"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "\/api\/v1\/plugin\/{name}\/dependencies": {
+      "get": {
+        "tags": ["plugins", "dependencies"],
+        "summary": "Get plugin dependencies and conflicts",
+        "description": "Retrieve all dependencies required by a specific plugin, including transitive dependencies, and any potential conflicts that may arise when using this plugin.",
+        "operationId": "e32f926644cb72b92ab62b8d6f609386",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "description": "The unique name\/identifier of the plugin",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 100,
+              "pattern": "^[a-zA-Z0-9_-]+$",
+              "example": "http"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Plugin dependencies resolved successfully",
+            "content": {
+              "application\/json": {
+                "schema": {
+                  "$ref": "#\/components\/schemas\/App\\Module\\Velox\\Plugin\\Endpoint\\Http\\v1\\Plugin\\Dependency\\PluginDependenciesResource"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Plugin not found",
+            "content": {
+              "application\/json": {
+                "schema": {
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Plugin with name 'unknown-plugin' not found."
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid plugin name format",
+            "content": {
+              "application\/json": {
+                "schema": {
+                  "properties": {
+                    "error": { "type": "string", "example": "Plugin name validation failed" },
+                    "details": { "type": "object" }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "\/api\/v1\/plugins\/generate-config": {
+      "post": {
+        "tags": ["plugins", "configuration"],
+        "summary": "Generate RoadRunner configuration from selected plugins",
+        "description": "Generate a complete RoadRunner configuration file in the specified format from a list of selected plugins. The system automatically resolves dependencies and includes all required plugins.",
+        "operationId": "ecefab7ca380c2d4c25ec91fd2525e9f",
+        "requestBody": {
+          "description": "Plugin selection and format configuration",
+          "required": true,
+          "content": {
+            "application\/json": {
+              "schema": {
+                "$ref": "#\/components\/schemas\/App\\Module\\Velox\\Plugin\\Endpoint\\Http\\v1\\Plugin\\GenerateConfigFilter"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Configuration generated successfully",
+            "content": {
+              "text\/plain": {
+                "schema": {
+                  "description": "Generated configuration content in the requested format",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error - invalid plugins or format specified",
+            "content": {
+              "application\/json": {
+                "schema": {
+                  "properties": {
+                    "error": { "type": "string", "example": "Plugin validation failed" },
+                    "details": {
+                      "properties": {
+                        "plugins": {
+                          "type": "array",
+                          "items": { "type": "string" },
+                          "example": ["Unknown plugin: invalid-plugin"]
+                        }
+                      },
+                      "type": "object"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Configuration generation failed",
+            "content": {
+              "application\/json": {
+                "schema": {
+                  "properties": {
+                    "error": { "type": "string", "example": "Failed to generate configuration" }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "\/api\/v1\/plugins": {
+      "get": {
+        "tags": ["plugins"],
+        "summary": "List all available RoadRunner plugins",
+        "description": "Retrieve a filtered list of available RoadRunner plugins with optional filtering by category, source, and search terms.",
+        "operationId": "a7434a027086e8773fee5610982f9dcb",
+        "parameters": [
+          {
+            "name": "category",
+            "in": "query",
+            "description": "Filter plugins by category",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "core",
+                "logging",
+                "http",
+                "jobs",
+                "kv",
+                "metrics",
+                "grpc",
+                "monitoring",
+                "network",
+                "broadcasting",
+                "workflow",
+                "observability"
+              ],
+              "example": "http"
+            }
+          },
+          {
+            "name": "source",
+            "in": "query",
+            "description": "Filter plugins by source type",
+            "required": false,
+            "schema": { "type": "string", "enum": ["official", "community"], "example": "official" }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "description": "Search plugins by name or description",
+            "required": false,
+            "schema": { "type": "string", "maxLength": 100, "example": "http" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of plugins with metadata and filtering information",
+            "content": {
+              "application\/json": {
+                "schema": {
+                  "$ref": "#\/components\/schemas\/App\\Module\\Velox\\Plugin\\Endpoint\\Http\\v1\\Plugin\\PluginCollectionResource"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error for invalid filter parameters",
+            "content": {
+              "application\/json": {
+                "schema": {
+                  "properties": {
+                    "error": { "type": "string", "example": "Invalid category filter" },
+                    "details": { "type": "object" }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "\/api\/v1\/plugin\/{name}": {
+      "get": {
+        "tags": ["plugins"],
+        "summary": "Get detailed information about a specific plugin",
+        "description": "Retrieve detailed information about a specific RoadRunner plugin by its name.",
+        "operationId": "7f56fed56da94d3d2864714f04b68dfd",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "description": "The unique name\/identifier of the plugin",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 100,
+              "pattern": "^[a-zA-Z0-9_-]+$",
+              "example": "http"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Plugin information retrieved successfully",
+            "content": {
+              "application\/json": {
+                "schema": {
+                  "$ref": "#\/components\/schemas\/App\\Module\\Velox\\Plugin\\Endpoint\\Http\\v1\\Plugin\\PluginResource"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Plugin not found",
+            "content": {
+              "application\/json": {
+                "schema": {
+                  "properties": {
+                    "error": { "type": "string", "example": "Plugin 'unknown-plugin' not found" },
+                    "code": { "type": "integer", "example": 404 }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid plugin name format",
+            "content": {
+              "application\/json": {
+                "schema": {
+                  "properties": {
+                    "error": { "type": "string", "example": "Plugin name validation failed" },
+                    "details": { "type": "object" }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "\/api\/v1\/presets\/generate-config": {
+      "post": {
+        "tags": ["presets", "configuration"],
+        "summary": "Generate RoadRunner configuration from selected presets",
+        "description": "Generate a complete RoadRunner configuration file from one or more preset configurations. Presets are predefined plugin combinations optimized for specific use cases. The system automatically merges presets and resolves conflicts.",
+        "operationId": "c74b86fb6ca360778a2ab9261fb2a615",
+        "requestBody": {
+          "description": "Preset selection and format configuration",
+          "required": true,
+          "content": {
+            "application\/json": {
+              "schema": {
+                "$ref": "#\/components\/schemas\/App\\Module\\Velox\\Preset\\Endpoint\\Http\\v1\\Preset\\GenerateConfigFromPresetsFilter"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Configuration generated successfully from presets",
+            "content": {
+              "text\/plain": {
+                "schema": {
+                  "description": "Generated configuration content in the requested format",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Preset validation failed - invalid presets specified or preset conflicts detected",
+            "content": {
+              "application\/json": {
+                "schema": {
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Preset validation failed: conflicting presets detected"
+                    },
+                    "details": {
+                      "properties": {
+                        "presets": {
+                          "type": "array",
+                          "items": { "type": "string" },
+                          "example": ["Unknown preset: invalid-preset"]
+                        },
+                        "conflicts": {
+                          "type": "array",
+                          "items": { "type": "string" },
+                          "example": [
+                            "web and api presets have conflicting middleware configurations"
+                          ]
+                        }
+                      },
+                      "type": "object"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Configuration generation failed",
+            "content": {
+              "application\/json": {
+                "schema": {
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Failed to generate configuration from presets"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "\/api\/v1\/presets": {
+      "get": {
+        "tags": ["presets"],
+        "operationId": "1d5d0a3947cee4fd2a3b395a5b4b0df2",
+        "parameters": [
+          {
+            "name": "tags",
+            "in": "query",
+            "description": "Filter presets by tags, comma-separated",
+            "required": false,
+            "schema": { "type": "string", "maxLength": 200, "example": "web,api" }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "description": "Search presets by name",
+            "required": false,
+            "schema": { "type": "string", "maxLength": 100, "example": "search term" }
+          },
+          {
+            "name": "official",
+            "in": "query",
+            "description": "Filter by official presets",
+            "required": false,
+            "schema": { "type": "string", "enum": ["yes", "1", "on"], "example": "true" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#\/components\/schemas\/App\\Module\\Velox\\Preset\\Endpoint\\Http\\v1\\Preset\\PresetCollectionResource"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "App\\Module\\Velox\\Plugin\\Endpoint\\Http\\v1\\Plugin\\Category\\PluginCategoriesCollectionResource": {
+        "description": "Collection of plugin categories with metadata",
+        "properties": {
+          "data": {
+            "description": "Array of plugin category objects",
+            "type": "array",
+            "items": {
+              "$ref": "#\/components\/schemas\/App\\Module\\Velox\\Plugin\\Endpoint\\Http\\v1\\Plugin\\Category\\PluginCategoryResource"
+            }
+          },
+          "meta": {
+            "description": "Metadata about the categories collection",
+            "properties": {
+              "total": {
+                "description": "Total number of available categories",
+                "type": "integer",
+                "example": 11
+              }
+            },
+            "type": "object"
+          }
+        },
+        "type": "object",
+        "example": {
+          "data": [
+            { "value": "core", "label": "Core" },
+            { "value": "http", "label": "HTTP" },
+            { "value": "jobs", "label": "Jobs" }
+          ],
+          "meta": { "total": 11 }
+        }
+      },
+      "App\\Module\\Velox\\Plugin\\Endpoint\\Http\\v1\\Plugin\\Category\\PluginCategoryResource": {
+        "description": "Plugin category information",
+        "properties": {
+          "value": {
+            "description": "Machine-readable category identifier used in API requests",
+            "type": "string",
+            "enum": [
+              "core",
+              "logging",
+              "http",
+              "jobs",
+              "kv",
+              "metrics",
+              "grpc",
+              "monitoring",
+              "network",
+              "broadcasting",
+              "workflow",
+              "observability"
+            ],
+            "example": "http"
+          },
+          "label": {
+            "description": "Human-readable category name for display purposes",
+            "type": "string",
+            "example": "HTTP"
+          }
+        },
+        "type": "object",
+        "example": { "value": "http", "label": "HTTP" }
+      },
+      "App\\Module\\Velox\\Plugin\\Endpoint\\Http\\v1\\Plugin\\Dependency\\PluginDependenciesResource": {
+        "description": "Plugin dependency resolution result with conflicts analysis",
+        "properties": {
+          "resolved_dependencies": {
+            "description": "List of plugins that are required as dependencies (excluding the requested plugin itself)",
+            "type": "array",
+            "items": {
+              "$ref": "#\/components\/schemas\/App\\Module\\Velox\\Plugin\\Endpoint\\Http\\v1\\Plugin\\PluginResource"
+            }
+          },
+          "dependency_count": {
+            "description": "Statistics about resolved dependencies",
+            "properties": {
+              "resolved": {
+                "description": "Number of successfully resolved dependencies",
+                "type": "integer",
+                "example": 3
+              }
+            },
+            "type": "object"
+          },
+          "conflicts": {
+            "description": "List of potential conflicts that may arise when using this plugin",
+            "type": "array",
+            "items": {
+              "properties": {
+                "plugin": {
+                  "description": "Name of the conflicting plugin",
+                  "type": "string",
+                  "example": "incompatible-plugin"
+                },
+                "type": {
+                  "description": "Type of conflict",
+                  "type": "string",
+                  "enum": [
+                    "circular_dependency",
+                    "missing_dependency",
+                    "version_conflict",
+                    "resource_conflict",
+                    "incompatible_plugin",
+                    "duplicate_plugin"
+                  ],
+                  "example": "version_conflict"
+                },
+                "message": {
+                  "description": "Human-readable description of the conflict",
+                  "type": "string",
+                  "example": "Version conflict between plugin A and plugin B"
+                },
+                "severity": {
+                  "description": "Severity level of the conflict",
+                  "type": "string",
+                  "enum": ["error", "warning", "info"],
+                  "example": "error"
+                },
+                "conflicting_plugins": {
+                  "description": "List of plugin names involved in the conflict",
+                  "type": "array",
+                  "items": { "type": "string" },
+                  "example": ["plugin-a", "plugin-b"]
+                }
+              },
+              "type": "object"
+            }
+          },
+          "is_valid": {
+            "description": "Whether the dependency resolution was successful without critical conflicts",
+            "type": "boolean",
+            "example": true
+          }
+        },
+        "type": "object",
+        "example": {
+          "resolved_dependencies": [
+            {
+              "name": "server",
+              "version": "v5.0.2",
+              "owner": "roadrunner-server",
+              "repository": "server",
+              "source": "official"
+            }
+          ],
+          "dependency_count": { "resolved": 1 },
+          "conflicts": [],
+          "is_valid": true
+        }
+      },
+      "App\\Module\\Velox\\Plugin\\Endpoint\\Http\\v1\\Plugin\\GenerateConfigFilter": {
+        "description": "Request body for generating RoadRunner configuration from plugins",
+        "required": ["plugins"],
+        "properties": {
+          "plugins": {
+            "description": "Array of plugin names to include in the configuration. Dependencies will be automatically resolved and included.",
+            "type": "array",
+            "items": { "type": "string", "pattern": "^[a-zA-Z0-9_-]+$" },
+            "minItems": 1,
+            "example": ["server", "logger", "http", "gzip", "static"]
+          },
+          "format": {
+            "description": "Output format for the generated configuration file",
+            "type": "string",
+            "default": "toml",
+            "enum": ["toml", "json", "docker", "dockerfile"],
+            "example": "toml"
+          }
+        },
+        "type": "object",
+        "example": { "plugins": ["server", "logger", "http", "gzip", "static"], "format": "toml" }
+      },
+      "App\\Module\\Velox\\Plugin\\Endpoint\\Http\\v1\\Plugin\\PluginCollectionResource": {
+        "description": "Collection of RoadRunner plugins with metadata and statistics",
+        "properties": {
+          "data": {
+            "description": "Array of plugin objects",
+            "type": "array",
+            "items": {
+              "$ref": "#\/components\/schemas\/App\\Module\\Velox\\Plugin\\Endpoint\\Http\\v1\\Plugin\\PluginResource"
+            }
+          },
+          "meta": {
+            "description": "Metadata about the plugin collection",
+            "properties": {
+              "total": {
+                "description": "Total number of plugins in the result set",
+                "type": "integer",
+                "example": 25
+              },
+              "statistics": {
+                "description": "Statistical breakdown of plugins",
+                "properties": {
+                  "by_category": {
+                    "description": "Plugin count grouped by category",
+                    "type": "object",
+                    "example": { "http": 5, "jobs": 3, "kv": 4 },
+                    "additionalProperties": { "type": "integer" }
+                  },
+                  "by_source": {
+                    "description": "Plugin count grouped by source type",
+                    "type": "object",
+                    "example": { "official": 20, "community": 5 },
+                    "additionalProperties": { "type": "integer" }
+                  },
+                  "with_dependencies": {
+                    "description": "Number of plugins that have dependencies",
+                    "type": "integer",
+                    "example": 12
+                  },
+                  "total_dependencies": {
+                    "description": "Total count of all dependencies across all plugins",
+                    "type": "integer",
+                    "example": 28
+                  }
+                },
+                "type": "object"
+              },
+              "filters": {
+                "description": "Available filter options based on current dataset",
+                "properties": {
+                  "available_categories": {
+                    "description": "List of categories present in the current result set",
+                    "type": "array",
+                    "items": { "type": "string" },
+                    "example": ["http", "jobs", "kv", "metrics"]
+                  },
+                  "available_sources": {
+                    "description": "List of sources present in the current result set",
+                    "type": "array",
+                    "items": { "type": "string" },
+                    "example": ["official", "community"]
+                  }
+                },
+                "type": "object"
+              }
+            },
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "App\\Module\\Velox\\Plugin\\Endpoint\\Http\\v1\\Plugin\\PluginResource": {
+        "description": "Individual RoadRunner plugin information",
+        "properties": {
+          "name": {
+            "description": "Unique name\/identifier of the plugin",
+            "type": "string",
+            "example": "http"
+          },
+          "version": {
+            "description": "Git reference (tag, branch, or commit) for the plugin version",
+            "type": "string",
+            "example": "v5.0.2"
+          },
+          "owner": {
+            "description": "Repository owner (user or organization)",
+            "type": "string",
+            "example": "roadrunner-server"
+          },
+          "repository": { "description": "Repository name", "type": "string", "example": "http" },
+          "repository_url": {
+            "description": "Full URL to the plugin repository",
+            "type": "string",
+            "format": "uri",
+            "example": "https:\/\/github.com\/roadrunner-server\/http"
+          },
+          "repository_type": {
+            "description": "Type of repository hosting platform",
+            "type": "string",
+            "enum": ["github", "gitlab"],
+            "example": "github"
+          },
+          "source": {
+            "description": "Source classification of the plugin",
+            "type": "string",
+            "enum": ["official", "community"],
+            "example": "official"
+          },
+          "description": {
+            "description": "Human-readable description of the plugin functionality",
+            "type": "string",
+            "example": "HTTP server plugin for handling web requests"
+          },
+          "category": {
+            "description": "Functional category of the plugin",
+            "type": "string",
+            "enum": [
+              "core",
+              "logging",
+              "http",
+              "jobs",
+              "kv",
+              "metrics",
+              "grpc",
+              "monitoring",
+              "network",
+              "broadcasting",
+              "workflow",
+              "observability"
+            ],
+            "example": "http",
+            "nullable": true
+          },
+          "dependencies": {
+            "description": "List of other plugins that this plugin depends on",
+            "type": "array",
+            "items": { "type": "string" },
+            "example": ["server", "logger"]
+          },
+          "folder": {
+            "description": "Subfolder within the repository where the plugin code is located",
+            "type": "string",
+            "example": "plugins\/roadrunner",
+            "nullable": true
+          },
+          "replace": {
+            "description": "Go module replace directive for custom module paths",
+            "type": "string",
+            "example": "github.com\/custom\/http",
+            "nullable": true
+          },
+          "is_official": {
+            "description": "Whether this is an official RoadRunner plugin",
+            "type": "boolean",
+            "example": true
+          },
+          "full_name": {
+            "description": "Full repository name in owner\/repository format",
+            "type": "string",
+            "example": "roadrunner-server\/http"
+          }
+        },
+        "type": "object"
+      },
+      "App\\Module\\Velox\\Preset\\Endpoint\\Http\\v1\\Preset\\GenerateConfigFromPresetsFilter": {
+        "properties": {
+          "presets": {
+            "description": "List of preset names to generate configuration from",
+            "type": "array",
+            "items": { "type": "string" },
+            "minItems": 1,
+            "example": ["web", "api", "database"]
+          },
+          "format": {
+            "description": "Configuration format to generate",
+            "type": "string",
+            "default": "toml",
+            "enum": ["toml", "json", "docker", "dockerfile"]
+          }
+        },
+        "type": "object"
+      },
+      "App\\Module\\Velox\\Preset\\Endpoint\\Http\\v1\\Preset\\PresetCollectionResource": {
+        "properties": {
+          "data": {
+            "description": "List of presets",
+            "type": "array",
+            "items": {
+              "$ref": "#\/components\/schemas\/App\\Module\\Velox\\Preset\\Endpoint\\Http\\v1\\Preset\\PresetResource"
+            }
+          },
+          "meta": {
+            "properties": {
+              "total": { "description": "Total number of presets", "type": "integer" },
+              "filters": {
+                "properties": {
+                  "available_tags": { "type": "array", "items": { "type": "string" } }
+                },
+                "type": "object"
+              }
+            },
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "App\\Module\\Velox\\Preset\\Endpoint\\Http\\v1\\Preset\\PresetResource": {
+        "properties": {
+          "name": { "description": "The unique name of the preset", "type": "string" },
+          "display_name": { "description": "The display name of the preset", "type": "string" },
+          "description": { "description": "A brief description of the preset", "type": "string" },
+          "plugins": {
+            "description": "List of plugin names included in the preset",
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "plugin_count": {
+            "description": "Number of plugins included in the preset",
+            "type": "integer"
+          },
+          "tags": {
+            "description": "Tags associated with the preset",
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "is_official": {
+            "description": "Indicates if the preset is official",
+            "type": "boolean"
+          },
+          "priority": {
+            "description": "Priority of the preset, lower values indicate higher priority",
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      }
+    }
+  },
+  "tags": [
+    { "name": "plugins", "description": "plugins" },
+    { "name": "categories", "description": "categories" },
+    { "name": "dependencies", "description": "dependencies" },
+    { "name": "configuration", "description": "configuration" },
+    { "name": "presets", "description": "presets" }
+  ]
+}
