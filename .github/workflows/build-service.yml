@@ -50,3 +50,26 @@ jobs:
           labels: ${{ steps.service-git.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      - name: 🛠️ Extract Git metadata for SPA
+        id: spa-git
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/roadrunner-php/velox-spa
+          tags: |
+            type=semver,pattern={{version}}
+
+      - name: 📦 Build SPA Docker Image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./
+          platforms: linux/amd64
+          file: ./.docker/spa/Dockerfile
+          push: true
+          build-args: |
+            APP_VERSION=${{ github.ref_name }}
+            SERVICE=velox-spa
+          tags: ${{ steps.spa-git.outputs.tags }}
+          labels: ${{ steps.spa-git.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
