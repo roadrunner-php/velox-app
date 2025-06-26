@@ -45,6 +45,7 @@ jobs:
           build-args: |
             APP_VERSION=${{ github.ref_name }}
             SERVICE=velox-spa
+            API_BASE_URL=${{ secrets.API_BASE_URL }}
           tags: ${{ steps.spa-git.outputs.tags }}
           labels: ${{ steps.spa-git.outputs.labels }}
           cache-from: type=gha
