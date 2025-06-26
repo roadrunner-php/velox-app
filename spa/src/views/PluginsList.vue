@@ -149,9 +149,7 @@ function clearAllSelections() {
 </script>
 
 <template>
-  <main class="p-6">
-    <BackButton />
-
+  <main class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-8">
     <!-- Error Alert -->
     <Teleport to="body">
       <ErrorAlert v-if="pluginStore.error" :message="pluginStore.error" />
