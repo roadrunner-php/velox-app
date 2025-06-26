@@ -25,6 +25,15 @@ documents:
     sources:
       - type: file
         sourcePaths:
+          - app/src/Application/HTTP/Response
+          - app/src/Module/Velox/Preset/DTO
+          - app/src/Module/Velox/Plugin/DTO
+          - app/src/Module/Velox/Dependency/DTO
+          - app/src/Module/Velox/Configuration/DTO
+          - app/src/Module/Velox/BinaryBuilder/DTO
+          - app/src/Module/Velox/Version/DTO
+      - type: file
+        sourcePaths:
           - app/src/Module/Velox
 
   - description: HTTP endpoints
@@ -37,14 +46,6 @@ documents:
           - "*Action.php"
           - "*Filter.php"
           - "*Resource.php"
-      - type: file
-        sourcePaths:
-          - app/src/Module/Velox/Preset/DTO
-          - app/src/Module/Velox/Plugin/DTO
-          - app/src/Module/Velox/Dependency/DTO
-          - app/src/Module/Velox/Configuration/DTO
-          - app/src/Module/Velox/BinaryBuilder/DTO
-          - app/src/Module/Velox/Version/DTO
 
   - description: OpenAPI module
     outputPath: modules/open-api.md
