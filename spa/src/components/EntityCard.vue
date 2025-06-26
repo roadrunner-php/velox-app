@@ -40,44 +40,38 @@ function toggleSelection() {
   <div
     class="p-4 border rounded-lg shadow hover:shadow-md transition relative cursor-pointer"
     :class="{ 'border-blue-500 bg-blue-50': selected }"
-    @click="handleCardClick"
+    @click="toggleSelection"
   >
-    <!-- Метка: Official / Community -->
+    <!-- Label: Official / Community -->
     <div
       class="absolute top-2 left-2 text-xs font-medium px-2 py-0.5 rounded bg-gray-100 text-gray-800"
     >
-      <span v-if="entity.is_official">✅ Официальный</span>
+      <span v-if="entity.is_official">✅ Official</span>
       <span v-else>🌐 Community</span>
     </div>
 
-    <!-- Чекбокс -->
+    <!-- Checkbox -->
     <label class="absolute top-2 right-2 cursor-pointer">
-      <input
-        type="checkbox"
-        class="cursor-pointer"
-        :checked="selected"
-        @click.stop
-        @change="toggleSelection"
-      />
+      <input type="checkbox" class="cursor-pointer" :checked="selected" />
     </label>
 
-    <!-- Заголовок -->
+    <!-- Title -->
     <div class="flex justify-between items-start mb-2 mt-6">
       <h3 class="text-lg font-semibold">
         {{ entity.display_name || entity.name }}
       </h3>
     </div>
 
-    <!-- Описание -->
+    <!-- Description -->
     <p class="text-sm text-gray-600 mb-2">{{ entity.description }}</p>
 
-    <!-- Детали -->
+    <!-- Details -->
     <div class="text-xs text-gray-500">
       <template v-if="type === 'plugin'">
-        Категория: <strong>{{ entity.category || '—' }}</strong>
+        Category: <strong>{{ entity.category || '—' }}</strong>
       </template>
       <template v-else>
-        {{ entity.plugin_count }} плагинов, теги: {{ entity.tags?.join(', ') || '—' }}
+        {{ entity.plugin_count }} plugins, tags: {{ entity.tags?.join(', ') || '—' }}
       </template>
     </div>
   </div>

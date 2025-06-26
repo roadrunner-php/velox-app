@@ -1,0 +1,57 @@
+services:
+  vx-app:
+    environment:
+      HTTP_WORKERS_DEBUG: true
+    volumes:
+      - type: bind
+        source: .
+        target: /app
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.vx-app.entrypoints=web"
+      - "traefik.http.routers.vx-app.rule=Host(`app.vx.localhost`)"
+      - "traefik.http.services.vx-app.loadbalancer.server.port=8080"
+
+  vx-spa:
+    image: ghcr.io/roadrunner-php/velox-spa:latest
+    environment:
+      VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://app.vx.localhost/api/v1}
+    command: |
+      npm run dev --host 0.0.0.0 --port 3000 --debug
+    ports:
+      - ${VX_HTTP_SPA_PORT:-3000}:3000
+    volumes:
+      - type: bind
+        source: ./spa
+        target: /app
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.vx-spa.entrypoints=web"
+      - "traefik.http.routers.vx-spa.rule=Host(`spa.vx.localhost`)"
+      - "traefik.http.services.vx-spa.loadbalancer.server.port=3000"
+
+  vx-reverse-proxy:
+    image: traefik:v2.9
+    restart: always
+    command:
+      - "--accesslog"
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--providers.file.directory=/configuration/"
+      - "--providers.file.watch=true"
+    ports:
+      - ${TRAEFIK_PORT:-80}:80
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.vx-reverse-proxy.entrypoints=web"
+      - "traefik.http.routers.vx-reverse-proxy.rule=Host(`traefik.vx.localhost`)"
+      - "traefik.http.services.vx-reverse-proxy.loadbalancer.server.port=8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./.docker/traefik/configuration:/configuration/
+      - ./.docker/traefik/certs:/etc/certs:ro
+    networks:
+      - vx-network

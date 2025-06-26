@@ -22,7 +22,7 @@ onMounted(() => {
       class="fixed top-4 right-4 z-50 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded shadow-lg max-w-sm"
       role="alert"
     >
-      <strong class="font-bold">Ошибка:</strong>
+      <strong class="font-bold">Error:</strong>
       <span class="block sm:inline ml-1">{{ message }}</span>
     </div>
   </transition>

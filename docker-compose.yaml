@@ -34,6 +34,7 @@ services:
       <<: *common-spiral-variables
       GITHUB_TOKEN: ${GITHUB_TOKEN}
       APP_HOST: ${APP_HOST}
+
   vx-spa:
     image: ghcr.io/roadrunner-php/velox-spa:latest
     environment:
