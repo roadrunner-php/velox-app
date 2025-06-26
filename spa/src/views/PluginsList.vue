@@ -145,7 +145,7 @@ async function handleGenerate() {
     </div>
 
     <!-- Selected Plugins -->
-    <div class="mt-8">
+    <div class="my-8">
       <h4 class="text-base font-semibold mb-2">Selected Plugins:</h4>
 
       <div v-if="selectedPlugins.length" class="flex flex-wrap gap-2">
@@ -167,11 +167,9 @@ async function handleGenerate() {
 
       <div v-else class="text-sm text-gray-500 italic">No plugins selected</div>
     </div>
-
     <!-- Format + Button -->
-    <div class="flex items-center gap-4 mt-8">
-      <ConfigFormatSelector v-model="configFormat" />
-
+    <div class="gap-4">
+      <ConfigFormatSelector v-model="configFormat" class="mb-8" />
       <button
         :disabled="selectedPlugins.length === 0"
         @click="handleGenerate"
@@ -181,7 +179,6 @@ async function handleGenerate() {
       </button>
     </div>
 
-    <!-- Modal -->
     <ConfigModal :show="showModal" :text="pluginStore.configOutput" @close="showModal = false" />
   </main>
 </template>
