@@ -13,3 +13,12 @@ indent_size = 2
 
 [*.yaml]
 indent_size = 2
+
+[*.vue]
+indent_size = 2
+
+[*.ts]
+indent_size = 2
+
+[*.css]
+indent_size = 2

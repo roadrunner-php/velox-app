@@ -7,7 +7,15 @@ http:
   address: '0.0.0.0:8080'
   middleware:
     - gzip
+    - headers
+  headers:
+    cors:
+      allowed_origin: "*"
+      allowed_headers: "*"
+      allowed_methods: "GET,POST,PUT,DELETE"
+      allow_credentials: true
   pool:
+    debug: ${HTTP_WORKERS_DEBUG:-false}
     num_workers: ${RR_HTTP_NUM_WORKERS:-4}
     supervisor:
       max_worker_memory: ${RR_HTTP_MAX_WORKER_MEMORY:-128}

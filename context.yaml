@@ -54,3 +54,9 @@ documents:
         sourcePaths:
           - vendor/zircote/swagger-php/src/Attributes
 
+  - description: SPA components
+    outputPath: spa/components.md
+    sources:
+      - type: file
+        sourcePaths:
+          - spa/src

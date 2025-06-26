@@ -40,7 +40,7 @@ function toggleSelection() {
   <div
     class="p-4 border rounded-lg shadow hover:shadow-md transition relative cursor-pointer"
     :class="{ 'border-blue-500 bg-blue-50': selected }"
-    @click="handleCardClick"
+    @click="toggleSelection"
   >
     <!-- Метка: Official / Community -->
     <div
@@ -52,18 +52,12 @@ function toggleSelection() {
 
     <!-- Чекбокс -->
     <label class="absolute top-2 right-2 cursor-pointer">
-      <input
-        type="checkbox"
-        class="cursor-pointer"
-        :checked="selected"
-        @click.stop
-        @change="toggleSelection"
-      />
+      <input type="checkbox" class="cursor-pointer" :checked="selected" />
     </label>
 
     <!-- Заголовок -->
     <div class="flex justify-between items-start mb-2 mt-6">
-      <h3 class="text-lg font-semibold">
+      <h3 class="text-lg font-semibold" @click="handleCardClick">
         {{ entity.display_name || entity.name }}
       </h3>
     </div>

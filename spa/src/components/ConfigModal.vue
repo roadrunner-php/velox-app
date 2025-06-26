@@ -74,6 +74,7 @@ onBeforeUnmount(() => {
 .modal-fade-leave-active {
   transition: opacity 0.3s ease;
 }
+
 .modal-fade-enter-from,
 .modal-fade-leave-to {
   opacity: 0;
@@ -85,10 +86,12 @@ onBeforeUnmount(() => {
     transform 0.3s ease,
     opacity 0.3s ease;
 }
+
 .modal-content-enter-from {
   opacity: 0;
   transform: scale(0.95);
 }
+
 .modal-content-leave-to {
   opacity: 0;
   transform: scale(0.95);
