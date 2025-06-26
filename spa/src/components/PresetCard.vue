@@ -15,7 +15,9 @@ interface Props {
 
 interface Emits {
   (e: 'toggle', name: string, includeDependencies: boolean): void
+
   (e: 'view-details', name: string): void
+
   (e: 'load-dependencies', name: string): void
 }
 
@@ -37,7 +39,8 @@ const isHovered = ref(false)
 const isSelected = computed(() => props.selectionState !== 'none')
 
 const cardClasses = computed(() => {
-  const base = 'relative p-6 rounded-2xl shadow-xl transition-all duration-300 cursor-pointer group border backdrop-blur-sm'
+  const base =
+    'relative p-6 rounded-2xl shadow-xl transition-all duration-300 cursor-pointer group border backdrop-blur-sm'
 
   switch (props.selectionState) {
     case 'manual':
@@ -47,7 +50,7 @@ const cardClasses = computed(() => {
     case 'conflict':
       return `${base} bg-gradient-to-br from-red-900/40 to-red-800/30 border-red-500/50 shadow-red-500/20 hover:shadow-red-500/30 hover:border-red-400/70`
     default:
-      return `${base} bg-gradient-to-br from-gray-800/60 to-gray-900/40 border-gray-700/50 hover:border-gray-600/70 hover:shadow-2xl hover:shadow-gray-900/50 hover:bg-gradient-to-br hover:from-gray-800/80 hover:to-gray-900/60`
+      return `${base} bg-gradient-to-br from-slate-800/60 to-slate-900/40 border-slate-700/50 hover:border-slate-600/70 hover:shadow-2xl hover:shadow-slate-900/50 hover:bg-gradient-to-br hover:from-slate-800/80 hover:to-slate-900/60`
   }
 })
 
@@ -60,7 +63,7 @@ const selectionIndicatorClasses = computed(() => {
     case 'conflict':
       return 'bg-gradient-to-r from-red-500 to-red-600 text-white shadow-lg shadow-red-500/30'
     default:
-      return 'bg-gray-700 text-gray-300'
+      return 'bg-slate-700 text-slate-300'
   }
 })
 
@@ -92,7 +95,7 @@ const priorityText = computed(() => {
 const priorityColor = computed(() => {
   if (props.preset.priority <= 10) return 'text-emerald-300 bg-emerald-900/20 border-emerald-500/30'
   if (props.preset.priority <= 50) return 'text-yellow-300 bg-yellow-900/20 border-yellow-500/30'
-  return 'text-gray-300 bg-gray-700/20 border-gray-600/30'
+  return 'text-slate-300 bg-slate-700/20 border-slate-600/30'
 })
 
 // Event handlers
@@ -155,9 +158,11 @@ function handleViewDetails() {
       <!-- Official/Community Badge -->
       <div
         class="absolute top-3 left-3 text-xs font-medium px-2 py-1 rounded-lg z-10 backdrop-blur-sm border"
-        :class="preset.is_official 
-          ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30' 
-          : 'bg-gray-600/20 text-gray-300 border-gray-600/30'"
+        :class="
+          preset.is_official
+            ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30'
+            : 'bg-slate-600/20 text-slate-300 border-slate-600/30'
+        "
       >
         <span v-if="preset.is_official" class="mr-1">✅</span>
         <span v-else class="mr-1">🌐</span>
@@ -175,24 +180,33 @@ function handleViewDetails() {
       <!-- Main Content -->
       <div class="mt-16 mb-4">
         <!-- Preset Name -->
-        <h3 class="text-xl font-bold text-white mb-3 pr-8 group-hover:text-purple-300 transition-colors">
+        <h3
+          class="text-xl font-bold text-white mb-3 pr-8 group-hover:text-purple-300 transition-colors"
+        >
           {{ preset.display_name || preset.name }}
         </h3>
 
         <!-- Preset Description -->
-        <p class="text-gray-300 mb-4 leading-relaxed line-clamp-3 text-sm">
+        <p class="text-slate-300 mb-4 leading-relaxed line-clamp-3 text-sm">
           {{ preset.description || 'No description available' }}
         </p>
 
         <!-- Preset Details -->
         <div class="flex flex-wrap gap-2 text-xs mb-4">
-          <span class="bg-indigo-900/30 text-indigo-300 px-2 py-1 rounded-lg border border-indigo-500/30">
+          <span
+            class="bg-indigo-900/30 text-indigo-300 px-2 py-1 rounded-lg border border-indigo-500/30"
+          >
             {{ pluginText }}
           </span>
-          <span v-if="preset.tags?.length" class="bg-cyan-900/30 text-cyan-300 px-2 py-1 rounded-lg border border-cyan-500/30">
+          <span
+            v-if="preset.tags?.length"
+            class="bg-cyan-900/30 text-cyan-300 px-2 py-1 rounded-lg border border-cyan-500/30"
+          >
             {{ preset.tags.length }} tags
           </span>
-          <span class="bg-purple-900/30 text-purple-300 px-2 py-1 rounded-lg border border-purple-500/30">
+          <span
+            class="bg-purple-900/30 text-purple-300 px-2 py-1 rounded-lg border border-purple-500/30"
+          >
             Priority: {{ preset.priority }}
           </span>
         </div>
@@ -203,13 +217,13 @@ function handleViewDetails() {
             <span
               v-for="tag in preset.tags.slice(0, 4)"
               :key="tag"
-              class="text-xs bg-gray-700/40 text-gray-300 px-2 py-1 rounded-lg border border-gray-600/30"
+              class="text-xs bg-slate-700/40 text-slate-300 px-2 py-1 rounded-lg border border-slate-600/30"
             >
               {{ tag }}
             </span>
             <span
               v-if="preset.tags.length > 4"
-              class="text-xs bg-gray-600/40 text-gray-400 px-2 py-1 rounded-lg border border-gray-600/30"
+              class="text-xs bg-slate-600/40 text-slate-400 px-2 py-1 rounded-lg border border-slate-600/30"
             >
               +{{ preset.tags.length - 4 }} more
             </span>
@@ -253,7 +267,7 @@ function handleViewDetails() {
               <!-- Loading State -->
               <div
                 v-if="isLoadingDependencies"
-                class="flex items-center gap-2 text-sm text-gray-400"
+                class="flex items-center gap-2 text-sm text-slate-400"
               >
                 <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-cyan-400"></div>
                 <span>Loading plugin details...</span>
@@ -264,7 +278,7 @@ function handleViewDetails() {
                 <div
                   v-for="pluginName in preset.plugins"
                   :key="pluginName"
-                  class="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg text-sm border border-gray-700/30 hover:border-gray-600/50 transition-colors"
+                  class="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg text-sm border border-slate-700/30 hover:border-slate-600/50 transition-colors"
                 >
                   <div class="flex items-center gap-2">
                     <div class="w-2 h-2 bg-purple-400 rounded-full flex-shrink-0"></div>
@@ -284,7 +298,9 @@ function handleViewDetails() {
 
         <!-- Selection Context -->
         <div v-if="selectionState === 'dependency' && selectedBy?.length" class="mt-4">
-          <div class="text-xs text-green-300 bg-green-900/20 p-3 rounded-lg border border-green-500/30">
+          <div
+            class="text-xs text-green-300 bg-green-900/20 p-3 rounded-lg border border-green-500/30"
+          >
             <span class="font-medium">Auto-selected:</span>
             Required by {{ selectedBy.join(', ') }}
           </div>
@@ -306,7 +322,7 @@ function handleViewDetails() {
         class="flex-1 px-4 py-2.5 text-sm font-semibold rounded-xl transition-all duration-200 border"
         :class="
           isSelected
-            ? 'bg-gray-700/50 text-gray-300 hover:bg-gray-600/50 border-gray-600/50 hover:border-gray-500/70'
+            ? 'bg-slate-700/50 text-slate-300 hover:bg-slate-600/50 border-slate-600/50 hover:border-slate-500/70'
             : 'bg-gradient-to-r from-purple-600 to-purple-700 text-white hover:from-purple-500 hover:to-purple-600 border-purple-500/50 shadow-lg shadow-purple-500/20 hover:shadow-purple-500/30'
         "
       >
@@ -315,7 +331,7 @@ function handleViewDetails() {
 
       <button
         @click.stop="handleViewDetails"
-        class="px-4 py-2.5 text-sm font-semibold text-gray-300 border border-gray-600/50 rounded-xl hover:bg-gray-700/30 hover:border-gray-500/70 hover:text-white transition-all duration-200"
+        class="px-4 py-2.5 text-sm font-semibold text-slate-300 border border-slate-600/50 rounded-xl hover:bg-slate-700/30 hover:border-slate-500/70 hover:text-white transition-all duration-200"
       >
         Details
       </button>
@@ -339,7 +355,7 @@ function handleViewDetails() {
 
 /* Focus states for accessibility */
 .group:focus-within {
-  @apply ring-2 ring-purple-500/50 ring-offset-2 ring-offset-gray-900;
+  @apply ring-2 ring-purple-500/50 ring-offset-2 ring-offset-slate-900;
 }
 
 /* Enhanced hover effects */
@@ -373,7 +389,8 @@ function handleViewDetails() {
 }
 
 @keyframes gradient-shift {
-  0%, 100% {
+  0%,
+  100% {
     background-position: 0% 50%;
   }
   50% {
@@ -383,7 +400,9 @@ function handleViewDetails() {
 
 /* Enhanced shadow effects */
 .shadow-xl {
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+  box-shadow:
+    0 20px 25px -5px rgba(0, 0, 0, 0.3),
+    0 10px 10px -5px rgba(0, 0, 0, 0.2);
 }
 
 /* Backdrop blur support */
@@ -393,24 +412,34 @@ function handleViewDetails() {
 
 /* Button hover glow effects */
 .hover\:shadow-purple-500\/30:hover {
-  box-shadow: 0 10px 15px -3px rgba(139, 92, 246, 0.3), 0 4px 6px -2px rgba(139, 92, 246, 0.2);
+  box-shadow:
+    0 10px 15px -3px rgba(139, 92, 246, 0.3),
+    0 4px 6px -2px rgba(139, 92, 246, 0.2);
 }
 
 /* Card glow effects based on state */
 .hover\:shadow-purple-500\/20:hover {
-  box-shadow: 0 20px 25px -5px rgba(139, 92, 246, 0.2), 0 10px 10px -5px rgba(139, 92, 246, 0.1);
+  box-shadow:
+    0 20px 25px -5px rgba(139, 92, 246, 0.2),
+    0 10px 10px -5px rgba(139, 92, 246, 0.1);
 }
 
 .hover\:shadow-green-500\/20:hover {
-  box-shadow: 0 20px 25px -5px rgba(34, 197, 94, 0.2), 0 10px 10px -5px rgba(34, 197, 94, 0.1);
+  box-shadow:
+    0 20px 25px -5px rgba(34, 197, 94, 0.2),
+    0 10px 10px -5px rgba(34, 197, 94, 0.1);
 }
 
 .hover\:shadow-red-500\/20:hover {
-  box-shadow: 0 20px 25px -5px rgba(239, 68, 68, 0.2), 0 10px 10px -5px rgba(239, 68, 68, 0.1);
+  box-shadow:
+    0 20px 25px -5px rgba(239, 68, 68, 0.2),
+    0 10px 10px -5px rgba(239, 68, 68, 0.1);
 }
 
-.hover\:shadow-gray-900\/50:hover {
-  box-shadow: 0 20px 25px -5px rgba(17, 24, 39, 0.5), 0 10px 10px -5px rgba(17, 24, 39, 0.3);
+.hover\:shadow-slate-900\/50:hover {
+  box-shadow:
+    0 20px 25px -5px rgba(15, 23, 42, 0.5),
+    0 10px 10px -5px rgba(15, 23, 42, 0.3);
 }
 
 /* Enhanced plugin list scrolling */
@@ -425,8 +454,8 @@ function handleViewDetails() {
 }
 
 /* Tag animation on hover */
-.group:hover .bg-gray-700\/40 {
-  @apply bg-gray-600/50 border-gray-500/40;
+.group:hover .bg-slate-700\/40 {
+  @apply bg-slate-600/50 border-slate-500/40;
 }
 
 /* Priority badge glow */

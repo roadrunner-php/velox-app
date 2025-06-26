@@ -168,26 +168,26 @@ function clearAllSelections() {
       <transition name="modal-fade">
         <div
           v-if="showSelectionConfirm"
-          class="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black/30"
+          class="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black/50"
         >
-          <div class="bg-white p-6 rounded-lg w-full max-w-lg shadow-xl">
-            <h3 class="text-lg font-semibold mb-4">Confirm Preset Selection</h3>
+          <div class="bg-slate-800 border border-slate-600 p-6 rounded-lg w-full max-w-lg shadow-xl">
+            <h3 class="text-lg font-semibold mb-4 text-white">Confirm Preset Selection</h3>
             
             <div v-if="pendingSelection" class="mb-4">
               
               <!-- Plugin Impact Summary -->
-              <div class="mb-4 p-3 bg-blue-50 rounded-lg">
-                <h4 class="font-medium text-blue-900 mb-2">Plugin Impact</h4>
-                <div class="text-sm text-blue-800">
+              <div class="mb-4 p-3 bg-blue-900/20 border border-blue-500/30 rounded-lg">
+                <h4 class="font-medium text-blue-300 mb-2">Plugin Impact</h4>
+                <div class="text-sm text-blue-200">
                   <div class="flex justify-between">
                     <span>Current plugins:</span>
                     <span class="font-medium">{{ pendingSelection.preview.pluginSummary.current }}</span>
                   </div>
                   <div class="flex justify-between">
                     <span>New plugins:</span>
-                    <span class="font-medium text-green-600">+{{ pendingSelection.preview.pluginSummary.new }}</span>
+                    <span class="font-medium text-green-400">+{{ pendingSelection.preview.pluginSummary.new }}</span>
                   </div>
-                  <div class="flex justify-between font-semibold border-t border-blue-200 mt-1 pt-1">
+                  <div class="flex justify-between font-semibold border-t border-blue-400/30 mt-1 pt-1">
                     <span>Total plugins:</span>
                     <span>{{ pendingSelection.preview.pluginSummary.total }}</span>
                   </div>
@@ -196,20 +196,20 @@ function clearAllSelections() {
 
               <!-- New Dependencies Section -->
               <div v-if="pendingSelection.preview.newDependencies.length > 1">
-                <p class="text-sm text-gray-600 mb-3">
-                  Selecting <strong>{{ pendingSelection.name }}</strong> will also select these related presets:
+                <p class="text-sm text-slate-300 mb-3">
+                  Selecting <strong class="text-white">{{ pendingSelection.name }}</strong> will also select these related presets:
                 </p>
                 
-                <div class="max-h-32 overflow-y-auto mb-4">
-                  <ul class="text-sm space-y-1">
+                <div class="mb-4">
+                  <ul class="text-sm space-y-1 pl-0">
                     <li 
                       v-for="preset in pendingSelection.preview.newDependencies.filter(p => p !== pendingSelection.name)"
                       :key="preset"
-                      class="flex items-center gap-2 p-2 bg-green-50 rounded"
+                      class="flex items-center gap-2 p-2 bg-green-900/20 border border-green-500/30 rounded"
                     >
-                      <span class="w-2 h-2 bg-green-500 rounded-full"></span>
-                      {{ preset }}
-                      <span class="text-xs text-green-600">(related preset)</span>
+                      <span class="w-2 h-2 bg-green-400 rounded-full"></span>
+                      <span class="text-white">{{ preset }}</span>
+                      <span class="text-xs text-green-400">(related preset)</span>
                     </li>
                   </ul>
                 </div>
@@ -217,14 +217,14 @@ function clearAllSelections() {
 
               <!-- Existing Dependencies Section -->
               <div v-if="pendingSelection.preview.existingDependencies.length > 1">
-                <p class="text-sm text-gray-500 mb-2">
+                <p class="text-sm text-slate-400 mb-2">
                   These presets are already selected:
                 </p>
                 <div class="flex flex-wrap gap-1 mb-4">
                   <span 
                     v-for="preset in pendingSelection.preview.existingDependencies.filter(p => p !== pendingSelection.name)"
                     :key="preset"
-                    class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full"
+                    class="text-xs bg-slate-700 text-slate-300 px-2 py-1 rounded-full"
                   >
                     {{ preset }}
                   </span>
@@ -233,16 +233,16 @@ function clearAllSelections() {
 
               <!-- Conflicts Section -->
               <div v-if="pendingSelection.preview.conflicts.length" class="mt-3">
-                <p class="text-sm text-red-600 font-medium mb-2">⚠️ Potential conflicts:</p>
-                <ul class="text-sm space-y-1">
+                <p class="text-sm text-red-400 font-medium mb-2">⚠️ Potential conflicts:</p>
+                <ul class="text-sm space-y-1 pl-0">
                   <li 
                     v-for="conflict in pendingSelection.preview.conflicts"
                     :key="conflict"
-                    class="flex items-center gap-2 p-2 bg-red-50 rounded"
+                    class="flex items-center gap-2 p-2 bg-red-900/20 border border-red-500/30 rounded"
                   >
-                    <span class="w-2 h-2 bg-red-500 rounded-full"></span>
-                    {{ conflict }}
-                    <span class="text-xs text-red-600">(may conflict)</span>
+                    <span class="w-2 h-2 bg-red-400 rounded-full"></span>
+                    <span class="text-white">{{ conflict }}</span>
+                    <span class="text-xs text-red-400">(may conflict)</span>
                   </li>
                 </ul>
               </div>
@@ -251,13 +251,13 @@ function clearAllSelections() {
             <div class="flex gap-3 justify-end">
               <button
                 @click="cancelSelection"
-                class="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors"
+                class="px-4 py-2 text-sm font-medium text-slate-300 bg-slate-700 border border-slate-600 rounded-md hover:bg-slate-600 hover:text-white transition-colors"
               >
                 Cancel
               </button>
               <button
                 @click="confirmSelection"
-                class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors"
+                class="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-blue-500 rounded-md hover:bg-blue-700 transition-colors"
               >
                 Confirm Selection
               </button>
@@ -269,8 +269,8 @@ function clearAllSelections() {
 
     <!-- Header -->
     <div class="mb-6">
-      <h1 class="text-2xl font-bold mb-2">RoadRunner Presets</h1>
-      <p class="text-gray-600">Select predefined preset configurations for common use cases</p>
+      <h1 class="text-2xl font-bold mb-2 text-white">RoadRunner Presets</h1>
+      <p class="text-slate-300">Select predefined preset configurations for common use cases</p>
     </div>
 
     <!-- Filters -->
@@ -279,7 +279,7 @@ function clearAllSelections() {
         type="text"
         v-model="searchQuery"
         placeholder="Search presets..."
-        class="px-3 py-2 border rounded-md w-full sm:w-64 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+        class="px-3 py-2 bg-slate-800 border border-slate-600 text-white rounded-md w-full sm:w-64 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 placeholder-slate-400"
       />
 
       <div class="flex gap-2 text-sm">
@@ -288,8 +288,8 @@ function clearAllSelections() {
           :class="[
             'px-3 py-2 rounded-md font-medium transition-colors',
             sourceFilter === 'all'
-              ? 'bg-blue-600 text-white'
-              : 'bg-gray-100 text-gray-800 hover:bg-gray-200',
+              ? 'bg-blue-600 text-white border border-blue-500'
+              : 'bg-slate-700 text-slate-300 border border-slate-600 hover:bg-slate-600 hover:text-white',
           ]"
         >
           All Sources
@@ -299,8 +299,8 @@ function clearAllSelections() {
           :class="[
             'px-3 py-2 rounded-md font-medium transition-colors',
             sourceFilter === 'official'
-              ? 'bg-blue-600 text-white'
-              : 'bg-gray-100 text-gray-800 hover:bg-gray-200',
+              ? 'bg-blue-600 text-white border border-blue-500'
+              : 'bg-slate-700 text-slate-300 border border-slate-600 hover:bg-slate-600 hover:text-white',
           ]"
         >
           Official
@@ -310,8 +310,8 @@ function clearAllSelections() {
           :class="[
             'px-3 py-2 rounded-md font-medium transition-colors',
             sourceFilter === 'community'
-              ? 'bg-blue-600 text-white'
-              : 'bg-gray-100 text-gray-800 hover:bg-gray-200',
+              ? 'bg-blue-600 text-white border border-blue-500'
+              : 'bg-slate-700 text-slate-300 border border-slate-600 hover:bg-slate-600 hover:text-white',
           ]"
         >
           Community
@@ -322,11 +322,11 @@ function clearAllSelections() {
     <!-- Tags -->
     <div v-if="uniqueTags.length" class="mb-6">
       <div class="flex items-center justify-between mb-3">
-        <h2 class="text-lg font-semibold">Filter by Tags</h2>
+        <h2 class="text-lg font-semibold text-white">Filter by Tags</h2>
         <button
           v-if="activeTags.length > 0"
           @click="clearAllTags"
-          class="text-sm text-gray-500 hover:text-gray-700 font-medium"
+          class="text-sm text-slate-400 hover:text-white font-medium transition-colors"
         >
           Clear All ({{ activeTags.length }})
         </button>
@@ -346,27 +346,27 @@ function clearAllSelections() {
     <!-- Selection Summary -->
     <div 
       v-if="selectionSummary.total > 0" 
-      class="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg"
+      class="mb-6 p-4 bg-blue-900/20 border border-blue-500/30 rounded-lg"
     >
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-4 text-sm">
-          <span class="font-medium text-blue-900">
+          <span class="font-medium text-blue-200">
             {{ selectionSummary.manual }} preset{{ selectionSummary.manual === 1 ? '' : 's' }} selected
           </span>
-          <span v-if="selectionSummary.dependencies > 0" class="text-blue-700">
+          <span v-if="selectionSummary.dependencies > 0" class="text-blue-300">
             + {{ selectionSummary.dependencies }} related
           </span>
-          <span class="font-semibold text-blue-900">
+          <span class="font-semibold text-blue-100">
             = {{ selectionSummary.total }} total
           </span>
-          <span class="text-green-600">
+          <span class="text-green-400">
             ({{ selectionSummary.totalPlugins }} plugins)
           </span>
         </div>
         
         <button
           @click="clearAllSelections"
-          class="text-sm text-red-600 hover:text-red-700 font-medium"
+          class="text-sm text-red-400 hover:text-red-300 font-medium transition-colors"
         >
           Clear All
         </button>
@@ -377,7 +377,7 @@ function clearAllSelections() {
         <span
           v-for="name in presetStore.manuallySelectedPresets"
           :key="name"
-          class="bg-blue-100 text-blue-800 text-xs font-medium px-2 py-1 rounded-full"
+          class="bg-blue-800/40 text-blue-200 text-xs font-medium px-2 py-1 rounded-full border border-blue-600/30"
         >
           {{ name }}
         </span>
@@ -387,10 +387,10 @@ function clearAllSelections() {
     <!-- Active Filters Summary -->
     <div 
       v-if="activeTags.length > 0 || searchQuery || sourceFilter !== 'all'"
-      class="mb-4 p-3 bg-gray-50 rounded-lg"
+      class="mb-4 p-3 bg-slate-800/50 border border-slate-600/50 rounded-lg"
     >
       <div class="flex items-center justify-between">
-        <div class="flex items-center gap-2 text-sm text-gray-600">
+        <div class="flex items-center gap-2 text-sm text-slate-300">
           <span class="font-medium">Active filters:</span>
           <span v-if="activeTags.length > 0">
             Tags: {{ activeTags.join(', ') }}
@@ -402,7 +402,7 @@ function clearAllSelections() {
             Source: {{ sourceFilter }}
           </span>
         </div>
-        <span class="text-xs text-gray-500">
+        <span class="text-xs text-slate-400">
           {{ filteredPresets.length }} preset{{ filteredPresets.length === 1 ? '' : 's' }} shown
         </span>
       </div>
@@ -410,8 +410,8 @@ function clearAllSelections() {
 
     <!-- Loading State -->
     <div v-if="presetStore.loading" class="text-center py-8">
-      <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
-      <p class="text-gray-600">Loading presets...</p>
+      <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-400 mx-auto mb-4"></div>
+      <p class="text-slate-300">Loading presets...</p>
     </div>
 
     <!-- Preset Grid -->
@@ -432,13 +432,13 @@ function clearAllSelections() {
 
     <!-- Empty State -->
     <div v-if="!presetStore.loading && filteredPresets.length === 0" class="text-center py-12">
-      <div class="text-gray-400 mb-4">
+      <div class="text-slate-500 mb-4">
         <svg class="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
         </svg>
       </div>
-      <h3 class="text-lg font-medium text-gray-900 mb-2">No presets found</h3>
-      <p class="text-gray-600">Try adjusting your search or filter criteria</p>
+      <h3 class="text-lg font-medium text-white mb-2">No presets found</h3>
+      <p class="text-slate-400">Try adjusting your search or filter criteria</p>
     </div>
     <!-- Configuration Generation -->
     <div v-if="selectionSummary.total > 0" class="pt-6">
@@ -448,7 +448,7 @@ function clearAllSelections() {
         <button
           @click="handleGenerate"
           :disabled="selectionSummary.total === 0"
-          class="w-full px-6 py-3 text-white font-semibold rounded-lg transition-colors bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+          class="w-full px-6 py-3 text-white font-semibold rounded-lg transition-colors bg-blue-600 hover:bg-blue-700 disabled:bg-slate-600 disabled:text-slate-400 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-slate-900"
         >
           Generate Configuration
         </button>
