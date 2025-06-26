@@ -73,12 +73,12 @@ async function handleGenerate() {
       <ErrorAlert v-if="pluginStore.error" :message="pluginStore.error" />
     </Teleport>
 
-    <!-- Фильтры -->
+    <!-- Filters -->
     <div class="flex flex-col sm:flex-row sm:items-center gap-4 mb-6">
       <input
         type="text"
         v-model="searchQuery"
-        placeholder="Поиск по имени..."
+        placeholder="Search by name..."
         class="px-3 py-2 border rounded w-full sm:w-64 text-sm"
       />
 
@@ -92,7 +92,7 @@ async function handleGenerate() {
               : 'bg-gray-100 text-gray-800 hover:bg-gray-200',
           ]"
         >
-          Все
+          All
         </button>
         <button
           @click="sourceFilter = 'official'"
@@ -103,7 +103,7 @@ async function handleGenerate() {
               : 'bg-gray-100 text-gray-800 hover:bg-gray-200',
           ]"
         >
-          Официальные
+          Official
         </button>
         <button
           @click="sourceFilter = 'community'"
@@ -119,8 +119,8 @@ async function handleGenerate() {
       </div>
     </div>
 
-    <!-- Категории -->
-    <h2 class="text-xl font-bold mb-4">Категории плагинов</h2>
+    <!-- Categories -->
+    <h2 class="text-xl font-bold mb-4">Plugin Categories</h2>
     <div class="flex flex-wrap gap-2 mb-6">
       <CategoryTag
         v-for="category in pluginStore.categories"
@@ -132,7 +132,7 @@ async function handleGenerate() {
       />
     </div>
 
-    <!-- Список плагинов -->
+    <!-- Plugin List -->
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-6">
       <EntityCard
         v-for="plugin in filteredPlugins"
@@ -144,9 +144,9 @@ async function handleGenerate() {
       />
     </div>
 
-    <!-- Выбранные плагины -->
+    <!-- Selected Plugins -->
     <div class="mt-8">
-      <h4 class="text-base font-semibold mb-2">Добавленные плагины:</h4>
+      <h4 class="text-base font-semibold mb-2">Selected Plugins:</h4>
 
       <div v-if="selectedPlugins.length" class="flex flex-wrap gap-2">
         <span
@@ -158,17 +158,17 @@ async function handleGenerate() {
           <button
             class="text-gray-500 hover:text-red-600"
             @click="togglePlugin(name)"
-            title="Удалить"
+            title="Remove"
           >
             ✖
           </button>
         </span>
       </div>
 
-      <div v-else class="text-sm text-gray-500 italic">Нет выбранных плагинов</div>
+      <div v-else class="text-sm text-gray-500 italic">No plugins selected</div>
     </div>
 
-    <!-- Формат + кнопка -->
+    <!-- Format + Button -->
     <div class="flex items-center gap-4 mt-8">
       <ConfigFormatSelector v-model="configFormat" />
 
@@ -177,11 +177,11 @@ async function handleGenerate() {
         @click="handleGenerate"
         class="px-4 py-2 rounded font-semibold transition text-white bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed"
       >
-        Сгенерировать
+        Generate
       </button>
     </div>
 
-    <!-- Модалка -->
+    <!-- Modal -->
     <ConfigModal :show="showModal" :text="pluginStore.configOutput" @close="showModal = false" />
   </main>
 </template>

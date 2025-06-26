@@ -3,7 +3,7 @@
     @click="$router.back()"
     class="inline-flex items-center gap-1 text-sm text-blue-600 hover:underline mb-4"
   >
-    ← Назад
+    ← Back
   </button>
 </template>
 

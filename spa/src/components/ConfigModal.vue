@@ -19,7 +19,7 @@ async function copyToClipboard() {
     copied.value = true
     setTimeout(() => (copied.value = false), 1500)
   } catch (e) {
-    alert('Не удалось скопировать текст.')
+    alert('Failed to copy text.')
   }
 }
 
@@ -47,7 +47,7 @@ onBeforeUnmount(() => {
       >
         <transition name="modal-content">
           <div ref="modalRef" class="bg-white p-6 rounded-lg w-full max-w-2xl relative shadow-xl">
-            <h3 class="text-lg font-semibold mb-4">Сгенерированная конфигурация</h3>
+            <h3 class="text-lg font-semibold mb-4">Generated Configuration</h3>
 
             <textarea class="w-full h-64 p-2 border rounded font-mono text-sm mb-4" readonly>{{
               text
@@ -55,11 +55,11 @@ onBeforeUnmount(() => {
 
             <div class="flex justify-between items-center">
               <button class="text-sm text-blue-600 hover:underline" @click="copyToClipboard">
-                {{ copied ? 'Скопировано!' : 'Скопировать' }}
+                {{ copied ? 'Copied!' : 'Copy' }}
               </button>
 
               <button class="text-sm text-gray-500 hover:text-black" @click="emit('close')">
-                ✖ Закрыть
+                ✖ Close
               </button>
             </div>
           </div>

@@ -10,7 +10,7 @@ const emit = defineEmits<{
 
 <template>
   <label class="text-sm">
-    Формат:
+    Format:
     <select
       :value="modelValue"
       @change="
