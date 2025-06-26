@@ -30,7 +30,7 @@ const pendingSelection = ref<{
 
 const searchQuery = ref('')
 const sourceFilter = ref<'all' | 'official' | 'community'>('all')
-const activeTags = ref<string[]>([])
+const activeTags = ref<string[]>([]) // Changed to support multiselect
 
 onMounted(() => {
   presetStore.loadPresets()
@@ -62,12 +62,16 @@ const uniqueTags = computed(() => {
 const selectionSummary = computed(() => presetStore.selectionSummary)
 
 function toggleTag(tag: string) {
-  const i = activeTags.value.indexOf(tag)
-  if (i === -1) {
+  const index = activeTags.value.indexOf(tag)
+  if (index === -1) {
     activeTags.value.push(tag)
   } else {
-    activeTags.value.splice(i, 1)
+    activeTags.value.splice(index, 1)
   }
+}
+
+function clearAllTags() {
+  activeTags.value = []
 }
 
 async function handlePresetToggle(name: string, includeDependencies: boolean) {
@@ -319,7 +323,16 @@ function clearAllSelections() {
 
     <!-- Tags -->
     <div v-if="uniqueTags.length" class="mb-6">
-      <h2 class="text-lg font-semibold mb-3">Filter by Tags</h2>
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="text-lg font-semibold">Filter by Tags</h2>
+        <button
+          v-if="activeTags.length > 0"
+          @click="clearAllTags"
+          class="text-sm text-gray-500 hover:text-gray-700 font-medium"
+        >
+          Clear All ({{ activeTags.length }})
+        </button>
+      </div>
       <div class="flex flex-wrap gap-2">
         <CategoryTag
           v-for="tag in uniqueTags"
@@ -369,6 +382,30 @@ function clearAllSelections() {
           class="bg-blue-100 text-blue-800 text-xs font-medium px-2 py-1 rounded-full"
         >
           {{ name }}
+        </span>
+      </div>
+    </div>
+
+    <!-- Active Filters Summary -->
+    <div 
+      v-if="activeTags.length > 0 || searchQuery || sourceFilter !== 'all'"
+      class="mb-4 p-3 bg-gray-50 rounded-lg"
+    >
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2 text-sm text-gray-600">
+          <span class="font-medium">Active filters:</span>
+          <span v-if="activeTags.length > 0">
+            Tags: {{ activeTags.join(', ') }}
+          </span>
+          <span v-if="searchQuery">
+            Search: "{{ searchQuery }}"
+          </span>
+          <span v-if="sourceFilter !== 'all'">
+            Source: {{ sourceFilter }}
+          </span>
+        </div>
+        <span class="text-xs text-gray-500">
+          {{ filteredPresets.length }} preset{{ filteredPresets.length === 1 ? '' : 's' }} shown
         </span>
       </div>
     </div>

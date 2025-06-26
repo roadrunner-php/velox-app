@@ -9,7 +9,7 @@ import ErrorAlert from '@/components/ErrorAlert.vue'
 import BackButton from '@/components/BackButton.vue'
 
 const pluginStore = usePluginsStore()
-const activeCategory = ref<string | null>(null)
+const activeCategories = ref<string[]>([]) // Changed from single category to array
 const configFormat = ref<'toml' | 'json' | 'docker' | 'dockerfile' | ''>('')
 
 const searchQuery = ref('')
@@ -33,7 +33,8 @@ onMounted(() => {
 
 const filteredPlugins = computed(() => {
   return pluginStore.pluginsWithSelection.filter((p) => {
-    const categoryMatch = !activeCategory.value || p.category === activeCategory.value
+    const categoryMatch = activeCategories.value.length === 0 || 
+                         (p.category && activeCategories.value.includes(p.category))
     const sourceMatch =
       sourceFilter.value === 'all' ||
       (sourceFilter.value === 'official' && p.is_official) ||
@@ -56,7 +57,16 @@ const selectionSummary = computed(() => {
 })
 
 function toggleCategory(value: string) {
-  activeCategory.value = activeCategory.value === value ? null : value
+  const index = activeCategories.value.indexOf(value)
+  if (index === -1) {
+    activeCategories.value.push(value)
+  } else {
+    activeCategories.value.splice(index, 1)
+  }
+}
+
+function clearAllCategories() {
+  activeCategories.value = []
 }
 
 async function handlePluginToggle(name: string, includeDependencies: boolean) {
@@ -287,14 +297,23 @@ function clearAllSelections() {
 
     <!-- Categories -->
     <div class="mb-6">
-      <h2 class="text-lg font-semibold mb-3">Categories</h2>
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="text-lg font-semibold">Categories</h2>
+        <button
+          v-if="activeCategories.length > 0"
+          @click="clearAllCategories"
+          class="text-sm text-gray-500 hover:text-gray-700 font-medium"
+        >
+          Clear All ({{ activeCategories.length }})
+        </button>
+      </div>
       <div class="flex flex-wrap gap-2">
         <CategoryTag
           v-for="category in pluginStore.categories"
           :key="category.value"
           :label="category.label"
           :value="category.value"
-          :is-active="activeCategory === category.value"
+          :is-active="activeCategories.includes(category.value)"
           @click="toggleCategory"
         />
       </div>
@@ -337,6 +356,30 @@ function clearAllSelections() {
           class="bg-blue-100 text-blue-800 text-xs font-medium px-2 py-1 rounded-full"
         >
           {{ name }}
+        </span>
+      </div>
+    </div>
+
+    <!-- Active Filters Summary -->
+    <div 
+      v-if="activeCategories.length > 0 || searchQuery || sourceFilter !== 'all'"
+      class="mb-4 p-3 bg-gray-50 rounded-lg"
+    >
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2 text-sm text-gray-600">
+          <span class="font-medium">Active filters:</span>
+          <span v-if="activeCategories.length > 0">
+            Categories: {{ activeCategories.join(', ') }}
+          </span>
+          <span v-if="searchQuery">
+            Search: "{{ searchQuery }}"
+          </span>
+          <span v-if="sourceFilter !== 'all'">
+            Source: {{ sourceFilter }}
+          </span>
+        </div>
+        <span class="text-xs text-gray-500">
+          {{ filteredPlugins.length }} plugin{{ filteredPlugins.length === 1 ? '' : 's' }} shown
         </span>
       </div>
     </div>
