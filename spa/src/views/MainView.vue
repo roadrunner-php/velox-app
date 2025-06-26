@@ -1,7 +1,47 @@
 <template>
   <div class="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900">
+    <div class="bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-900 relative overflow-hidden">
+    <!-- Animated Background -->
+    <div class="absolute inset-0">
+      <!-- Gradient overlay -->
+      <div class="absolute inset-0 bg-gradient-to-br from-slate-900/90 via-purple-900/20 to-indigo-900/90"></div>
+
+      <!-- Animated particles -->
+      <div class="absolute inset-0">
+        <div
+          v-for="particle in particles"
+          :key="particle.id"
+          class="absolute w-1 h-1 bg-blue-400/30 rounded-full animate-pulse"
+          :style="{
+            left: particle.x + '%',
+            top: particle.y + '%',
+            animationDelay: particle.delay + 's',
+            animationDuration: particle.duration + 's'
+          }"
+        ></div>
+      </div>
+
+      <!-- Geometric lines -->
+      <div class="absolute inset-0 opacity-20">
+        <svg class="w-full h-full" viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="lineGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:0.3" />
+              <stop offset="100%" style="stop-color:#8b5cf6;stop-opacity:0.1" />
+            </linearGradient>
+          </defs>
+          <g class="animate-pulse">
+            <line x1="0" y1="400" x2="300" y2="200" stroke="url(#lineGradient)" stroke-width="1"/>
+            <line x1="900" y1="600" x2="1200" y2="300" stroke="url(#lineGradient)" stroke-width="1"/>
+            <line x1="100" y1="100" x2="500" y2="400" stroke="url(#lineGradient)" stroke-width="1"/>
+            <line x1="700" y1="100" x2="1100" y2="500" stroke="url(#lineGradient)" stroke-width="1"/>
+          </g>
+        </svg>
+      </div>
+    </div>
+
     <!-- Hero Section -->
-    <section class="relative overflow-hidden bg-gradient-to-br from-gray-900 via-black to-gray-900">
+    <section class="relative overflow-hidden">
       <!-- Background Elements -->
       <div class="absolute inset-0 bg-black/30"></div>
       <div class="absolute top-0 left-0 w-full h-full">
@@ -30,12 +70,12 @@
 
           <!-- Subtitle -->
           <p
-            class="text-xl sm:text-2xl text-gray-300 mb-8 max-w-4xl mx-auto leading-relaxed animate-fade-in-up animation-delay-200"
+            class="text-xl sm:text-2xl text-gray-300 my-16 max-w-4xl mx-auto leading-relaxed animate-fade-in-up animation-delay-200"
           >
             Create optimized, lightweight server configurations with our intelligent plugin system
             and proven presets.
             <span class="text-cyan-400 font-semibold"
-              >Deploy faster, run leaner, scale better.</span
+            >Deploy faster, run leaner, scale better.</span
             >
           </p>
 
@@ -128,6 +168,7 @@
         </svg>
       </div>
     </section>
+  </div>
 
     <!-- Stats Section -->
     <section class="py-16 bg-gray-900/80 backdrop-blur-sm border-t border-gray-800/50">
