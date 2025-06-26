@@ -1,0 +1,51 @@
+name: 📦 Velox SPA Image
+
+on:
+  release:
+    types:
+      - created
+
+jobs:
+  build-release:
+    name: 📦 Docker Image
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ secrets.GHCR_LOGIN }}
+          password: ${{ secrets.GHCR_PASSWORD }}
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: 🛠️ Extract Git metadata for SPA
+        id: spa-git
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/roadrunner-php/velox-spa
+          tags: |
+            type=semver,pattern={{version}}
+
+      - name: 📦 Build SPA Docker Image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./spa
+          platforms: linux/amd64
+          file: ./.docker/spa/Dockerfile
+          push: true
+          build-args: |
+            APP_VERSION=${{ github.ref_name }}
+            SERVICE=velox-spa
+          tags: ${{ steps.spa-git.outputs.tags }}
+          labels: ${{ steps.spa-git.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

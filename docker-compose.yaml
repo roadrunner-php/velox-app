@@ -37,6 +37,15 @@ services:
       <<: *common-spiral-variables
       GITHUB_TOKEN: ${GITHUB_TOKEN}
       APP_HOST: ${APP_HOST}
+  vx-spa:
+    image: ghcr.io/roadrunner-php/velox-spa:latest
+    ports:
+      - "3000:3000"
+    networks:
+      - vx-network
+    restart: always
+    environment:
+      <<: *common-spiral-variables
 
 networks:
   vx-network:
