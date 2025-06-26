@@ -170,6 +170,68 @@
     </section>
   </div>
 
+    <!-- Architecture Diagram Section -->
+    <section class="py-20 bg-gradient-to-b from-gray-900 to-black relative overflow-hidden">
+      <!-- Background Pattern -->
+      <div class="absolute inset-0 opacity-5">
+        <div
+          class="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-blue-500/10 to-purple-500/10"
+        ></div>
+        <div class="absolute top-1/4 right-1/4 w-96 h-96 bg-blue-500/5 rounded-full blur-3xl"></div>
+        <div
+          class="absolute bottom-1/4 left-1/4 w-96 h-96 bg-purple-500/5 rounded-full blur-3xl"
+        ></div>
+      </div>
+
+      <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+          <h2 class="text-3xl sm:text-4xl font-bold text-white mb-4">How Velox Works</h2>
+          <p class="text-xl text-gray-300 max-w-3xl mx-auto">
+            See how our intelligent configuration system transforms plugin selection into optimized RoadRunner deployments
+          </p>
+        </div>
+
+        <!-- Process Steps -->
+        <div class="grid md:grid-cols-3 gap-8 mt-16">
+          <div class="text-center group">
+            <div
+              class="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg shadow-blue-500/20"
+            >
+              <span class="text-2xl font-bold text-white">1</span>
+            </div>
+            <h3 class="text-xl font-bold text-white mb-4">Select & Configure</h3>
+            <p class="text-gray-300 leading-relaxed">
+              Choose plugins or presets through our intuitive interface. Dependencies are automatically resolved and conflicts detected.
+            </p>
+          </div>
+
+          <div class="text-center group">
+            <div
+              class="w-16 h-16 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg shadow-purple-500/20"
+            >
+              <span class="text-2xl font-bold text-white">2</span>
+            </div>
+            <h3 class="text-xl font-bold text-white mb-4">Generate Config</h3>
+            <p class="text-gray-300 leading-relaxed">
+              Our engine creates optimized TOML, JSON, or Dockerfile configurations with zero manual intervention required.
+            </p>
+          </div>
+
+          <div class="text-center group">
+            <div
+              class="w-16 h-16 bg-gradient-to-br from-cyan-500 to-cyan-600 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg shadow-cyan-500/20"
+            >
+              <span class="text-2xl font-bold text-white">3</span>
+            </div>
+            <h3 class="text-xl font-bold text-white mb-4">Deploy & Scale</h3>
+            <p class="text-gray-300 leading-relaxed">
+              Launch your lean, optimized RoadRunner server with perfect plugin compatibility and enterprise performance.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- Stats Section -->
     <section class="py-16 bg-gray-900/80 backdrop-blur-sm border-t border-gray-800/50">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -600,6 +662,18 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { RouterLink } from 'vue-router'
+import AnimatedDiagram from '@/components/AnimatedDiagram.vue'
+
+// Generate random particles for background animation
+const particles = ref(
+  Array.from({ length: 30 }, (_, i) => ({
+    id: i,
+    x: Math.random() * 100,
+    y: Math.random() * 100,
+    delay: Math.random() * 3,
+    duration: 2 + Math.random() * 2
+  }))
+)
 
 // Animated statistics
 const animatedStats = ref({
