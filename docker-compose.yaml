@@ -28,24 +28,21 @@ services:
   vx-app:
     <<: *php
     image: ghcr.io/roadrunner-php/velox-app:latest
-    command: >
-      sh -c "chmod +x /app/.docker/php/entrypoint.sh
-      && /app/.docker/php/entrypoint.sh"
     ports:
-      - ${VX_HTTP_PORT:-8080}:8080
+      - ${VX_HTTP_APP_PORT:-8080}:8080
     environment:
       <<: *common-spiral-variables
       GITHUB_TOKEN: ${GITHUB_TOKEN}
       APP_HOST: ${APP_HOST}
   vx-spa:
     image: ghcr.io/roadrunner-php/velox-spa:latest
+    environment:
+      VITE_API_BASE_URL: ${VITE_API_BASE_URL:-https://rr.buggregator.dev}
     ports:
-      - "3000:3000"
+      - ${VX_HTTP_SPA_PORT:-3000}:3000
     networks:
       - vx-network
     restart: always
-    environment:
-      <<: *common-spiral-variables
 
 networks:
   vx-network:
