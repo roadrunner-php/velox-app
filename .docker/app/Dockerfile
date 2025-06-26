@@ -26,11 +26,11 @@ COPY --from=rr /usr/bin/rr /usr/bin/rr
 
 WORKDIR /app
 
-RUN chmod +x .docker/entrypoint.sh
+RUN chmod +x .docker/app/entrypoint.sh
 
 RUN composer config --no-plugins allow-plugins.spiral/composer-publish-plugin false
 RUN composer install --no-dev --optimize-autoloader
 
 RUN vendor/bin/dload
 
-CMD [".docker/entrypoint.sh"]
+CMD [".docker/app/entrypoint.sh"]
