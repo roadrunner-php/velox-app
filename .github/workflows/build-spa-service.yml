@@ -41,7 +41,7 @@ jobs:
         with:
           context: ./
           platforms: linux/amd64
-          file: ./.docker/php/Dockerfile
+          file: ./.docker/app/Dockerfile
           push: true
           build-args: |
             APP_VERSION=${{ github.ref_name }}
