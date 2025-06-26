@@ -157,18 +157,35 @@ watch(isHovered, (hovered) => {
 
       <!-- Official/Community Badge -->
       <div
-        class="absolute top-3 left-3 text-xs font-medium px-2 py-1 rounded-lg z-10 backdrop-blur-sm border"
-        :class="plugin.is_official 
-          ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30' 
-          : 'bg-gray-600/20 text-gray-300 border-gray-600/30'"
+        class="absolute top-3 left-3 text-xs font-medium z-10 flex items-center gap-1"
+        :class="plugin.is_official
+          ? 'text-emerald-300'
+          : 'text-gray-400'"
       >
-        <span v-if="plugin.is_official" class="mr-1">✅</span>
-        <span v-else class="mr-1">🌐</span>
-        {{ plugin.is_official ? 'Official' : 'Community' }}
+        <!-- Certificate icon for official plugins -->
+        <svg
+          v-if="plugin.is_official"
+          class="w-6 h-6"
+          fill="currentColor"
+          viewBox="0 0 20 20"
+        >
+          <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+        </svg>
+        <!-- Globe icon for community plugins -->
+        <svg
+          v-else
+          class="w-6 h-6"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9m0-9v9" />
+        </svg>
+        <span>{{ plugin.is_official ? 'Official' : 'Community' }}</span>
       </div>
 
       <!-- Main Content -->
-      <div class="mt-12 mb-4">
+      <div class="mt-8">
         <!-- Plugin Name -->
         <h3 class="text-xl font-bold text-white mb-3 pr-8 group-hover:text-blue-300 transition-colors">
           {{ plugin.name }}
@@ -196,7 +213,7 @@ watch(isHovered, (hovered) => {
         <div v-if="plugin.dependencies.length > 0" class="mt-4">
           <button
             @click.stop="handleLoadDependencies"
-            class="flex items-center gap-2 text-sm text-cyan-400 hover:text-cyan-300 transition-colors font-medium"
+            class="dependency-toggle-btn flex items-center gap-2 text-cyan-400 hover:text-cyan-300 transition-colors font-medium"
             :disabled="isLoadingDependencies"
           >
             <span>{{ dependencyText }}</span>
@@ -319,6 +336,39 @@ watch(isHovered, (hovered) => {
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+/* FIXED: Dependencies toggle button styling */
+.dependency-toggle-btn {
+  /* Reset button styling */
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+
+  /* Text styling */
+  font-size: 0.875rem; /* text-sm */
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+
+  /* Remove default button appearance */
+  appearance: none;
+  -webkit-appearance: none;
+
+  /* Focus styles */
+  outline: none;
+  border-radius: 0.25rem;
+}
+
+.dependency-toggle-btn:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+.dependency-toggle-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 /* Smooth transitions for dependency expansion */
