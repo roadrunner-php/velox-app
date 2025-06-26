@@ -1,4 +1,4 @@
-name: 📦 Velox App Docker Image
+name: 📦 Velox SPA Image
 
 on:
   release:
@@ -27,26 +27,25 @@ jobs:
         id: buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: 🛠️ Extract Git metadata (tags, labels) for Docker
-        id: service-git
+      - name: 🛠️ Extract Git metadata for SPA
+        id: spa-git
         uses: docker/metadata-action@v5
         with:
-          images: ghcr.io/roadrunner-php/velox-app
+          images: ghcr.io/roadrunner-php/velox-spa
           tags: |
             type=semver,pattern={{version}}
 
-      - name: 📦 Build Docker Image
-        id: docker-service
+      - name: 📦 Build SPA Docker Image
         uses: docker/build-push-action@v6
         with:
-          context: ./
+          context: ./spa
           platforms: linux/amd64
-          file: ./.docker/php/Dockerfile
+          file: ./.docker/spa/Dockerfile
           push: true
           build-args: |
             APP_VERSION=${{ github.ref_name }}
-            SERVICE=velox-app
-          tags: ${{ steps.service-git.outputs.tags }}
-          labels: ${{ steps.service-git.outputs.labels }}
+            SERVICE=velox-spa
+          tags: ${{ steps.spa-git.outputs.tags }}
+          labels: ${{ steps.spa-git.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
