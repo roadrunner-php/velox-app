@@ -46,10 +46,10 @@ onBeforeUnmount(() => {
         class="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black/30"
       >
         <transition name="modal-content">
-          <div ref="modalRef" class="bg-white p-6 rounded-lg w-full max-w-2xl relative shadow-xl">
+          <div ref="modalRef" class="bg-white p-6 rounded-lg w-full max-w-4xl relative shadow-xl">
             <h3 class="text-lg font-semibold mb-4">Generated Configuration</h3>
 
-            <textarea class="w-full h-64 p-2 border rounded font-mono text-sm mb-4" readonly>{{
+            <textarea class="w-full h-80 p-2 border rounded font-mono text-sm mb-4" readonly>{{
               text
             }}</textarea>
 
