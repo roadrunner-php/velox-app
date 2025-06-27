@@ -187,16 +187,6 @@ import { ref } from 'vue'
 import { RouterView, RouterLink } from 'vue-router'
 
 const mobileMenuOpen = ref(false)
-
-// Close mobile menu when clicking outside
-const closeMobileMenu = () => {
-  mobileMenuOpen.value = false
-}
-
-// Close mobile menu on route change
-const onRouteChange = () => {
-  mobileMenuOpen.value = false
-}
 </script>
 
 <style scoped>

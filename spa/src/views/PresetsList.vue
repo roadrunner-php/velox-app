@@ -1,21 +1,27 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { usePresetsStore } from '@/stores/usePresetsStore'
-import CategoryTag from '@/components/CategoryTag.vue'
 import PresetCard from '@/components/PresetCard.vue'
-import ConfigFormatSelector from '@/components/ConfigFormatSelector.vue'
 import ConfigModal from '@/components/ConfigModal.vue'
 import ErrorAlert from '@/components/ErrorAlert.vue'
-import BackButton from '@/components/BackButton.vue'
+
+// New modular components
+import SearchAndFilters from '@/components/SearchAndFilters.vue'
+import FilterTags from '@/components/FilterTags.vue'
+import SelectionSummary from '@/components/SelectionSummary.vue'
+import LoadingState from '@/components/LoadingState.vue'
+import EmptyState from '@/components/EmptyState.vue'
+import ConfigurationGeneration from '@/components/ConfigurationGeneration.vue'
+import SelectionConfirmationModal from '@/components/SelectionConfirmationModal.vue'
 
 const presetStore = usePresetsStore()
-const configFormat = ref<'toml' | 'json' | 'docker' | 'dockerfile' | ''>('')
+const configFormat = ref<'toml' | 'json' | 'docker' | 'dockerfile'>('toml')
 
 const showModal = ref(false)
 const showSelectionConfirm = ref(false)
-const pendingSelection = ref<{ 
-  name: string; 
-  preview: { 
+const pendingSelection = ref<{
+  name: string
+  preview: {
     toSelect: string[]
     conflicts: string[]
     newDependencies: string[]
@@ -25,12 +31,12 @@ const pendingSelection = ref<{
       new: number
       total: number
     }
-  } 
+  }
 } | null>(null)
 
 const searchQuery = ref('')
 const sourceFilter = ref<'all' | 'official' | 'community'>('all')
-const activeTags = ref<string[]>([]) // Changed to support multiselect
+const activeTags = ref<string[]>([])
 
 onMounted(() => {
   presetStore.loadPresets()
@@ -38,8 +44,9 @@ onMounted(() => {
 
 const filteredPresets = computed(() => {
   return presetStore.presetsWithSelection.filter((p) => {
-    const nameMatch = p.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-                     p.display_name.toLowerCase().includes(searchQuery.value.toLowerCase())
+    const nameMatch =
+      p.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+      p.display_name.toLowerCase().includes(searchQuery.value.toLowerCase())
     const sourceMatch =
       sourceFilter.value === 'all' ||
       (sourceFilter.value === 'official' && p.is_official) ||
@@ -61,6 +68,7 @@ const uniqueTags = computed(() => {
 
 const selectionSummary = computed(() => presetStore.selectionSummary)
 
+// Filter management
 function toggleTag(tag: string) {
   const index = activeTags.value.indexOf(tag)
   if (index === -1) {
@@ -74,14 +82,21 @@ function clearAllTags() {
   activeTags.value = []
 }
 
+function clearAllFilters() {
+  activeTags.value = []
+  searchQuery.value = ''
+  sourceFilter.value = 'all'
+}
+
+// Preset selection management
 async function handlePresetToggle(name: string, includeDependencies: boolean) {
   const selection = presetStore.getSelectionInfo(name)
-  
+
   if (!selection || selection.state === 'none') {
     // Preview the selection if it might have relationships/conflicts
     try {
       const preview = await presetStore.getSelectionPreview(name)
-      
+
       // Check if we need confirmation:
       // 1. Are there new dependencies/relationships?
       // 2. Are there any conflicts?
@@ -89,7 +104,7 @@ async function handlePresetToggle(name: string, includeDependencies: boolean) {
       const hasNewDependencies = preview.newDependencies.length > 1 // More than just the preset itself
       const hasConflicts = preview.conflicts.length > 0
       const hasSignificantPluginImpact = preview.pluginSummary.new > 5 // Arbitrary threshold
-      
+
       if (hasNewDependencies || hasConflicts || hasSignificantPluginImpact) {
         pendingSelection.value = { name, preview }
         showSelectionConfirm.value = true
@@ -99,7 +114,7 @@ async function handlePresetToggle(name: string, includeDependencies: boolean) {
       console.error('Failed to get selection preview:', e)
     }
   }
-  
+
   // Direct toggle without confirmation
   await presetStore.togglePresetSelection(name, includeDependencies)
 }
@@ -119,9 +134,11 @@ function cancelSelection() {
 
 function handleViewDetails(name: string) {
   // For now, just show an alert with preset details
-  const preset = presetStore.presets.find(p => p.name === name)
+  const preset = presetStore.presets.find((p) => p.name === name)
   if (preset) {
-    alert(`Preset: ${preset.display_name}\nPlugins: ${preset.plugins.join(', ')}\nTags: ${preset.tags?.join(', ') || 'None'}`)
+    alert(
+      `Preset: ${preset.display_name}\nPlugins: ${preset.plugins.join(', ')}\nTags: ${preset.tags?.join(', ') || 'None'}`,
+    )
   }
 }
 
@@ -133,14 +150,14 @@ async function handleLoadDependencies(name: string) {
   }
 }
 
-async function handleGenerate() {
+async function handleGenerate(format: typeof configFormat.value) {
   presetStore.error = null
   showModal.value = false
 
   try {
     await presetStore.generateConfig({
       presets: presetStore.allSelectedPresets,
-      ...(configFormat.value && { format: configFormat.value }),
+      format,
     })
 
     if (!presetStore.error) {
@@ -164,258 +181,76 @@ function clearAllSelections() {
     </Teleport>
 
     <!-- Selection Confirmation Modal -->
-    <Teleport to="body">
-      <transition name="modal-fade">
-        <div
-          v-if="showSelectionConfirm"
-          class="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black/50"
-        >
-          <div class="bg-slate-800 border border-slate-600 p-6 rounded-lg w-full max-w-lg shadow-xl">
-            <h3 class="text-lg font-semibold mb-4 text-white">Confirm Preset Selection</h3>
-            
-            <div v-if="pendingSelection" class="mb-4">
-              
-              <!-- Plugin Impact Summary -->
-              <div class="mb-4 p-3 bg-blue-900/20 border border-blue-500/30 rounded-lg">
-                <h4 class="font-medium text-blue-300 mb-2">Plugin Impact</h4>
-                <div class="text-sm text-blue-200">
-                  <div class="flex justify-between">
-                    <span>Current plugins:</span>
-                    <span class="font-medium">{{ pendingSelection.preview.pluginSummary.current }}</span>
-                  </div>
-                  <div class="flex justify-between">
-                    <span>New plugins:</span>
-                    <span class="font-medium text-green-400">+{{ pendingSelection.preview.pluginSummary.new }}</span>
-                  </div>
-                  <div class="flex justify-between font-semibold border-t border-blue-400/30 mt-1 pt-1">
-                    <span>Total plugins:</span>
-                    <span>{{ pendingSelection.preview.pluginSummary.total }}</span>
-                  </div>
-                </div>
-              </div>
-
-              <!-- New Dependencies Section -->
-              <div v-if="pendingSelection.preview.newDependencies.length > 1">
-                <p class="text-sm text-slate-300 mb-3">
-                  Selecting <strong class="text-white">{{ pendingSelection.name }}</strong> will also select these related presets:
-                </p>
-                
-                <div class="mb-4">
-                  <ul class="text-sm space-y-1 pl-0">
-                    <li 
-                      v-for="preset in pendingSelection.preview.newDependencies.filter(p => p !== pendingSelection.name)"
-                      :key="preset"
-                      class="flex items-center gap-2 p-2 bg-green-900/20 border border-green-500/30 rounded"
-                    >
-                      <span class="w-2 h-2 bg-green-400 rounded-full"></span>
-                      <span class="text-white">{{ preset }}</span>
-                      <span class="text-xs text-green-400">(related preset)</span>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-
-              <!-- Existing Dependencies Section -->
-              <div v-if="pendingSelection.preview.existingDependencies.length > 1">
-                <p class="text-sm text-slate-400 mb-2">
-                  These presets are already selected:
-                </p>
-                <div class="flex flex-wrap gap-1 mb-4">
-                  <span 
-                    v-for="preset in pendingSelection.preview.existingDependencies.filter(p => p !== pendingSelection.name)"
-                    :key="preset"
-                    class="text-xs bg-slate-700 text-slate-300 px-2 py-1 rounded-full"
-                  >
-                    {{ preset }}
-                  </span>
-                </div>
-              </div>
-
-              <!-- Conflicts Section -->
-              <div v-if="pendingSelection.preview.conflicts.length" class="mt-3">
-                <p class="text-sm text-red-400 font-medium mb-2">⚠️ Potential conflicts:</p>
-                <ul class="text-sm space-y-1 pl-0">
-                  <li 
-                    v-for="conflict in pendingSelection.preview.conflicts"
-                    :key="conflict"
-                    class="flex items-center gap-2 p-2 bg-red-900/20 border border-red-500/30 rounded"
-                  >
-                    <span class="w-2 h-2 bg-red-400 rounded-full"></span>
-                    <span class="text-white">{{ conflict }}</span>
-                    <span class="text-xs text-red-400">(may conflict)</span>
-                  </li>
-                </ul>
-              </div>
-            </div>
-
-            <div class="flex gap-3 justify-end">
-              <button
-                @click="cancelSelection"
-                class="px-4 py-2 text-sm font-medium text-slate-300 bg-slate-700 border border-slate-600 rounded-md hover:bg-slate-600 hover:text-white transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                @click="confirmSelection"
-                class="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-blue-500 rounded-md hover:bg-blue-700 transition-colors"
-              >
-                Confirm Selection
-              </button>
-            </div>
-          </div>
-        </div>
-      </transition>
-    </Teleport>
+    <SelectionConfirmationModal
+      :show="showSelectionConfirm"
+      title="Confirm Preset Selection"
+      :item-name="pendingSelection?.name"
+      :preview-data="pendingSelection?.preview"
+      dependency-type="related preset"
+      @confirm="confirmSelection"
+      @cancel="cancelSelection"
+    />
 
     <!-- Header -->
-    <div class="mb-6">
-      <h1 class="text-2xl font-bold mb-2 text-white">RoadRunner Presets</h1>
-      <p class="text-slate-300">Select predefined preset configurations for common use cases</p>
+    <div class="mb-8">
+      <h1 class="text-3xl font-bold mb-3 text-white">RoadRunner Presets</h1>
+      <p class="text-slate-300 text-lg">
+        Select predefined preset configurations for common use cases
+      </p>
     </div>
 
-    <!-- Filters -->
-    <div class="flex flex-col sm:flex-row sm:items-center gap-4 mb-6">
-      <input
-        type="text"
-        v-model="searchQuery"
-        placeholder="Search presets..."
-        class="px-3 py-2 bg-slate-800 border border-slate-600 text-white rounded-md w-full sm:w-64 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 placeholder-slate-400"
-      />
+    <!-- Search and Filters -->
+    <SearchAndFilters
+      v-model:search-query="searchQuery"
+      v-model:source-filter="sourceFilter"
+      :active-categories="activeTags"
+      search-placeholder="Search presets..."
+      :result-count="filteredPresets.length"
+      item-type="preset"
+      categories-label="Tags"
+      @clear-all-filters="clearAllFilters"
+      class="mb-6"
+    />
 
-      <div class="flex gap-2 text-sm">
-        <button
-          @click="sourceFilter = 'all'"
-          :class="[
-            'px-3 py-2 rounded-md font-medium transition-colors',
-            sourceFilter === 'all'
-              ? 'bg-blue-600 text-white border border-blue-500'
-              : 'bg-slate-700 text-slate-300 border border-slate-600 hover:bg-slate-600 hover:text-white',
-          ]"
-        >
-          All Sources
-        </button>
-        <button
-          @click="sourceFilter = 'official'"
-          :class="[
-            'px-3 py-2 rounded-md font-medium transition-colors',
-            sourceFilter === 'official'
-              ? 'bg-blue-600 text-white border border-blue-500'
-              : 'bg-slate-700 text-slate-300 border border-slate-600 hover:bg-slate-600 hover:text-white',
-          ]"
-        >
-          Official
-        </button>
-        <button
-          @click="sourceFilter = 'community'"
-          :class="[
-            'px-3 py-2 rounded-md font-medium transition-colors',
-            sourceFilter === 'community'
-              ? 'bg-blue-600 text-white border border-blue-500'
-              : 'bg-slate-700 text-slate-300 border border-slate-600 hover:bg-slate-600 hover:text-white',
-          ]"
-        >
-          Community
-        </button>
-      </div>
-    </div>
-
-    <!-- Tags -->
-    <div v-if="uniqueTags.length" class="mb-6">
-      <div class="flex items-center justify-between mb-3">
-        <h2 class="text-lg font-semibold text-white">Filter by Tags</h2>
-        <button
-          v-if="activeTags.length > 0"
-          @click="clearAllTags"
-          class="text-sm text-slate-400 hover:text-white font-medium transition-colors"
-        >
-          Clear All ({{ activeTags.length }})
-        </button>
-      </div>
-      <div class="flex flex-wrap gap-2">
-        <CategoryTag
-          v-for="tag in uniqueTags"
-          :key="tag"
-          :label="tag"
-          :value="tag"
-          :is-active="activeTags.includes(tag)"
-          @click="toggleTag"
-        />
-      </div>
-    </div>
+    <!-- Tags Filter -->
+    <FilterTags
+      v-if="uniqueTags.length"
+      :tags="uniqueTags"
+      :active-tags="activeTags"
+      title="Filter by Tags"
+      @toggle="toggleTag"
+      @clear-all="clearAllTags"
+      class="mb-8"
+    />
 
     <!-- Selection Summary -->
-    <div 
-      v-if="selectionSummary.total > 0" 
-      class="mb-6 p-4 bg-blue-900/20 border border-blue-500/30 rounded-lg"
+    <SelectionSummary
+      :summary="selectionSummary"
+      :selected-items="presetStore.manuallySelectedPresets"
+      item-type="preset"
+      dependency-type="related"
+      @clear-all="clearAllSelections"
+      class="mb-8"
     >
-      <div class="flex items-center justify-between">
-        <div class="flex items-center gap-4 text-sm">
-          <span class="font-medium text-blue-200">
-            {{ selectionSummary.manual }} preset{{ selectionSummary.manual === 1 ? '' : 's' }} selected
-          </span>
-          <span v-if="selectionSummary.dependencies > 0" class="text-blue-300">
-            + {{ selectionSummary.dependencies }} related
-          </span>
-          <span class="font-semibold text-blue-100">
-            = {{ selectionSummary.total }} total
-          </span>
-          <span class="text-green-400">
-            ({{ selectionSummary.totalPlugins }} plugins)
-          </span>
+      <template #details>
+        <div class="text-xs text-green-400 font-medium">
+          Total plugins: {{ selectionSummary.totalPlugins }}
         </div>
-        
-        <button
-          @click="clearAllSelections"
-          class="text-sm text-red-400 hover:text-red-300 font-medium transition-colors"
-        >
-          Clear All
-        </button>
-      </div>
-      
-      <!-- Selected Preset Names -->
-      <div class="mt-3 flex flex-wrap gap-2">
-        <span
-          v-for="name in presetStore.manuallySelectedPresets"
-          :key="name"
-          class="bg-blue-800/40 text-blue-200 text-xs font-medium px-2 py-1 rounded-full border border-blue-600/30"
-        >
-          {{ name }}
-        </span>
-      </div>
-    </div>
-
-    <!-- Active Filters Summary -->
-    <div 
-      v-if="activeTags.length > 0 || searchQuery || sourceFilter !== 'all'"
-      class="mb-4 p-3 bg-slate-800/50 border border-slate-600/50 rounded-lg"
-    >
-      <div class="flex items-center justify-between">
-        <div class="flex items-center gap-2 text-sm text-slate-300">
-          <span class="font-medium">Active filters:</span>
-          <span v-if="activeTags.length > 0">
-            Tags: {{ activeTags.join(', ') }}
-          </span>
-          <span v-if="searchQuery">
-            Search: "{{ searchQuery }}"
-          </span>
-          <span v-if="sourceFilter !== 'all'">
-            Source: {{ sourceFilter }}
-          </span>
-        </div>
-        <span class="text-xs text-slate-400">
-          {{ filteredPresets.length }} preset{{ filteredPresets.length === 1 ? '' : 's' }} shown
-        </span>
-      </div>
-    </div>
+      </template>
+    </SelectionSummary>
 
     <!-- Loading State -->
-    <div v-if="presetStore.loading" class="text-center py-8">
-      <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-400 mx-auto mb-4"></div>
-      <p class="text-slate-300">Loading presets...</p>
-    </div>
+    <LoadingState
+      v-if="presetStore.loading"
+      message="Loading presets..."
+      subtitle="Please wait while we fetch the available preset configurations"
+    />
 
     <!-- Preset Grid -->
-    <div v-else class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-8">
+    <div
+      v-else-if="filteredPresets.length > 0"
+      class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-8"
+    >
       <PresetCard
         v-for="preset in filteredPresets"
         :key="preset.name"
@@ -431,65 +266,94 @@ function clearAllSelections() {
     </div>
 
     <!-- Empty State -->
-    <div v-if="!presetStore.loading && filteredPresets.length === 0" class="text-center py-12">
-      <div class="text-slate-500 mb-4">
-        <svg class="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-        </svg>
-      </div>
-      <h3 class="text-lg font-medium text-white mb-2">No presets found</h3>
-      <p class="text-slate-400">Try adjusting your search or filter criteria</p>
-    </div>
-    <!-- Configuration Generation -->
-    <div v-if="selectionSummary.total > 0" class="pt-6">
-      <ConfigFormatSelector v-model="configFormat" class="mb-10" />
+    <EmptyState
+      v-else-if="!presetStore.loading"
+      title="No presets found"
+      description="Try adjusting your search or filter criteria to find the presets you're looking for."
+      icon-type="filter"
+      :show-action-button="activeTags.length > 0 || searchQuery || sourceFilter !== 'all'"
+      action-text="Clear All Filters"
+      @action="clearAllFilters"
+    />
 
-      <div class="flex items-end">
-        <button
-          @click="handleGenerate"
-          :disabled="selectionSummary.total === 0"
-          class="w-full px-6 py-3 text-white font-semibold rounded-lg transition-colors bg-blue-600 hover:bg-blue-700 disabled:bg-slate-600 disabled:text-slate-400 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-slate-900"
-        >
-          Generate Configuration
-        </button>
-      </div>
-    </div>
+    <!-- Configuration Generation -->
+    <ConfigurationGeneration
+      v-model="configFormat"
+      :selection-count="selectionSummary.total"
+      title="Generate Configuration"
+      description="Choose your preferred format and generate the configuration file from selected presets"
+      button-text="Generate Configuration"
+      help-text="Your configuration will merge all selected presets and resolve any conflicts automatically."
+      @generate="handleGenerate"
+    />
 
     <!-- Configuration Modal -->
-    <ConfigModal 
-      :show="showModal" 
-      :text="presetStore.configOutput" 
-      @close="showModal = false" 
-    />
+    <ConfigModal :show="showModal" :text="presetStore.configOutput" @close="showModal = false" />
   </main>
 </template>
 
 <style scoped>
-.modal-fade-enter-active,
-.modal-fade-leave-active {
-  transition: opacity 0.3s ease;
+/* Smooth transitions */
+.transition-all {
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 200ms;
 }
 
-.modal-fade-enter-from,
-.modal-fade-leave-to {
-  opacity: 0;
+/* Enhanced spacing for better visual hierarchy */
+.mb-8 {
+  margin-bottom: 2rem;
 }
 
-/* Loading animation */
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
+.mb-6 {
+  margin-bottom: 1.5rem;
+}
+
+/* Grid layout improvements */
+.grid {
+  gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .grid {
+    gap: 2rem;
   }
 }
 
-.animate-spin {
-  animation: spin 1s linear infinite;
+/* Focus states for accessibility */
+*:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
 }
 
-/* Smooth transitions */
-.transition-colors {
-  transition-property: color, background-color, border-color;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 150ms;
+/* Responsive design improvements */
+@media (max-width: 640px) {
+  .px-4 {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .my-8 {
+    margin-top: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+}
+
+/* Enhanced visual separation */
+.mb-8:last-child {
+  margin-bottom: 0;
+}
+
+/* Grid responsiveness */
+@media (max-width: 768px) {
+  .grid-cols-1 {
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1280px) {
+  .xl\:grid-cols-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
 }
 </style>

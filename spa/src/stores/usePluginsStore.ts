@@ -24,7 +24,7 @@ export const usePluginsStore = defineStore('plugins', {
     configOutput: '' as string,
     loading: false,
     error: null as string | null,
-    
+
     // Enhanced selection management
     selections: new Map<string, PluginSelectionInfo>(),
     dependencyCache: new Map<string, PluginDependencyResponse>(),
@@ -34,7 +34,7 @@ export const usePluginsStore = defineStore('plugins', {
   getters: {
     // Get plugins with their selection information
     pluginsWithSelection(): PluginWithSelectionInfo[] {
-      return this.plugins.map(plugin => {
+      return this.plugins.map((plugin) => {
         const selectionInfo = this.selections.get(plugin.name)
         return {
           ...plugin,
@@ -121,19 +121,19 @@ export const usePluginsStore = defineStore('plugins', {
       }
 
       this.loadingDependencies.add(name)
-      
+
       try {
         const res = await pluginApi.fetchPluginDependencies(name)
         const dependencyData = res.data
-        
+
         // Cache the result
         this.dependencyCache.set(name, dependencyData)
-        
+
         // Update the main dependencies if this is the selected plugin
         if (name === this.selectedPlugin?.name) {
           this.dependencies = dependencyData
         }
-        
+
         return dependencyData
       } catch (e: any) {
         this.error = e.message
@@ -187,7 +187,7 @@ export const usePluginsStore = defineStore('plugins', {
           // Load and select dependencies
           const dependencyData = await this.loadDependencies(pluginName)
           await this.selectDependencies(pluginName, dependencyData.resolved_dependencies)
-          
+
           // Handle conflicts
           if (dependencyData.conflicts.length > 0) {
             this.handleConflicts(pluginName, dependencyData.conflicts)
@@ -201,7 +201,7 @@ export const usePluginsStore = defineStore('plugins', {
     async selectDependencies(parentPlugin: string, dependencies: Plugin[]) {
       for (const dep of dependencies) {
         const existing = this.selections.get(dep.name)
-        
+
         if (!existing || existing.state === 'none') {
           // Auto-select as dependency
           this.selections.set(dep.name, {
@@ -232,13 +232,13 @@ export const usePluginsStore = defineStore('plugins', {
 
       // Check all dependency plugins to see if they're still needed
       const allSelections = Array.from(this.selections.entries())
-      
+
       for (const [depName, depInfo] of allSelections) {
         if (depInfo.state === 'dependency' && depInfo.requiredBy.includes(pluginName)) {
           // Remove this plugin from the requiredBy list
-          const updatedRequiredBy = depInfo.requiredBy.filter(name => name !== pluginName)
-          const updatedSelectedBy = depInfo.selectedBy.filter(name => name !== pluginName)
-          
+          const updatedRequiredBy = depInfo.requiredBy.filter((name) => name !== pluginName)
+          const updatedSelectedBy = depInfo.selectedBy.filter((name) => name !== pluginName)
+
           if (updatedRequiredBy.length === 0) {
             // No longer required, remove it
             this.selections.delete(depName)
@@ -295,13 +295,13 @@ export const usePluginsStore = defineStore('plugins', {
     }> {
       try {
         const dependencyData = await this.loadDependencies(pluginName)
-        const allToSelect = [pluginName, ...dependencyData.resolved_dependencies.map(d => d.name)]
-        const conflicts = dependencyData.conflicts.flatMap(c => c.conflicting_plugins || [])
-        
+        const allToSelect = [pluginName, ...dependencyData.resolved_dependencies.map((d) => d.name)]
+        const conflicts = dependencyData.conflicts.flatMap((c) => c.conflicting_plugins || [])
+
         // Split dependencies into new vs already selected
         const newDependencies: string[] = []
         const existingDependencies: string[] = []
-        
+
         for (const depName of allToSelect) {
           const existing = this.selections.get(depName)
           if (!existing || existing.state === 'none') {
@@ -310,19 +310,19 @@ export const usePluginsStore = defineStore('plugins', {
             existingDependencies.push(depName)
           }
         }
-        
-        return { 
-          toSelect: allToSelect, 
+
+        return {
+          toSelect: allToSelect,
           conflicts,
           newDependencies,
-          existingDependencies
+          existingDependencies,
         }
       } catch (e) {
-        return { 
-          toSelect: [pluginName], 
+        return {
+          toSelect: [pluginName],
           conflicts: [],
           newDependencies: [pluginName],
-          existingDependencies: []
+          existingDependencies: [],
         }
       }
     },
