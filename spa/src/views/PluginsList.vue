@@ -42,7 +42,7 @@ const filteredPlugins = computed(() => {
   return pluginStore.pluginsWithSelection.filter((p) => {
     const categoryMatch =
       activeCategories.value.length === 0 ||
-      (p.category && activeCategories.value.filter(c => c.value === p.category).length)
+      (p.category && activeCategories.value.some(c => c.value === p.category))
     const sourceMatch =
       sourceFilter.value === 'all' ||
       (sourceFilter.value === 'official' && p.is_official) ||

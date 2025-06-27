@@ -52,18 +52,18 @@ const filteredPresets = computed(() => {
       (sourceFilter.value === 'official' && p.is_official) ||
       (sourceFilter.value === 'community' && !p.is_official)
     const tagsMatch =
-      activeTags.value.length === 0 || p.tags?.some(tag => activeTags.value.filter(t => t.value === tag).length)
+      activeTags.value.length === 0 || p.tags?.some(tag => activeTags.value.some(t => t.value === tag))
 
     return nameMatch && sourceMatch && tagsMatch
   })
 })
 
 const uniqueTags = computed(() => {
-  const tags = new Set<Tag>()
+  const tags = new Set<string>()
   presetStore.presets.forEach((p) => {
-    p.tags?.forEach(tag => tags.add({label: tag, value: tag}))
+    p.tags?.forEach(tag => tags.add(tag))
   })
-  return Array.from(tags).sort((a, b) => a.value.localeCompare(b.value))
+  return Array.from(tags).sort().map(tag => ({value: tag, label: tag}))
 })
 
 const selectionSummary = computed(() => presetStore.selectionSummary)
