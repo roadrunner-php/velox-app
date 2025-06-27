@@ -7,15 +7,16 @@ import ErrorAlert from '@/components/ErrorAlert.vue'
 
 // New modular components
 import SearchAndFilters from '@/components/SearchAndFilters.vue'
-import FilterTags from '@/components/FilterTags.vue'
+import FilterTags, { type Tag } from '@/components/FilterTags.vue'
 import SelectionSummary from '@/components/SelectionSummary.vue'
 import LoadingState from '@/components/LoadingState.vue'
 import EmptyState from '@/components/EmptyState.vue'
 import ConfigurationGeneration from '@/components/ConfigurationGeneration.vue'
 import SelectionConfirmationModal from '@/components/SelectionConfirmationModal.vue'
+import type { PluginCategory } from '@/api/pluginsApi.ts'
 
 const pluginStore = usePluginsStore()
-const activeCategories = ref<string[]>([])
+const activeCategories = ref<PluginCategory[] | Tag[]>([])
 const configFormat = ref<'toml' | 'json' | 'docker' | 'dockerfile'>('toml')
 
 const searchQuery = ref('')
@@ -41,7 +42,7 @@ const filteredPlugins = computed(() => {
   return pluginStore.pluginsWithSelection.filter((p) => {
     const categoryMatch =
       activeCategories.value.length === 0 ||
-      (p.category && activeCategories.value.includes(p.category))
+      (p.category && activeCategories.value.filter(c => c.value === p.category).length)
     const sourceMatch =
       sourceFilter.value === 'all' ||
       (sourceFilter.value === 'official' && p.is_official) ||
@@ -64,10 +65,10 @@ const selectionSummary = computed(() => {
 })
 
 // Filter management
-function toggleCategory(value: string) {
-  const index = activeCategories.value.indexOf(value)
+function toggleCategory(category: PluginCategory) {
+  const index = activeCategories.value.findIndex(c => c.value === category.value)
   if (index === -1) {
-    activeCategories.value.push(value)
+    activeCategories.value.push(category)
   } else {
     activeCategories.value.splice(index, 1)
   }

@@ -7,7 +7,7 @@ import ErrorAlert from '@/components/ErrorAlert.vue'
 
 // New modular components
 import SearchAndFilters from '@/components/SearchAndFilters.vue'
-import FilterTags from '@/components/FilterTags.vue'
+import FilterTags, { type Tag } from '@/components/FilterTags.vue'
 import SelectionSummary from '@/components/SelectionSummary.vue'
 import LoadingState from '@/components/LoadingState.vue'
 import EmptyState from '@/components/EmptyState.vue'
@@ -36,7 +36,7 @@ const pendingSelection = ref<{
 
 const searchQuery = ref('')
 const sourceFilter = ref<'all' | 'official' | 'community'>('all')
-const activeTags = ref<string[]>([])
+const activeTags = ref<Tag[]>([])
 
 onMounted(() => {
   presetStore.loadPresets()
@@ -52,25 +52,25 @@ const filteredPresets = computed(() => {
       (sourceFilter.value === 'official' && p.is_official) ||
       (sourceFilter.value === 'community' && !p.is_official)
     const tagsMatch =
-      activeTags.value.length === 0 || p.tags?.some((tag) => activeTags.value.includes(tag))
+      activeTags.value.length === 0 || p.tags?.some(tag => activeTags.value.filter(t => t.value === tag).length)
 
     return nameMatch && sourceMatch && tagsMatch
   })
 })
 
 const uniqueTags = computed(() => {
-  const tags = new Set<string>()
+  const tags = new Set<Tag>()
   presetStore.presets.forEach((p) => {
-    p.tags?.forEach((tag) => tags.add(tag))
+    p.tags?.forEach(tag => tags.add({label: tag, value: tag}))
   })
-  return Array.from(tags).sort()
+  return Array.from(tags).sort((a, b) => a.value.localeCompare(b.value))
 })
 
 const selectionSummary = computed(() => presetStore.selectionSummary)
 
 // Filter management
-function toggleTag(tag: string) {
-  const index = activeTags.value.indexOf(tag)
+function toggleTag(tag: Tag) {
+  const index = activeTags.value.findIndex(c => c.value === tag.value)
   if (index === -1) {
     activeTags.value.push(tag)
   } else {

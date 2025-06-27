@@ -64,7 +64,7 @@
           <span class="font-medium text-white">Active filters:</span>
           <div class="flex flex-wrap gap-2">
             <span v-if="activeCategories?.length" class="bg-slate-700/60 px-2 py-1 rounded text-xs">
-              {{ categoriesLabel }}: {{ activeCategories.join(', ') }}
+              {{ categoriesLabel }}: {{ activeCategoriesLabel }}
             </span>
             <span v-if="searchQuery" class="bg-slate-700/60 px-2 py-1 rounded text-xs">
               Search: "{{ searchQuery }}"
@@ -94,11 +94,13 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import type { PluginCategory } from '@/api/pluginsApi.ts'
+import type { Tag } from '@/components/FilterTags.vue'
 
 interface Props {
   searchQuery: string
   sourceFilter?: 'all' | 'official' | 'community'
-  activeCategories?: string[]
+  activeCategories?: PluginCategory[] | Tag[]
   searchPlaceholder?: string
   showSourceFilter?: boolean
   showActiveFilters?: boolean
@@ -134,6 +136,12 @@ const hasActiveFilters = computed(() => {
     props.searchQuery ||
     props.sourceFilter !== 'all'
   )
+})
+
+const activeCategoriesLabel = computed(() => {
+  return props.activeCategories
+    .map(c => c.label)
+    .join(', ')
 })
 </script>
 

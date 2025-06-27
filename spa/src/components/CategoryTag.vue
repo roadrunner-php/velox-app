@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import type { PluginCategory } from '@/api/pluginsApi.ts'
+import type { Tag } from '@/components/FilterTags.vue'
+
 const props = defineProps<{
   label: string
   value: string
@@ -6,11 +9,11 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  (e: 'click', value: string): void
+  (e: 'click', value: Tag | PluginCategory): void
 }>()
 
 function handleClick() {
-  emit('click', props.value)
+  emit('click', {value: props.value, label: props.label})
 }
 
 function handleKeydown(event: KeyboardEvent) {
