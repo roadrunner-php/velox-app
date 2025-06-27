@@ -4,7 +4,6 @@ import { usePluginsStore } from '@/stores/usePluginsStore'
 import PluginCard from '@/components/PluginCard.vue'
 import ConfigModal from '@/components/ConfigModal.vue'
 import ErrorAlert from '@/components/ErrorAlert.vue'
-import BackButton from '@/components/BackButton.vue'
 
 // New modular components
 import SearchAndFilters from '@/components/SearchAndFilters.vue'
@@ -40,8 +39,9 @@ onMounted(() => {
 
 const filteredPlugins = computed(() => {
   return pluginStore.pluginsWithSelection.filter((p) => {
-    const categoryMatch = activeCategories.value.length === 0 || 
-                         (p.category && activeCategories.value.includes(p.category))
+    const categoryMatch =
+      activeCategories.value.length === 0 ||
+      (p.category && activeCategories.value.includes(p.category))
     const sourceMatch =
       sourceFilter.value === 'all' ||
       (sourceFilter.value === 'official' && p.is_official) ||
@@ -184,7 +184,9 @@ function clearAllSelections() {
     <!-- Header -->
     <div class="mb-8">
       <h1 class="text-3xl font-bold mb-3 text-white">RoadRunner Plugins</h1>
-      <p class="text-slate-300 text-lg">Select plugins to generate your custom RoadRunner configuration</p>
+      <p class="text-slate-300 text-lg">
+        Select plugins to generate your custom RoadRunner configuration
+      </p>
     </div>
 
     <!-- Search and Filters -->
@@ -228,7 +230,10 @@ function clearAllSelections() {
     />
 
     <!-- Plugin Grid -->
-    <div v-else-if="filteredPlugins.length > 0" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-8">
+    <div
+      v-else-if="filteredPlugins.length > 0"
+      class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-8"
+    >
       <PluginCard
         v-for="plugin in filteredPlugins"
         :key="plugin.name"
@@ -311,7 +316,7 @@ function clearAllSelections() {
     padding-left: 1rem;
     padding-right: 1rem;
   }
-  
+
   .my-8 {
     margin-top: 1.5rem;
     margin-bottom: 1.5rem;

@@ -4,7 +4,6 @@ import { usePresetsStore } from '@/stores/usePresetsStore'
 import PresetCard from '@/components/PresetCard.vue'
 import ConfigModal from '@/components/ConfigModal.vue'
 import ErrorAlert from '@/components/ErrorAlert.vue'
-import BackButton from '@/components/BackButton.vue'
 
 // New modular components
 import SearchAndFilters from '@/components/SearchAndFilters.vue'
@@ -20,9 +19,9 @@ const configFormat = ref<'toml' | 'json' | 'docker' | 'dockerfile'>('toml')
 
 const showModal = ref(false)
 const showSelectionConfirm = ref(false)
-const pendingSelection = ref<{ 
-  name: string; 
-  preview: { 
+const pendingSelection = ref<{
+  name: string
+  preview: {
     toSelect: string[]
     conflicts: string[]
     newDependencies: string[]
@@ -32,7 +31,7 @@ const pendingSelection = ref<{
       new: number
       total: number
     }
-  } 
+  }
 } | null>(null)
 
 const searchQuery = ref('')
@@ -45,8 +44,9 @@ onMounted(() => {
 
 const filteredPresets = computed(() => {
   return presetStore.presetsWithSelection.filter((p) => {
-    const nameMatch = p.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-                     p.display_name.toLowerCase().includes(searchQuery.value.toLowerCase())
+    const nameMatch =
+      p.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+      p.display_name.toLowerCase().includes(searchQuery.value.toLowerCase())
     const sourceMatch =
       sourceFilter.value === 'all' ||
       (sourceFilter.value === 'official' && p.is_official) ||
@@ -91,12 +91,12 @@ function clearAllFilters() {
 // Preset selection management
 async function handlePresetToggle(name: string, includeDependencies: boolean) {
   const selection = presetStore.getSelectionInfo(name)
-  
+
   if (!selection || selection.state === 'none') {
     // Preview the selection if it might have relationships/conflicts
     try {
       const preview = await presetStore.getSelectionPreview(name)
-      
+
       // Check if we need confirmation:
       // 1. Are there new dependencies/relationships?
       // 2. Are there any conflicts?
@@ -104,7 +104,7 @@ async function handlePresetToggle(name: string, includeDependencies: boolean) {
       const hasNewDependencies = preview.newDependencies.length > 1 // More than just the preset itself
       const hasConflicts = preview.conflicts.length > 0
       const hasSignificantPluginImpact = preview.pluginSummary.new > 5 // Arbitrary threshold
-      
+
       if (hasNewDependencies || hasConflicts || hasSignificantPluginImpact) {
         pendingSelection.value = { name, preview }
         showSelectionConfirm.value = true
@@ -114,7 +114,7 @@ async function handlePresetToggle(name: string, includeDependencies: boolean) {
       console.error('Failed to get selection preview:', e)
     }
   }
-  
+
   // Direct toggle without confirmation
   await presetStore.togglePresetSelection(name, includeDependencies)
 }
@@ -134,9 +134,11 @@ function cancelSelection() {
 
 function handleViewDetails(name: string) {
   // For now, just show an alert with preset details
-  const preset = presetStore.presets.find(p => p.name === name)
+  const preset = presetStore.presets.find((p) => p.name === name)
   if (preset) {
-    alert(`Preset: ${preset.display_name}\nPlugins: ${preset.plugins.join(', ')}\nTags: ${preset.tags?.join(', ') || 'None'}`)
+    alert(
+      `Preset: ${preset.display_name}\nPlugins: ${preset.plugins.join(', ')}\nTags: ${preset.tags?.join(', ') || 'None'}`,
+    )
   }
 }
 
@@ -192,7 +194,9 @@ function clearAllSelections() {
     <!-- Header -->
     <div class="mb-8">
       <h1 class="text-3xl font-bold mb-3 text-white">RoadRunner Presets</h1>
-      <p class="text-slate-300 text-lg">Select predefined preset configurations for common use cases</p>
+      <p class="text-slate-300 text-lg">
+        Select predefined preset configurations for common use cases
+      </p>
     </div>
 
     <!-- Search and Filters -->
@@ -243,7 +247,10 @@ function clearAllSelections() {
     />
 
     <!-- Preset Grid -->
-    <div v-else-if="filteredPresets.length > 0" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-8">
+    <div
+      v-else-if="filteredPresets.length > 0"
+      class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-8"
+    >
       <PresetCard
         v-for="preset in filteredPresets"
         :key="preset.name"
@@ -281,11 +288,7 @@ function clearAllSelections() {
     />
 
     <!-- Configuration Modal -->
-    <ConfigModal 
-      :show="showModal" 
-      :text="presetStore.configOutput" 
-      @close="showModal = false" 
-    />
+    <ConfigModal :show="showModal" :text="presetStore.configOutput" @close="showModal = false" />
   </main>
 </template>
 
@@ -329,7 +332,7 @@ function clearAllSelections() {
     padding-left: 1rem;
     padding-right: 1rem;
   }
-  
+
   .my-8 {
     margin-top: 1.5rem;
     margin-bottom: 1.5rem;
