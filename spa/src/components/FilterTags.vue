@@ -21,7 +21,7 @@
           :key="getTagValue(tag)"
           :label="getTagLabel(tag)"
           :value="getTagValue(tag)"
-          :is-active="activeTags.includes(tag)"
+          :is-active="!!activeTags.filter(t => t.value === tag.value).length"
           @click="handleTagClick"
         />
       </div>
