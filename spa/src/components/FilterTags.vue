@@ -18,10 +18,10 @@
       <div class="flex flex-wrap gap-2">
         <CategoryTag
           v-for="tag in tags"
-          :key="tag"
+          :key="getTagValue(tag)"
           :label="getTagLabel(tag)"
-          :value="tag"
-          :is-active="activeTags.includes(tag)"
+          :value="getTagValue(tag)"
+          :is-active="activeTags.some(t => t.value === tag.value)"
           @click="handleTagClick"
         />
       </div>
@@ -43,15 +43,16 @@
 
 <script setup lang="ts">
 import CategoryTag from './CategoryTag.vue'
+import type { PluginCategory } from '@/api/pluginsApi.ts'
 
-interface Tag {
+export interface Tag {
   value: string
-  label?: string
+  label: string
 }
 
 interface Props {
-  tags: string[] | Tag[]
-  activeTags: string[]
+  tags: PluginCategory[] | Tag[]
+  activeTags: PluginCategory[] | Tag[]
   title?: string
   showClearButton?: boolean
   showEmptyState?: boolean
@@ -61,7 +62,7 @@ interface Props {
 }
 
 interface Emits {
-  (e: 'toggle', value: string): void
+  (e: 'toggle', value: Tag | PluginCategory): void
   (e: 'clearAll'): void
 }
 
@@ -76,21 +77,15 @@ const props = withDefaults(defineProps<Props>(), {
 
 const emit = defineEmits<Emits>()
 
-function getTagLabel(tag: string | Tag): string {
-  if (typeof tag === 'string') {
-    return tag
-  }
+function getTagLabel(tag: Tag | PluginCategory): string {
   return tag.label || tag.value
 }
 
-function getTagValue(tag: string | Tag): string {
-  if (typeof tag === 'string') {
-    return tag
-  }
+function getTagValue(tag: Tag | PluginCategory): string {
   return tag.value
 }
 
-function handleTagClick(value: string) {
+function handleTagClick(value: Tag | PluginCategory): void {
   emit('toggle', value)
 }
 </script>
