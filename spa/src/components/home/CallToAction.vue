@@ -1,22 +1,22 @@
 <template>
-  <section class="py-20 relative" :class="sectionClasses">
-    <div class="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
+  <section class="cta-section" :class="sectionClasses">
+    <div class="cta-container">
       <!-- Section Header -->
-      <h2 class="text-3xl sm:text-4xl font-bold text-white mb-6">
+      <h2 class="cta-title">
         {{ title }}
       </h2>
 
-      <p v-if="subtitle" class="text-xl text-gray-300 mb-8 leading-relaxed">
+      <p v-if="subtitle" class="cta-subtitle">
         {{ subtitle }}
       </p>
 
       <!-- Additional Content Slot -->
-      <div v-if="$slots.content" class="mb-8">
+      <div v-if="$slots.content" class="cta-content">
         <slot name="content"></slot>
       </div>
 
       <!-- CTA Buttons -->
-      <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+      <div class="cta-buttons">
         <GradientButton
           v-for="cta in ctas"
           :key="cta.text"
@@ -99,3 +99,29 @@ const sectionClasses = computed(() => {
   return variantClasses[props.variant]
 })
 </script>
+
+<style scoped>
+.cta-section {
+  @apply py-20 relative;
+}
+
+.cta-container {
+  @apply max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8;
+}
+
+.cta-title {
+  @apply text-3xl sm:text-4xl font-bold text-white mb-6;
+}
+
+.cta-subtitle {
+  @apply text-xl text-gray-300 mb-8 leading-relaxed;
+}
+
+.cta-content {
+  @apply mb-8;
+}
+
+.cta-buttons {
+  @apply flex flex-col sm:flex-row gap-4 justify-center items-center;
+}
+</style>

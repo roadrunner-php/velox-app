@@ -1,9 +1,9 @@
 <template>
-  <div class="absolute inset-0">
+  <div class="particle-field">
     <div
       v-for="particle in particles"
       :key="particle.id"
-      class="absolute rounded-full animate-pulse"
+      class="particle"
       :class="[sizeClass, disabled ? 'animate-none' : '']"
       :style="{
         left: particle.x + '%',
@@ -75,3 +75,13 @@ onMounted(() => {
   generateParticles()
 })
 </script>
+
+<style scoped>
+.particle-field {
+  @apply absolute inset-0;
+}
+
+.particle {
+  @apply absolute rounded-full animate-pulse;
+}
+</style>

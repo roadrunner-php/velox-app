@@ -1,19 +1,19 @@
 <template>
-  <div class="flex items-start gap-3">
+  <div class="info-field">
     <!-- Icon -->
     <div 
-      class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5"
+      class="info-field-icon-wrapper"
       :class="iconBackgroundClasses"
     >
-      <component :is="iconComponent" class="w-4 h-4" :class="iconClasses" />
+      <component :is="iconComponent" class="info-field-icon" :class="iconClasses" />
     </div>
 
     <!-- Content -->
-    <div class="flex-1 min-w-0">
-      <div class="text-sm font-medium text-gray-400 mb-1">{{ label }}</div>
+    <div class="info-field-content">
+      <div class="info-field-label">{{ label }}</div>
       <div 
-        class="text-white font-medium"
-        :class="{ 'font-mono text-sm': monospace, 'break-all': breakAll }"
+        class="info-field-value"
+        :class="{ 'info-field-value--monospace': monospace, 'info-field-value--break-all': breakAll }"
       >
         <slot>{{ value }}</slot>
       </div>
@@ -42,16 +42,16 @@ const props = withDefaults(defineProps<Props>(), {
 
 const iconBackgroundClasses = computed(() => {
   if (props.highlight) {
-    return 'bg-green-900/30 border border-green-500/30'
+    return 'info-field-icon-wrapper--highlight'
   }
-  return 'bg-gray-800/60 border border-gray-700/50'
+  return 'info-field-icon-wrapper--default'
 })
 
 const iconClasses = computed(() => {
   if (props.highlight) {
-    return 'text-green-400'
+    return 'info-field-icon--highlight'
   }
-  return 'text-gray-400'
+  return 'info-field-icon--default'
 })
 
 const iconComponent = computed(() => {
@@ -84,3 +84,53 @@ const iconComponent = computed(() => {
   ])
 })
 </script>
+
+<style scoped>
+.info-field {
+  @apply flex items-start gap-3;
+}
+
+.info-field-icon-wrapper {
+  @apply w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5;
+}
+
+.info-field-icon-wrapper--highlight {
+  @apply bg-green-900/30 border border-green-500/30;
+}
+
+.info-field-icon-wrapper--default {
+  @apply bg-gray-800/60 border border-gray-700/50;
+}
+
+.info-field-icon {
+  @apply w-4 h-4;
+}
+
+.info-field-icon--highlight {
+  @apply text-green-400;
+}
+
+.info-field-icon--default {
+  @apply text-gray-400;
+}
+
+.info-field-content {
+  @apply flex-1 min-w-0;
+}
+
+.info-field-label {
+  @apply text-sm font-medium text-gray-400 mb-1;
+}
+
+.info-field-value {
+  @apply text-white font-medium;
+}
+
+.info-field-value--monospace {
+  @apply font-mono text-sm;
+}
+
+.info-field-value--break-all {
+  @apply break-all;
+}
+</style>

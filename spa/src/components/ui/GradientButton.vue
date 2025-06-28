@@ -8,11 +8,11 @@
     :aria-label="ariaLabel"
     @click="handleClick"
   >
-    <span class="flex items-center justify-center gap-2">
+    <span class="gradient-button-content">
       <!-- Loading Spinner -->
       <div 
         v-if="loading"
-        class="animate-spin rounded-full border-b-2 border-current"
+        class="gradient-button-spinner"
         :class="spinnerSizeClass"
       ></div>
       
@@ -20,7 +20,7 @@
       <slot name="icon" v-if="!loading && $slots.icon" />
       
       <!-- Default Icon -->
-      <span v-else-if="!loading && icon" class="text-lg">{{ icon }}</span>
+      <span v-else-if="!loading && icon" class="gradient-button-emoji">{{ icon }}</span>
       
       <!-- Text Content -->
       <span>{{ loading ? loadingText : text }}</span>
@@ -28,7 +28,7 @@
       <!-- Arrow Icon -->
       <svg 
         v-if="showArrow && !loading" 
-        class="transition-transform duration-200 group-hover:translate-x-1"
+        class="gradient-button-arrow"
         :class="iconSizeClass"
         fill="none" 
         stroke="currentColor" 
@@ -85,33 +85,31 @@ const tag = computed(() => {
   return 'button'
 })
 
-const baseClasses = 'group inline-flex items-center justify-center font-bold rounded-full transition-all duration-300 transform focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 disabled:opacity-50 disabled:cursor-not-allowed'
-
 const variantClasses = computed(() => {
   switch (props.variant) {
     case 'primary':
-      return 'bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-500 hover:to-blue-600 focus:ring-blue-500 border border-blue-500/30 shadow-lg shadow-blue-500/20 hover:shadow-blue-500/30'
+      return 'gradient-button--primary'
     case 'secondary':
-      return 'bg-gradient-to-r from-purple-600 to-purple-700 text-white hover:from-purple-500 hover:to-purple-600 focus:ring-purple-500 border border-purple-500/30 shadow-lg shadow-purple-500/20 hover:shadow-purple-500/30'
+      return 'gradient-button--secondary'
     case 'outline':
-      return 'bg-transparent border-2 border-purple-500/70 text-purple-400 hover:bg-purple-500 hover:text-white hover:border-purple-400 focus:ring-purple-500 shadow-lg shadow-purple-500/10 hover:shadow-purple-500/25'
+      return 'gradient-button--outline'
     case 'ghost':
-      return 'bg-gray-800/60 backdrop-blur-sm text-gray-300 border border-gray-700/50 hover:bg-gray-700 hover:text-white hover:border-gray-600/50 focus:ring-gray-500'
+      return 'gradient-button--ghost'
     default:
-      return ''
+      return 'gradient-button--primary'
   }
 })
 
 const sizeClasses = computed(() => {
   switch (props.size) {
     case 'sm':
-      return 'px-4 py-2 text-sm'
+      return 'gradient-button--sm'
     case 'md':
-      return 'px-8 py-4 text-lg'
+      return 'gradient-button--md'
     case 'lg':
-      return 'px-10 py-5 text-xl'
+      return 'gradient-button--lg'
     default:
-      return 'px-8 py-4 text-lg'
+      return 'gradient-button--md'
   }
 })
 
@@ -136,13 +134,13 @@ const iconSizeClass = computed(() => {
 })
 
 const buttonClasses = computed(() => [
-  baseClasses,
+  'gradient-button-base',
   variantClasses.value,
   sizeClasses.value,
   widthClass.value,
   {
-    'hover:scale-105': !props.disabled && !props.loading,
-    'active:scale-95': !props.disabled && !props.loading
+    'gradient-button--hover': !props.disabled && !props.loading,
+    'gradient-button--disabled': props.disabled || props.loading
   }
 ])
 
@@ -152,3 +150,61 @@ function handleClick(event: MouseEvent) {
   }
 }
 </script>
+
+<style scoped>
+.gradient-button-base {
+  @apply inline-flex items-center justify-center font-bold rounded-full transition-all duration-300 transform focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900;
+}
+
+.gradient-button--hover:not(.gradient-button--disabled) {
+  @apply hover:scale-105 active:scale-95;
+}
+
+.gradient-button--disabled {
+  @apply opacity-50 cursor-not-allowed;
+}
+
+.gradient-button--primary {
+  @apply bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-500 hover:to-blue-600 focus:ring-blue-500 border border-blue-500/30 shadow-lg shadow-blue-500/20 hover:shadow-blue-500/30;
+}
+
+.gradient-button--secondary {
+  @apply bg-gradient-to-r from-purple-600 to-purple-700 text-white hover:from-purple-500 hover:to-purple-600 focus:ring-purple-500 border border-purple-500/30 shadow-lg shadow-purple-500/20 hover:shadow-purple-500/30;
+}
+
+.gradient-button--outline {
+  @apply bg-transparent border-2 border-purple-500/70 text-purple-400 hover:bg-purple-500 hover:text-white hover:border-purple-400 focus:ring-purple-500 shadow-lg shadow-purple-500/10 hover:shadow-purple-500/25;
+}
+
+.gradient-button--ghost {
+  @apply bg-gray-800/60 backdrop-blur-sm text-gray-300 border border-gray-700/50 hover:bg-gray-700 hover:text-white hover:border-gray-600/50 focus:ring-gray-500;
+}
+
+.gradient-button--sm {
+  @apply px-4 py-2 text-sm;
+}
+
+.gradient-button--md {
+  @apply px-8 py-4 text-lg;
+}
+
+.gradient-button--lg {
+  @apply px-10 py-5 text-xl;
+}
+
+.gradient-button-content {
+  @apply flex items-center justify-center gap-2;
+}
+
+.gradient-button-spinner {
+  @apply animate-spin rounded-full border-b-2 border-current;
+}
+
+.gradient-button-emoji {
+  @apply text-lg;
+}
+
+.gradient-button-arrow {
+  @apply transition-transform duration-200 group-hover:translate-x-1;
+}
+</style>

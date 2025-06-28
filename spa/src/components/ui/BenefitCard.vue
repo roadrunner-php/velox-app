@@ -1,8 +1,8 @@
 <template>
-  <div class="text-center group">
+  <div class="benefit-card">
     <!-- Icon Container -->
     <div 
-      class="mx-auto mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg"
+      class="benefit-card-icon-container"
       :class="[
         iconContainerClasses,
         sizeClasses
@@ -12,7 +12,7 @@
       <slot name="icon">
         <!-- Default icon based on type -->
         <svg 
-          class="text-white"
+          class="benefit-card-icon text-white"
           :class="iconSizeClasses"
           fill="none" 
           stroke="currentColor" 
@@ -30,7 +30,7 @@
 
     <!-- Title -->
     <h3 
-      class="font-bold text-white mb-4"
+      class="benefit-card-title"
       :class="titleSizeClasses"
     >
       {{ title }}
@@ -38,30 +38,30 @@
 
     <!-- Description -->
     <p 
-      class="text-gray-300 leading-relaxed"
+      class="benefit-card-description"
       :class="descriptionSizeClasses"
     >
       {{ description }}
     </p>
 
     <!-- Additional Content Slot -->
-    <div v-if="$slots.content" class="mt-4">
+    <div v-if="$slots.content" class="benefit-card-content">
       <slot name="content"></slot>
     </div>
 
     <!-- Action Button -->
-    <div v-if="actionText && (actionHref || actionTo)" class="mt-6">
+    <div v-if="actionText && (actionHref || actionTo)" class="benefit-card-action">
       <component
         :is="actionComponent"
         :href="actionHref"
         :to="actionTo"
-        class="inline-flex items-center text-sm font-medium transition-colors duration-200 hover:underline"
+        class="benefit-card-action-link"
         :class="actionClasses"
         :target="actionHref ? '_blank' : undefined"
         :rel="actionHref ? 'noopener noreferrer' : undefined"
       >
         {{ actionText }}
-        <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg class="benefit-card-action-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path 
             stroke-linecap="round" 
             stroke-linejoin="round" 
@@ -73,9 +73,9 @@
     </div>
 
     <!-- Badge -->
-    <div v-if="badge" class="mt-4">
+    <div v-if="badge" class="benefit-card-badge-container">
       <span 
-        class="inline-flex items-center px-3 py-1 text-xs font-medium rounded-full border"
+        class="benefit-card-badge"
         :class="badgeClasses"
       >
         {{ badge }}
@@ -151,7 +151,7 @@ const iconContainerClasses = computed(() => {
     indigo: 'bg-gradient-to-br from-indigo-400 to-indigo-600 shadow-indigo-500/20'
   }
 
-  return `${variantClasses[props.variant]} rounded-2xl flex items-center justify-center`
+  return `${variantClasses[props.variant]} benefit-card-icon-base`
 })
 
 const actionClasses = computed(() => {
@@ -194,3 +194,49 @@ const defaultIconPath = computed(() => {
   return iconPaths[props.iconType]
 })
 </script>
+
+<style scoped>
+.benefit-card {
+  @apply text-center;
+}
+
+.benefit-card-icon-container {
+  @apply mx-auto mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg;
+}
+
+.benefit-card-icon-base {
+  @apply rounded-2xl flex items-center justify-center;
+}
+
+.benefit-card-title {
+  @apply font-bold text-white mb-4;
+}
+
+.benefit-card-description {
+  @apply text-gray-300 leading-relaxed;
+}
+
+.benefit-card-content {
+  @apply mt-4;
+}
+
+.benefit-card-action {
+  @apply mt-6;
+}
+
+.benefit-card-action-link {
+  @apply inline-flex items-center text-sm font-medium transition-colors duration-200 hover:underline;
+}
+
+.benefit-card-action-icon {
+  @apply w-4 h-4 ml-1;
+}
+
+.benefit-card-badge-container {
+  @apply mt-4;
+}
+
+.benefit-card-badge {
+  @apply inline-flex items-center px-3 py-1 text-xs font-medium rounded-full border;
+}
+</style>

@@ -1,18 +1,18 @@
 <template>
-  <section class="py-16 relative" :class="sectionClasses">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+  <section class="statistics-section" :class="sectionClasses">
+    <div class="statistics-container">
       <!-- Section Header -->
-      <div v-if="title || subtitle" class="text-center mb-12">
-        <h2 v-if="title" class="text-2xl sm:text-3xl font-bold text-white mb-4">
+      <div v-if="title || subtitle" class="statistics-header">
+        <h2 v-if="title" class="statistics-title">
           {{ title }}
         </h2>
-        <p v-if="subtitle" class="text-gray-300 max-w-2xl mx-auto">
+        <p v-if="subtitle" class="statistics-subtitle">
           {{ subtitle }}
         </p>
       </div>
 
       <!-- Statistics Grid -->
-      <div class="grid grid-cols-2 lg:grid-cols-4 gap-8">
+      <div class="statistics-grid">
         <StatCounter
           v-for="stat in statistics"
           :key="stat.id || stat.label"
@@ -29,7 +29,7 @@
       </div>
 
       <!-- Additional Content Slot -->
-      <div v-if="$slots.content" class="mt-12">
+      <div v-if="$slots.content" class="statistics-additional-content">
         <slot name="content"></slot>
       </div>
     </div>
@@ -124,3 +124,33 @@ defineExpose({
   },
 })
 </script>
+
+<style scoped>
+.statistics-section {
+  @apply py-16 relative;
+}
+
+.statistics-container {
+  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+}
+
+.statistics-header {
+  @apply text-center mb-12;
+}
+
+.statistics-title {
+  @apply text-2xl sm:text-3xl font-bold text-white mb-4;
+}
+
+.statistics-subtitle {
+  @apply text-gray-300 max-w-2xl mx-auto;
+}
+
+.statistics-grid {
+  @apply grid grid-cols-2 lg:grid-cols-4 gap-8;
+}
+
+.statistics-additional-content {
+  @apply mt-12;
+}
+</style>

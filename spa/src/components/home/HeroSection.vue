@@ -1,5 +1,5 @@
 <template>
-  <section class="relative overflow-hidden" :class="sectionClasses">
+  <section class="hero-section" :class="sectionClasses">
     <!-- Background -->
     <AnimatedBackground
       v-if="showBackground"
@@ -9,35 +9,33 @@
     />
 
     <!-- Content Container -->
-    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 sm:py-32">
-      <div class="text-center">
+    <div class="hero-container">
+      <div class="hero-content">
         <!-- Main Headline with Animation -->
         <h1
-          class="text-4xl sm:text-6xl lg:text-7xl font-bold text-white mb-6"
+          class="hero-title"
           :class="headlineAnimation"
         >
           {{ mainTitle }}
-          <span
-            class="bg-gradient-to-r from-blue-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent animate-gradient-x"
-          >
+          <span class="hero-title-highlight">
             {{ highlightTitle }}
           </span>
         </h1>
 
         <!-- Subtitle -->
         <p
-          class="text-xl sm:text-2xl text-gray-300 my-16 max-w-4xl mx-auto leading-relaxed"
+          class="hero-subtitle"
           :class="subtitleAnimation"
         >
           {{ subtitle }}
-          <span v-if="subtitleHighlight" class="text-cyan-400 font-semibold">
+          <span v-if="subtitleHighlight" class="hero-subtitle-highlight">
             {{ subtitleHighlight }}
           </span>
         </p>
 
         <!-- CTA Buttons -->
         <div
-          class="flex flex-col sm:flex-row gap-4 justify-center items-center"
+          class="hero-cta-buttons"
           :class="ctaAnimation"
         >
           <GradientButton
@@ -60,11 +58,11 @@
         </div>
 
         <!-- Key Benefits Pills -->
-        <div class="flex flex-wrap justify-center gap-3 mt-12" :class="benefitsAnimation">
+        <div class="hero-benefits" :class="benefitsAnimation">
           <span
             v-for="benefit in benefits"
             :key="benefit"
-            class="px-4 py-2 bg-gray-800/60 backdrop-blur-sm text-gray-300 rounded-full text-sm font-medium border border-gray-700/50 hover:border-gray-600/50 transition-colors"
+            class="hero-benefit-pill"
           >
             {{ benefit }}
           </span>
@@ -75,9 +73,9 @@
     <!-- Scroll Indicator -->
     <div
       v-if="showScrollIndicator"
-      class="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce"
+      class="hero-scroll-indicator"
     >
-      <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg class="hero-scroll-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path
           stroke-linecap="round"
           stroke-linejoin="round"
@@ -165,3 +163,53 @@ const benefitsAnimation = computed(() =>
   props.reducedMotion ? '' : 'animate-fade-in-up animation-delay-600',
 )
 </script>
+
+<style scoped>
+.hero-section {
+  @apply relative overflow-hidden;
+}
+
+.hero-container {
+  @apply relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 sm:py-32;
+}
+
+.hero-content {
+  @apply text-center;
+}
+
+.hero-title {
+  @apply text-4xl sm:text-6xl lg:text-7xl font-bold text-white mb-6;
+}
+
+.hero-title-highlight {
+  @apply bg-gradient-to-r from-blue-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent;
+}
+
+.hero-subtitle {
+  @apply text-xl sm:text-2xl text-gray-300 my-16 max-w-4xl mx-auto leading-relaxed;
+}
+
+.hero-subtitle-highlight {
+  @apply text-cyan-400 font-semibold;
+}
+
+.hero-cta-buttons {
+  @apply flex flex-col sm:flex-row gap-4 justify-center items-center;
+}
+
+.hero-benefits {
+  @apply flex flex-wrap justify-center gap-3 mt-12;
+}
+
+.hero-benefit-pill {
+  @apply px-4 py-2 bg-gray-800/60 backdrop-blur-sm text-gray-300 rounded-full text-sm font-medium border border-gray-700/50 hover:border-gray-600/50 transition-colors;
+}
+
+.hero-scroll-indicator {
+  @apply absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce;
+}
+
+.hero-scroll-icon {
+  @apply w-6 h-6 text-gray-400;
+}
+</style>

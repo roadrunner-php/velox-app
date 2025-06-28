@@ -1,28 +1,26 @@
 <template>
-  <div
-    class="bg-gradient-to-br from-gray-800/60 to-gray-900/40 border border-gray-700/50 rounded-2xl p-8 mb-8 backdrop-blur-sm"
-  >
+  <div class="plugin-details-header">
     <!-- Plugin Header with Status -->
-    <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
+    <div class="plugin-header">
       <!-- Left Section: Plugin Info -->
-      <div class="flex-1">
+      <div class="plugin-info">
         <!-- Plugin Name & Badges -->
-        <div class="flex items-start gap-4 mb-4">
-          <div class="flex-1">
+        <div class="plugin-name-section">
+          <div class="plugin-badges-container">
             <!-- Badges Row -->
-            <div class="flex flex-wrap gap-2 mb-4">
+            <div class="plugin-badges">
               <!-- Official/Community Badge -->
               <span
-                class="inline-flex items-center gap-1 px-3 py-1 text-sm font-medium rounded-full border"
+                class="plugin-badge"
                 :class="
                   plugin.is_official
-                    ? 'bg-emerald-900/20 text-emerald-300 border-emerald-500/30'
-                    : 'bg-gray-700/60 text-gray-300 border-gray-600/50'
+                    ? 'plugin-badge--official'
+                    : 'plugin-badge--community'
                 "
               >
                 <svg
                   v-if="plugin.is_official"
-                  class="w-4 h-4"
+                  class="plugin-badge-icon"
                   fill="currentColor"
                   viewBox="0 0 20 20"
                 >
@@ -32,7 +30,7 @@
                     clip-rule="evenodd"
                   />
                 </svg>
-                <svg v-else class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg v-else class="plugin-badge-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
                     stroke-linecap="round"
                     stroke-linejoin="round"
@@ -46,33 +44,31 @@
               <!-- Category Badge -->
               <span
                 v-if="plugin.category"
-                class="px-3 py-1 text-sm font-medium bg-blue-900/20 text-blue-300 border border-blue-500/30 rounded-full"
+                class="plugin-badge plugin-badge--category"
               >
                 {{ plugin.category }}
               </span>
 
               <!-- Version Badge -->
-              <span
-                class="px-3 py-1 text-sm font-medium bg-purple-900/20 text-purple-300 border border-purple-500/30 rounded-full"
-              >
+              <span class="plugin-badge plugin-badge--version">
                 {{ plugin.version }}
               </span>
 
               <!-- Selection Status Badge -->
               <span
                 v-if="selectionState !== 'none'"
-                class="px-3 py-1 text-sm font-bold rounded-full border"
+                class="plugin-badge plugin-badge--selection"
                 :class="selectionStatusClasses"
               >
                 {{ selectionStatusText }}
               </span>
             </div>
-            <h1 class="text-3xl font-bold text-white mb-2">
+            <h1 class="plugin-title">
               {{ plugin.name }}
             </h1>
 
             <!-- Description -->
-            <p class="text-gray-300 text-lg leading-relaxed">
+            <p class="plugin-description">
               {{ plugin.description || 'No description available' }}
             </p>
           </div>
@@ -80,34 +76,32 @@
       </div>
 
       <!-- Right Section: Actions -->
-      <div class="flex flex-col gap-3 lg:min-w-[200px]">
+      <div class="plugin-actions">
         <!-- Primary Action Button -->
         <button
           @click="$emit('toggleSelection')"
           :disabled="isLoadingDependencies"
-          class="w-full px-6 py-3 font-semibold rounded-xl transition-all duration-200 border flex items-center justify-center gap-2"
+          class="primary-action-button"
           :class="primaryActionClasses"
         >
           <div
             v-if="isLoadingDependencies"
-            class="animate-spin rounded-full h-4 w-4 border-b-2 border-current"
+            class="primary-action-loading"
           ></div>
           <span>{{ primaryActionText }}</span>
         </button>
       </div>
     </div>
 
-    <div class="space-y-3">
+    <div class="plugin-links">
       <a
         v-if="plugin.repository_url"
         :href="plugin.repository_url"
         target="_blank"
         rel="noopener noreferrer"
-        class="flex items-center gap-3 p-4 bg-gray-900/40 rounded-lg border border-gray-700/30 hover:border-gray-600/50 transition-all duration-200 group"
+        class="repository-link"
       >
-        <div
-          class="w-10 h-10 bg-blue-900/30 rounded-lg flex items-center justify-center group-hover:bg-blue-800/40 transition-colors"
-        >
+        <div class="repository-link-icon">
           <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
               stroke-linecap="round"
@@ -117,16 +111,16 @@
             />
           </svg>
         </div>
-        <div class="flex-1 min-w-0">
-          <div class="font-medium text-white group-hover:text-blue-300 transition-colors">
+        <div class="repository-link-content">
+          <div class="repository-link-title">
             View Repository
           </div>
-          <div class="text-sm text-gray-400 truncate">
+          <div class="repository-link-url">
             {{ plugin.repository_url }}
           </div>
         </div>
         <svg
-          class="w-4 h-4 text-gray-400 group-hover:text-white transition-colors"
+          class="repository-link-arrow"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -168,11 +162,11 @@ const dependencyCount = computed(() => props.plugin.dependencies?.length || 0)
 const selectionStatusClasses = computed(() => {
   switch (props.selectionState) {
     case 'manual':
-      return 'bg-gradient-to-r from-blue-500 to-blue-600 text-white border-blue-400/50'
+      return 'plugin-badge--manual'
     case 'dependency':
-      return 'bg-gradient-to-r from-green-500 to-green-600 text-white border-green-400/50'
+      return 'plugin-badge--auto'
     case 'conflict':
-      return 'bg-gradient-to-r from-red-500 to-red-600 text-white border-red-400/50'
+      return 'plugin-badge--conflict'
     default:
       return ''
   }
@@ -195,10 +189,10 @@ const primaryActionClasses = computed(() => {
   const isSelected = props.selectionState !== 'none'
 
   if (isSelected) {
-    return 'bg-gray-700/50 text-gray-300 hover:bg-gray-600/50 border-gray-600/50 hover:border-gray-500/70'
+    return 'primary-action-button--deselect'
   }
 
-  return 'bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-500 hover:to-blue-600 border-blue-500/50 shadow-lg shadow-blue-500/20 hover:shadow-blue-500/30'
+  return 'primary-action-button--select'
 })
 
 const primaryActionText = computed(() => {
@@ -209,3 +203,125 @@ const primaryActionText = computed(() => {
   return props.selectionState !== 'none' ? 'Deselect Plugin' : 'Select Plugin'
 })
 </script>
+
+<style scoped>
+.plugin-details-header {
+  @apply bg-gradient-to-br from-gray-800/60 to-gray-900/40 border border-gray-700/50 rounded-2xl p-8 mb-8 backdrop-blur-sm;
+}
+
+.plugin-header {
+  @apply flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6;
+}
+
+.plugin-info {
+  @apply flex-1;
+}
+
+.plugin-name-section {
+  @apply flex items-start gap-4;
+}
+
+.plugin-badges-container {
+  @apply flex-1;
+}
+
+.plugin-badges {
+  @apply flex flex-wrap gap-2 mb-4;
+}
+
+.plugin-badge {
+  @apply inline-flex items-center gap-1 px-3 py-1 text-sm font-medium rounded-full border;
+}
+
+.plugin-badge--official {
+  @apply bg-emerald-900/20 text-emerald-300 border-emerald-500/30;
+}
+
+.plugin-badge--community {
+  @apply bg-gray-700/60 text-gray-300 border-gray-600/50;
+}
+
+.plugin-badge--category {
+  @apply bg-blue-900/20 text-blue-300 border-blue-500/30;
+}
+
+.plugin-badge--version {
+  @apply bg-purple-900/20 text-purple-300 border-purple-500/30;
+}
+
+.plugin-badge--selection {
+  @apply font-bold border;
+}
+
+.plugin-badge--manual {
+  @apply bg-gradient-to-r from-blue-500 to-blue-600 text-white border-blue-400/50;
+}
+
+.plugin-badge--auto {
+  @apply bg-gradient-to-r from-green-500 to-green-600 text-white border-green-400/50;
+}
+
+.plugin-badge--conflict {
+  @apply bg-gradient-to-r from-red-500 to-red-600 text-white border-red-400/50;
+}
+
+.plugin-badge-icon {
+  @apply w-4 h-4;
+}
+
+.plugin-title {
+  @apply text-3xl font-bold text-white mb-2;
+}
+
+.plugin-description {
+  @apply text-gray-300 text-lg leading-relaxed;
+}
+
+.plugin-actions {
+  @apply flex flex-col gap-3 lg:min-w-[200px];
+}
+
+.primary-action-button {
+  @apply w-full px-6 py-3 font-semibold rounded-xl transition-all duration-200 border flex items-center justify-center gap-2;
+}
+
+.primary-action-button--select {
+  @apply bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-500 hover:to-blue-600 border-blue-500/50 shadow-lg shadow-blue-500/20 hover:shadow-blue-500/30;
+}
+
+.primary-action-button--deselect {
+  @apply bg-gray-700/50 text-gray-300 hover:bg-gray-600/50 border-gray-600/50 hover:border-gray-500/70;
+}
+
+.primary-action-loading {
+  @apply animate-spin rounded-full h-4 w-4 border-b-2 border-current;
+}
+
+.plugin-links {
+  @apply space-y-3;
+}
+
+.repository-link {
+  @apply flex items-center gap-3 p-4 bg-gray-900/40 rounded-lg border border-gray-700/30 hover:border-gray-600/50 transition-all duration-200 group;
+}
+
+.repository-link-icon {
+  @apply w-10 h-10 bg-blue-900/30 rounded-lg flex items-center justify-center group-hover:bg-blue-800/40 transition-colors;
+}
+
+.repository-link-content {
+  @apply flex-1 min-w-0;
+}
+
+.repository-link-title {
+  @apply font-medium text-white group-hover:text-blue-300 transition-colors;
+}
+
+.repository-link-url {
+  @apply text-sm text-gray-400 truncate;
+}
+
+.repository-link-arrow {
+  @apply w-4 h-4 text-gray-400 group-hover:text-white transition-colors;
+}
+</style>

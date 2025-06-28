@@ -1,7 +1,7 @@
 <template>
-  <div class="absolute inset-0" :style="{ opacity: opacity }">
+  <div class="geometric-patterns" :style="{ opacity: opacity }">
     <svg
-      class="w-full h-full"
+      class="geometric-patterns-svg"
       viewBox="0 0 1200 800"
       xmlns="http://www.w3.org/2000/svg"
       aria-hidden="true"
@@ -28,7 +28,7 @@
         </linearGradient>
       </defs>
 
-      <g class="animate-pulse" :class="{ 'animate-none': disabled }">
+      <g class="geometric-lines" :class="{ 'animate-none': disabled }">
         <!-- Main pattern lines -->
         <line
           v-for="line in mainLines"
@@ -124,3 +124,17 @@ const secondaryLines = computed<GeometricLine[]>(() => {
   ]
 })
 </script>
+
+<style scoped>
+.geometric-patterns {
+  @apply absolute inset-0;
+}
+
+.geometric-patterns-svg {
+  @apply w-full h-full;
+}
+
+.geometric-lines {
+  @apply animate-pulse;
+}
+</style>

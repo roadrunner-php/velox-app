@@ -303,7 +303,7 @@ watch(isHovered, (hovered) => {
 
 <style scoped>
 .plugin-card {
-  @apply relative p-6 rounded-2xl shadow-xl transition-all duration-300 cursor-pointer group border backdrop-blur-sm;
+  @apply relative p-6 rounded-2xl shadow-xl transition-all duration-300 cursor-pointer border backdrop-blur-sm;
   @apply flex flex-col justify-between transform hover:-translate-y-1;
 }
 

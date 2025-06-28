@@ -1,25 +1,23 @@
 <template>
-  <section class="py-20 relative overflow-hidden" :class="sectionClasses">
+  <section class="benefits-section" :class="sectionClasses">
     <!-- Background Pattern -->
-    <div v-if="showBackground" class="absolute inset-0 opacity-10">
-      <div
-        class="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-blue-400/10 to-purple-400/10"
-      ></div>
+    <div v-if="showBackground" class="benefits-background">
+      <div class="benefits-gradient"></div>
     </div>
 
-    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="benefits-container">
       <!-- Section Header -->
-      <div class="text-center mb-16">
-        <h2 class="text-3xl sm:text-4xl font-bold text-white mb-4">
+      <div class="benefits-header">
+        <h2 class="benefits-title">
           {{ title }}
         </h2>
-        <p v-if="subtitle" class="text-xl text-gray-300 max-w-3xl mx-auto">
+        <p v-if="subtitle" class="benefits-subtitle">
           {{ subtitle }}
         </p>
       </div>
 
       <!-- Benefits Grid -->
-      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div class="benefits-grid">
         <BenefitCard
           v-for="benefit in benefits"
           :key="benefit.id || benefit.title"
@@ -46,7 +44,7 @@
       </div>
 
       <!-- Additional Content Slot -->
-      <div v-if="$slots.content" class="mt-16">
+      <div v-if="$slots.content" class="benefits-additional-content">
         <slot name="content"></slot>
       </div>
     </div>
@@ -174,3 +172,41 @@ const sectionClasses = computed(() => {
   return variantClasses[props.variant]
 })
 </script>
+
+<style scoped>
+.benefits-section {
+  @apply py-20 relative overflow-hidden;
+}
+
+.benefits-background {
+  @apply absolute inset-0 opacity-10;
+}
+
+.benefits-gradient {
+  @apply absolute top-0 left-0 w-full h-full bg-gradient-to-r from-blue-400/10 to-purple-400/10;
+}
+
+.benefits-container {
+  @apply relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+}
+
+.benefits-header {
+  @apply text-center mb-16;
+}
+
+.benefits-title {
+  @apply text-3xl sm:text-4xl font-bold text-white mb-4;
+}
+
+.benefits-subtitle {
+  @apply text-xl text-gray-300 max-w-3xl mx-auto;
+}
+
+.benefits-grid {
+  @apply grid md:grid-cols-2 lg:grid-cols-3 gap-8;
+}
+
+.benefits-additional-content {
+  @apply mt-16;
+}
+</style>

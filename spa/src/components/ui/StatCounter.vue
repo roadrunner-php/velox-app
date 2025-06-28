@@ -1,12 +1,12 @@
 <template>
-  <div class="text-center group">
+  <div class="stat-counter">
     <div
-      class="transition-transform duration-300 group-hover:scale-110 mb-2"
+      class="stat-counter-value"
       :class="[valueClasses, animationClass]"
     >
       {{ displayValue }}{{ suffix }}
     </div>
-    <div class="text-gray-400 font-medium">
+    <div class="stat-counter-label">
       {{ label }}
     </div>
   </div>
@@ -55,7 +55,7 @@ const valueClasses = computed(() => {
     yellow: 'text-yellow-400',
   }
 
-  return ['font-bold', sizeClasses[props.size], colorClasses[props.color]]
+  return ['stat-counter-value-base', sizeClasses[props.size], colorClasses[props.color]]
 })
 
 const animationClass = computed(() => {
@@ -128,3 +128,21 @@ defineExpose({
   },
 })
 </script>
+
+<style scoped>
+.stat-counter {
+  @apply text-center;
+}
+
+.stat-counter-value {
+  @apply transition-transform duration-300 group-hover:scale-110 mb-2;
+}
+
+.stat-counter-value-base {
+  @apply font-bold;
+}
+
+.stat-counter-label {
+  @apply text-gray-400 font-medium;
+}
+</style>
