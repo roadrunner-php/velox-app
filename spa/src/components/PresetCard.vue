@@ -181,13 +181,6 @@
       >
         {{ isSelected ? 'Deselect' : 'Select' }}
       </button>
-
-      <button
-        @click.stop="handleViewDetails"
-        class="preset-card__action-button preset-card__action-button--details"
-      >
-        Details
-      </button>
     </div>
   </div>
 </template>
