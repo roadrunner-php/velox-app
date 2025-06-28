@@ -1,21 +1,21 @@
 <template>
-  <div class="space-y-6">
+  <div class="filter-tags">
     <!-- Filter Tags Section -->
     <div v-if="tags.length > 0">
-      <div class="flex items-center justify-between mb-4">
-        <h2 class="text-xl font-semibold text-white">
+      <div class="filter-tags__header">
+        <h2 class="filter-tags__title">
           {{ title }}
         </h2>
         <button
           v-if="activeTags.length > 0 && showClearButton"
           @click="$emit('clearAll')"
-          class="text-sm text-slate-400 hover:text-white font-medium transition-colors duration-200 bg-slate-800/40 hover:bg-slate-700/60 px-3 py-1 rounded-lg border border-slate-600/50"
+          class="filter-tags__clear-button"
         >
           Clear All ({{ activeTags.length }})
         </button>
       </div>
       
-      <div class="flex flex-wrap gap-2">
+      <div class="filter-tags__list">
         <CategoryTag
           v-for="tag in tags"
           :key="getTagValue(tag)"
@@ -28,13 +28,13 @@
     </div>
 
     <!-- No Tags Available State -->
-    <div v-else-if="showEmptyState" class="text-center py-8">
-      <div class="text-slate-500 mb-4">
-        <svg class="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <div v-else-if="showEmptyState" class="filter-tags__empty">
+      <div class="filter-tags__empty-icon">
+        <svg class="filter-tags__empty-icon-svg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
         </svg>
       </div>
-      <p class="text-slate-400">
+      <p class="filter-tags__empty-text">
         {{ emptyStateMessage }}
       </p>
     </div>
@@ -91,50 +91,40 @@ function handleTagClick(value: Tag | PluginCategory): void {
 </script>
 
 <style scoped>
-/* Focus styles for accessibility */
-button:focus-visible {
-  outline: 2px solid #3b82f6;
-  outline-offset: 2px;
+.filter-tags {
+  @apply space-y-6;
 }
 
-/* Smooth transitions */
-.transition-colors {
-  transition-property: color, background-color, border-color;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 200ms;
+.filter-tags__header {
+  @apply flex items-center justify-between mb-4;
 }
 
-/* Enhanced hover effects */
-button:hover {
-  transform: translateY(-1px);
+.filter-tags__title {
+  @apply text-xl font-semibold text-white;
 }
 
-button:active {
-  transform: scale(0.98);
+.filter-tags__clear-button {
+  @apply text-sm text-slate-400 hover:text-white font-medium transition-colors duration-200;
+  @apply bg-slate-800/40 hover:bg-slate-700/60 px-3 py-1 rounded-lg border border-slate-600/50;
 }
 
-/* Responsive design */
-@media (max-width: 640px) {
-  .flex-wrap {
-    gap: 0.375rem;
-  }
-  
-  .text-xl {
-    font-size: 1.125rem;
-  }
+.filter-tags__list {
+  @apply flex flex-wrap gap-2;
 }
 
-/* Empty state animation */
-.text-slate-500 svg {
-  animation: float 3s ease-in-out infinite;
+.filter-tags__empty {
+  @apply text-center py-8;
 }
 
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-5px);
-  }
+.filter-tags__empty-icon {
+  @apply text-slate-500 mb-4;
+}
+
+.filter-tags__empty-icon-svg {
+  @apply w-12 h-12 mx-auto;
+}
+
+.filter-tags__empty-text {
+  @apply text-slate-400;
 }
 </style>

@@ -1,21 +1,18 @@
 <template>
-  <section 
-    class="py-16 relative"
-    :class="sectionClasses"
-  >
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+  <section class="statistics-section" :class="sectionClasses">
+    <div class="statistics-container">
       <!-- Section Header -->
-      <div v-if="title || subtitle" class="text-center mb-12">
-        <h2 v-if="title" class="text-2xl sm:text-3xl font-bold text-white mb-4">
+      <div v-if="title || subtitle" class="statistics-header">
+        <h2 v-if="title" class="statistics-title">
           {{ title }}
         </h2>
-        <p v-if="subtitle" class="text-gray-300 max-w-2xl mx-auto">
+        <p v-if="subtitle" class="statistics-subtitle">
           {{ subtitle }}
         </p>
       </div>
 
       <!-- Statistics Grid -->
-      <div class="grid grid-cols-2 lg:grid-cols-4 gap-8">
+      <div class="statistics-grid">
         <StatCounter
           v-for="stat in statistics"
           :key="stat.id || stat.label"
@@ -32,7 +29,7 @@
       </div>
 
       <!-- Additional Content Slot -->
-      <div v-if="$slots.content" class="mt-12">
+      <div v-if="$slots.content" class="statistics-additional-content">
         <slot name="content"></slot>
       </div>
     </div>
@@ -72,7 +69,7 @@ const props = withDefaults(defineProps<Props>(), {
       label: 'Available Plugins',
       suffix: '+',
       color: 'blue',
-      delay: 0
+      delay: 0,
     },
     {
       id: 'presets',
@@ -80,7 +77,7 @@ const props = withDefaults(defineProps<Props>(), {
       label: 'Ready Presets',
       suffix: '+',
       color: 'green',
-      delay: 200
+      delay: 200,
     },
     {
       id: 'deployments',
@@ -88,7 +85,7 @@ const props = withDefaults(defineProps<Props>(), {
       label: 'Deployments',
       suffix: 'K+',
       color: 'purple',
-      delay: 400
+      delay: 400,
     },
     {
       id: 'performance',
@@ -96,21 +93,21 @@ const props = withDefaults(defineProps<Props>(), {
       label: 'Faster Setup',
       suffix: '%',
       color: 'cyan',
-      delay: 600
-    }
+      delay: 600,
+    },
   ],
   variant: 'default',
   counterSize: 'md',
   animationDuration: 2000,
   animateOnMount: true,
-  startAnimation: false
+  startAnimation: false,
 })
 
 const sectionClasses = computed(() => {
   const variantClasses = {
     default: 'bg-gray-900/80 backdrop-blur-sm border-t border-gray-800/50',
     transparent: 'bg-transparent',
-    dark: 'bg-gray-900 border-t border-gray-800'
+    dark: 'bg-gray-900 border-t border-gray-800',
   }
 
   return variantClasses[props.variant]
@@ -124,81 +121,36 @@ defineExpose({
   },
   resetCounters: () => {
     // Reset all counters - could be implemented if needed
-  }
+  },
 })
 </script>
 
 <style scoped>
-/* Backdrop blur support */
-.backdrop-blur-sm {
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
+.statistics-section {
+  @apply py-16 relative;
 }
 
-/* Grid responsive improvements */
-.grid {
-  gap: 2rem;
+.statistics-container {
+  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
 }
 
-@media (max-width: 640px) {
-  .grid {
-    gap: 1.5rem;
-  }
-  
-  .grid-cols-2 {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
+.statistics-header {
+  @apply text-center mb-12;
 }
 
-@media (min-width: 1024px) {
-  .lg\:grid-cols-4 {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
+.statistics-title {
+  @apply text-2xl sm:text-3xl font-bold text-white mb-4;
 }
 
-/* Section animations */
-.section-animate {
-  animation: fadeIn 0.8s ease-out;
+.statistics-subtitle {
+  @apply text-gray-300 max-w-2xl mx-auto;
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.statistics-grid {
+  @apply grid grid-cols-2 lg:grid-cols-4 gap-8;
 }
 
-/* Enhanced visual separation */
-.border-t {
-  border-top-width: 1px;
-}
-
-/* Focus management for accessibility */
-.grid:focus-within {
-  outline: 2px solid #3b82f6;
-  outline-offset: 4px;
-  border-radius: 0.5rem;
-}
-
-/* Responsive text sizing */
-@media (max-width: 640px) {
-  .text-2xl {
-    font-size: 1.5rem;
-  }
-  
-  .text-3xl {
-    font-size: 1.875rem;
-  }
-}
-
-/* Reduced motion support */
-@media (prefers-reduced-motion: reduce) {
-  .section-animate {
-    animation: none;
-  }
+.statistics-additional-content {
+  @apply mt-12;
 }
 </style>

@@ -1,23 +1,23 @@
 <template>
   <div
-    class="group relative overflow-hidden transition-all duration-500 transform hover:-translate-y-2"
+    class="feature-card"
     :class="[cardClasses, sizeClasses]"
   >
     <!-- Top accent line -->
-    <div class="absolute top-0 left-0 w-full h-1" :class="accentClasses"></div>
+    <div class="feature-card-accent" :class="accentClasses"></div>
 
     <!-- Card Content -->
     <div :class="paddingClasses">
       <!-- Icon Section -->
       <div
-        class="flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg"
+        class="feature-card-icon-container"
         :class="[iconContainerClasses, iconSizeClasses]"
       >
         <!-- Slot for custom icon -->
         <slot name="icon">
           <!-- Default icon if none provided -->
           <svg
-            class="text-white"
+            class="feature-card-icon text-white"
             :class="iconClasses"
             fill="none"
             stroke="currentColor"
@@ -34,28 +34,28 @@
       </div>
 
       <!-- Title -->
-      <h3 class="font-bold text-white mb-4" :class="titleSizeClasses">
+      <h3 class="feature-card-title" :class="titleSizeClasses">
         {{ title }}
       </h3>
 
       <!-- Description -->
-      <p class="text-gray-300 leading-relaxed" :class="descriptionSizeClasses">
+      <p class="feature-card-description" :class="descriptionSizeClasses">
         {{ description }}
       </p>
 
       <!-- Link/Button Section -->
-      <div v-if="linkText && (href || to)" class="mt-6">
+      <div v-if="linkText && (href || to)" class="feature-card-link-section">
         <component
           :is="linkComponent"
           :href="href"
           :to="to"
-          class="inline-flex items-center justify-center w-full px-6 py-3 font-semibold rounded-xl transition-all duration-300 group-hover:shadow-lg border"
+          class="feature-card-link"
           :class="linkClasses"
           :target="href ? '_blank' : undefined"
           :rel="href ? 'noopener noreferrer' : undefined"
         >
           {{ linkText }}
-          <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="feature-card-link-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
               stroke-linecap="round"
               stroke-linejoin="round"
@@ -67,9 +67,9 @@
       </div>
 
       <!-- Badge/Tag Section -->
-      <div v-if="badge" class="absolute top-3 right-3 z-10">
+      <div v-if="badge" class="feature-card-badge-container">
         <span
-          class="px-2 py-1 text-xs font-medium rounded-full backdrop-blur-sm border"
+          class="feature-card-badge"
           :class="badgeClasses"
         >
           {{ badge }}
@@ -79,7 +79,7 @@
 
     <!-- Hover overlay effect -->
     <div
-      class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+      class="feature-card-hover-overlay"
       :class="hoverOverlayClasses"
     ></div>
   </div>
@@ -111,7 +111,7 @@ const linkComponent = computed(() => {
 })
 
 const cardClasses = computed(() => {
-  const base = 'bg-gray-800/40 backdrop-blur-sm rounded-2xl shadow-2xl border border-gray-700/30'
+  const base = 'feature-card-base'
 
   const variantClasses = {
     default: 'hover:shadow-gray-900/50 hover:border-gray-600/70',
@@ -159,7 +159,7 @@ const iconContainerClasses = computed(() => {
     indigo: 'bg-gradient-to-br from-indigo-400 to-indigo-600',
   }
 
-  return `${variantClasses[props.variant]} rounded-2xl`
+  return `${variantClasses[props.variant]} feature-card-icon-base`
 })
 
 const iconSizeClasses = computed(() => {
@@ -282,70 +282,55 @@ const defaultIconPath = computed(() => {
 </script>
 
 <style scoped>
-/* Enhanced shadow effects */
-.shadow-2xl {
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+.feature-card {
+  @apply relative overflow-hidden transition-all duration-500 transform hover:-translate-y-2;
 }
 
-/* Backdrop blur support */
-.backdrop-blur-sm {
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
+.feature-card-base {
+  @apply bg-gray-800/40 backdrop-blur-sm rounded-2xl shadow-2xl border border-gray-700/30;
 }
 
-/* Smooth transitions */
-.transition-all {
-  transition-property: all;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+.feature-card-accent {
+  @apply absolute top-0 left-0 w-full h-1;
 }
 
-.transition-transform {
-  transition-property: transform;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+.feature-card-icon-container {
+  @apply flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg;
 }
 
-.transition-opacity {
-  transition-property: opacity;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+.feature-card-icon-base {
+  @apply rounded-2xl;
 }
 
-/* Focus states for accessibility */
-a:focus-visible,
-[role='button']:focus-visible {
-  outline: 2px solid #3b82f6;
-  outline-offset: 2px;
+.feature-card-title {
+  @apply font-bold text-white mb-4;
 }
 
-/* Gradient animation */
-.bg-gradient-to-r,
-.bg-gradient-to-br {
-  background-size: 200% 200%;
-  animation: gradient-shift 6s ease infinite;
+.feature-card-description {
+  @apply text-gray-300 leading-relaxed;
 }
 
-@keyframes gradient-shift {
-  0%,
-  100% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
+.feature-card-link-section {
+  @apply mt-6;
 }
 
-/* Reduced motion support */
-@media (prefers-reduced-motion: reduce) {
-  .transition-all,
-  .transition-transform,
-  .transition-opacity,
-  .bg-gradient-to-r,
-  .bg-gradient-to-br {
-    transition: none;
-    animation: none;
-  }
+.feature-card-link {
+  @apply inline-flex items-center justify-center w-full px-6 py-3 font-semibold rounded-xl transition-all duration-300 group-hover:shadow-lg border;
+}
 
-  .group:hover {
-    transform: none !important;
-  }
+.feature-card-link-icon {
+  @apply w-5 h-5 ml-2;
+}
+
+.feature-card-badge-container {
+  @apply absolute top-3 right-3 z-10;
+}
+
+.feature-card-badge {
+  @apply px-2 py-1 text-xs font-medium rounded-full backdrop-blur-sm border;
+}
+
+.feature-card-hover-overlay {
+  @apply absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none;
 }
 </style>

@@ -1,21 +1,21 @@
 <template>
   <section 
-    class="py-20 relative overflow-hidden"
+    class="feature-comparison-section"
     :class="sectionClasses"
   >
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="feature-comparison-container">
       <!-- Section Header -->
-      <div class="text-center mb-16">
-        <h2 class="text-3xl sm:text-4xl font-bold text-white mb-4">
+      <div class="feature-comparison-header">
+        <h2 class="feature-comparison-title">
           {{ title }}
         </h2>
-        <p v-if="subtitle" class="text-xl text-gray-300 max-w-3xl mx-auto">
+        <p v-if="subtitle" class="feature-comparison-subtitle">
           {{ subtitle }}
         </p>
       </div>
 
       <!-- Feature Comparison Grid -->
-      <div class="grid lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
+      <div class="feature-comparison-grid">
         <!-- Plugins Card -->
         <FeatureCard
           title="Custom Plugins"
@@ -28,7 +28,7 @@
           badge="Granular Control"
         >
           <template #icon>
-            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="feature-card-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 stroke-linecap="round"
                 stroke-linejoin="round"
@@ -39,13 +39,13 @@
           </template>
 
           <template #content>
-            <ul class="space-y-3 mb-8 text-left">
+            <ul class="feature-list">
               <li 
                 v-for="feature in pluginsFeatures"
                 :key="feature"
-                class="flex items-center text-gray-300"
+                class="feature-item feature-item--blue"
               >
-                <span class="w-2 h-2 bg-blue-400 rounded-full mr-3 flex-shrink-0"></span>
+                <span class="feature-bullet feature-bullet--blue"></span>
                 {{ feature }}
               </li>
             </ul>
@@ -64,7 +64,7 @@
           badge="Instant Deploy"
         >
           <template #icon>
-            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="feature-card-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 stroke-linecap="round"
                 stroke-linejoin="round"
@@ -75,13 +75,13 @@
           </template>
 
           <template #content>
-            <ul class="space-y-3 mb-8 text-left">
+            <ul class="feature-list">
               <li 
                 v-for="feature in presetsFeatures"
                 :key="feature"
-                class="flex items-center text-gray-300"
+                class="feature-item feature-item--purple"
               >
-                <span class="w-2 h-2 bg-purple-400 rounded-full mr-3 flex-shrink-0"></span>
+                <span class="feature-bullet feature-bullet--purple"></span>
                 {{ feature }}
               </li>
             </ul>
@@ -90,11 +90,11 @@
       </div>
 
       <!-- Bottom CTA -->
-      <div v-if="showBottomCta" class="text-center mt-16">
-        <p class="text-gray-300 mb-6">
+      <div v-if="showBottomCta" class="feature-comparison-cta">
+        <p class="feature-comparison-cta-text">
           {{ bottomCtaText }}
         </p>
-        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <div class="feature-comparison-cta-buttons">
           <GradientButton
             text="Try Plugins"
             variant="primary"
@@ -174,94 +174,63 @@ const sectionClasses = computed(() => {
 </script>
 
 <style scoped>
-/* Grid layout enhancements */
-.grid {
-  gap: 2rem;
+.feature-comparison-section {
+  @apply py-20 relative overflow-hidden;
 }
 
-@media (min-width: 1024px) {
-  .lg\:grid-cols-2 {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
+.feature-comparison-container {
+  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
 }
 
-/* Feature list styling */
-.space-y-3 > * + * {
-  margin-top: 0.75rem;
+.feature-comparison-header {
+  @apply text-center mb-16;
 }
 
-/* Enhanced spacing */
-.mb-16 {
-  margin-bottom: 4rem;
+.feature-comparison-title {
+  @apply text-3xl sm:text-4xl font-bold text-white mb-4;
 }
 
-.mt-16 {
-  margin-bottom: 4rem;
+.feature-comparison-subtitle {
+  @apply text-xl text-gray-300 max-w-3xl mx-auto;
 }
 
-/* Responsive improvements */
-@media (max-width: 640px) {
-  .py-20 {
-    padding-top: 3rem;
-    padding-bottom: 3rem;
-  }
-  
-  .text-3xl {
-    font-size: 1.875rem;
-  }
-  
-  .text-4xl {
-    font-size: 2.25rem;
-  }
-  
-  .gap-8 {
-    gap: 1.5rem;
-  }
+.feature-comparison-grid {
+  @apply grid lg:grid-cols-2 gap-8 max-w-6xl mx-auto;
 }
 
-/* Focus management for accessibility */
-.grid:focus-within {
-  outline: 2px solid #3b82f6;
-  outline-offset: 4px;
-  border-radius: 1rem;
+.feature-card-icon {
+  @apply w-8 h-8 text-white;
 }
 
-/* Section entrance animation */
-.section-animate {
-  animation: fadeInScale 0.8s ease-out;
+.feature-list {
+  @apply space-y-3 mb-8 text-left;
 }
 
-@keyframes fadeInScale {
-  from {
-    opacity: 0;
-    transform: scale(0.95) translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-  }
+.feature-item {
+  @apply flex items-center text-gray-300;
 }
 
-/* Enhanced visual hierarchy */
-.max-w-6xl {
-  max-width: 72rem;
+.feature-bullet {
+  @apply w-2 h-2 rounded-full mr-3 flex-shrink-0;
 }
 
-/* Button group spacing */
-.flex.gap-4 {
-  gap: 1rem;
+.feature-bullet--blue {
+  @apply bg-blue-400;
 }
 
-@media (max-width: 640px) {
-  .flex.gap-4 {
-    gap: 0.75rem;
-  }
+.feature-bullet--purple {
+  @apply bg-purple-400;
 }
 
-/* Reduced motion support */
-@media (prefers-reduced-motion: reduce) {
-  .section-animate {
-    animation: none;
-  }
+.feature-comparison-cta {
+  @apply text-center mt-16;
+}
+
+.feature-comparison-cta-text {
+  @apply text-gray-300 mb-6;
+}
+
+.feature-comparison-cta-buttons {
+  @apply flex flex-col sm:flex-row gap-4 justify-center;
 }
 </style>

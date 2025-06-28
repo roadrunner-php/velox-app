@@ -1,9 +1,9 @@
 <template>
-  <div class="absolute inset-0">
+  <div class="particle-field">
     <div
       v-for="particle in particles"
       :key="particle.id"
-      class="absolute rounded-full animate-pulse"
+      class="particle"
       :class="[sizeClass, disabled ? 'animate-none' : '']"
       :style="{
         left: particle.x + '%',
@@ -77,25 +77,11 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* Pulse animation with better performance */
-.animate-pulse {
-  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+.particle-field {
+  @apply absolute inset-0;
 }
 
-@keyframes pulse {
-  0%,
-  100% {
-    opacity: var(--particle-opacity, 0.5);
-  }
-  50% {
-    opacity: calc(var(--particle-opacity, 0.5) * 0.3);
-  }
-}
-
-/* Respect reduced motion preferences */
-@media (prefers-reduced-motion: reduce) {
-  .animate-pulse {
-    animation: none;
-  }
+.particle {
+  @apply absolute rounded-full animate-pulse;
 }
 </style>

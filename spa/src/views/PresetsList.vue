@@ -283,7 +283,6 @@ function clearAllSelections() {
       title="Generate Configuration"
       description="Choose your preferred format and generate the configuration file from selected presets"
       button-text="Generate Configuration"
-      help-text="Your configuration will merge all selected presets and resolve any conflicts automatically."
       @generate="handleGenerate"
     />
 

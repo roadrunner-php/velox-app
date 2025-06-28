@@ -1,8 +1,8 @@
 <template>
-  <div class="text-center group">
+  <div class="benefit-card">
     <!-- Icon Container -->
     <div 
-      class="mx-auto mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg"
+      class="benefit-card-icon-container"
       :class="[
         iconContainerClasses,
         sizeClasses
@@ -12,7 +12,7 @@
       <slot name="icon">
         <!-- Default icon based on type -->
         <svg 
-          class="text-white"
+          class="benefit-card-icon text-white"
           :class="iconSizeClasses"
           fill="none" 
           stroke="currentColor" 
@@ -30,7 +30,7 @@
 
     <!-- Title -->
     <h3 
-      class="font-bold text-white mb-4"
+      class="benefit-card-title"
       :class="titleSizeClasses"
     >
       {{ title }}
@@ -38,30 +38,30 @@
 
     <!-- Description -->
     <p 
-      class="text-gray-300 leading-relaxed"
+      class="benefit-card-description"
       :class="descriptionSizeClasses"
     >
       {{ description }}
     </p>
 
     <!-- Additional Content Slot -->
-    <div v-if="$slots.content" class="mt-4">
+    <div v-if="$slots.content" class="benefit-card-content">
       <slot name="content"></slot>
     </div>
 
     <!-- Action Button -->
-    <div v-if="actionText && (actionHref || actionTo)" class="mt-6">
+    <div v-if="actionText && (actionHref || actionTo)" class="benefit-card-action">
       <component
         :is="actionComponent"
         :href="actionHref"
         :to="actionTo"
-        class="inline-flex items-center text-sm font-medium transition-colors duration-200 hover:underline"
+        class="benefit-card-action-link"
         :class="actionClasses"
         :target="actionHref ? '_blank' : undefined"
         :rel="actionHref ? 'noopener noreferrer' : undefined"
       >
         {{ actionText }}
-        <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg class="benefit-card-action-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path 
             stroke-linecap="round" 
             stroke-linejoin="round" 
@@ -73,9 +73,9 @@
     </div>
 
     <!-- Badge -->
-    <div v-if="badge" class="mt-4">
+    <div v-if="badge" class="benefit-card-badge-container">
       <span 
-        class="inline-flex items-center px-3 py-1 text-xs font-medium rounded-full border"
+        class="benefit-card-badge"
         :class="badgeClasses"
       >
         {{ badge }}
@@ -151,7 +151,7 @@ const iconContainerClasses = computed(() => {
     indigo: 'bg-gradient-to-br from-indigo-400 to-indigo-600 shadow-indigo-500/20'
   }
 
-  return `${variantClasses[props.variant]} rounded-2xl flex items-center justify-center`
+  return `${variantClasses[props.variant]} benefit-card-icon-base`
 })
 
 const actionClasses = computed(() => {
@@ -196,106 +196,47 @@ const defaultIconPath = computed(() => {
 </script>
 
 <style scoped>
-/* Icon container animation */
-.group:hover .group-hover\:scale-110 {
-  transform: scale(1.1);
+.benefit-card {
+  @apply text-center;
 }
 
-/* Smooth transitions */
-.transition-transform {
-  transition-property: transform;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 300ms;
+.benefit-card-icon-container {
+  @apply mx-auto mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg;
 }
 
-.transition-colors {
-  transition-property: color, background-color, border-color;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 200ms;
+.benefit-card-icon-base {
+  @apply rounded-2xl flex items-center justify-center;
 }
 
-/* Enhanced shadow effects */
-.shadow-lg {
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
+.benefit-card-title {
+  @apply font-bold text-white mb-4;
 }
 
-/* Icon container glow effects */
-.shadow-yellow-500\/20 {
-  box-shadow: 0 10px 15px -3px rgba(245, 158, 11, 0.2), 0 4px 6px -2px rgba(245, 158, 11, 0.1);
+.benefit-card-description {
+  @apply text-gray-300 leading-relaxed;
 }
 
-.shadow-green-500\/20 {
-  box-shadow: 0 10px 15px -3px rgba(34, 197, 94, 0.2), 0 4px 6px -2px rgba(34, 197, 94, 0.1);
+.benefit-card-content {
+  @apply mt-4;
 }
 
-.shadow-purple-500\/20 {
-  box-shadow: 0 10px 15px -3px rgba(139, 92, 246, 0.2), 0 4px 6px -2px rgba(139, 92, 246, 0.1);
+.benefit-card-action {
+  @apply mt-6;
 }
 
-.shadow-blue-500\/20 {
-  box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.2), 0 4px 6px -2px rgba(59, 130, 246, 0.1);
+.benefit-card-action-link {
+  @apply inline-flex items-center text-sm font-medium transition-colors duration-200 hover:underline;
 }
 
-.shadow-pink-500\/20 {
-  box-shadow: 0 10px 15px -3px rgba(236, 72, 153, 0.2), 0 4px 6px -2px rgba(236, 72, 153, 0.1);
+.benefit-card-action-icon {
+  @apply w-4 h-4 ml-1;
 }
 
-.shadow-indigo-500\/20 {
-  box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.2), 0 4px 6px -2px rgba(99, 102, 241, 0.1);
+.benefit-card-badge-container {
+  @apply mt-4;
 }
 
-/* Floating animation for icons */
-.group:hover .rounded-2xl {
-  animation: float 3s ease-in-out infinite;
-}
-
-@keyframes float {
-  0%, 100% {
-    transform: scale(1.1) translateY(0);
-  }
-  50% {
-    transform: scale(1.1) translateY(-5px);
-  }
-}
-
-/* Focus states for accessibility */
-a:focus-visible {
-  outline: 2px solid currentColor;
-  outline-offset: 2px;
-  border-radius: 0.25rem;
-}
-
-/* Text shadow for better contrast */
-.text-white {
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-}
-
-/* Responsive adjustments */
-@media (max-width: 640px) {
-  .text-xl {
-    font-size: 1.125rem;
-  }
-  
-  .w-20 {
-    width: 4rem;
-  }
-  
-  .h-20 {
-    height: 4rem;
-  }
-}
-
-/* Reduced motion support */
-@media (prefers-reduced-motion: reduce) {
-  .transition-transform,
-  .transition-colors {
-    transition: none;
-  }
-  
-  .group:hover .group-hover\:scale-110,
-  .group:hover .rounded-2xl {
-    transform: none;
-    animation: none;
-  }
+.benefit-card-badge {
+  @apply inline-flex items-center px-3 py-1 text-xs font-medium rounded-full border;
 }
 </style>

@@ -1,12 +1,12 @@
 <template>
-  <div class="text-center group">
+  <div class="stat-counter">
     <div
-      class="transition-transform duration-300 group-hover:scale-110 mb-2"
+      class="stat-counter-value"
       :class="[valueClasses, animationClass]"
     >
       {{ displayValue }}{{ suffix }}
     </div>
-    <div class="text-gray-400 font-medium">
+    <div class="stat-counter-label">
       {{ label }}
     </div>
   </div>
@@ -55,7 +55,7 @@ const valueClasses = computed(() => {
     yellow: 'text-yellow-400',
   }
 
-  return ['font-bold', sizeClasses[props.size], colorClasses[props.color]]
+  return ['stat-counter-value-base', sizeClasses[props.size], colorClasses[props.color]]
 })
 
 const animationClass = computed(() => {
@@ -130,70 +130,19 @@ defineExpose({
 </script>
 
 <style scoped>
-/* Smooth transitions */
-.transition-transform {
-  transition-property: transform;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 300ms;
+.stat-counter {
+  @apply text-center;
 }
 
-/* Pulse animation during counting */
-.animate-pulse {
-  animation: pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+.stat-counter-value {
+  @apply transition-transform duration-300 group-hover:scale-110 mb-2;
 }
 
-@keyframes pulse {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.8;
-  }
+.stat-counter-value-base {
+  @apply font-bold;
 }
 
-/* Hover effect */
-.group:hover .group-hover\:scale-110 {
-  transform: scale(1.1);
-}
-
-/* Focus state for accessibility */
-.group:focus-within {
-  outline: 2px solid currentColor;
-  outline-offset: 2px;
-  border-radius: 0.5rem;
-}
-
-/* Text shadow for better contrast */
-.text-blue-400,
-.text-green-400,
-.text-purple-400,
-.text-cyan-400,
-.text-yellow-400 {
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-}
-
-/* Responsive sizing */
-@media (max-width: 640px) {
-  .text-4xl {
-    font-size: 2.5rem;
-  }
-
-  .text-5xl {
-    font-size: 3rem;
-  }
-}
-
-/* Reduced motion support */
-@media (prefers-reduced-motion: reduce) {
-  .transition-transform,
-  .animate-pulse {
-    transition: none;
-    animation: none;
-  }
-
-  .group:hover .group-hover\:scale-110 {
-    transform: none;
-  }
+.stat-counter-label {
+  @apply text-gray-400 font-medium;
 }
 </style>

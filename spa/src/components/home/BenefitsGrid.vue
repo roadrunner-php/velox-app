@@ -1,26 +1,23 @@
 <template>
-  <section 
-    class="py-20 relative overflow-hidden"
-    :class="sectionClasses"
-  >
+  <section class="benefits-section" :class="sectionClasses">
     <!-- Background Pattern -->
-    <div v-if="showBackground" class="absolute inset-0 opacity-10">
-      <div class="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-blue-400/10 to-purple-400/10"></div>
+    <div v-if="showBackground" class="benefits-background">
+      <div class="benefits-gradient"></div>
     </div>
 
-    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="benefits-container">
       <!-- Section Header -->
-      <div class="text-center mb-16">
-        <h2 class="text-3xl sm:text-4xl font-bold text-white mb-4">
+      <div class="benefits-header">
+        <h2 class="benefits-title">
           {{ title }}
         </h2>
-        <p v-if="subtitle" class="text-xl text-gray-300 max-w-3xl mx-auto">
+        <p v-if="subtitle" class="benefits-subtitle">
           {{ subtitle }}
         </p>
       </div>
 
       <!-- Benefits Grid -->
-      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div class="benefits-grid">
         <BenefitCard
           v-for="benefit in benefits"
           :key="benefit.id || benefit.title"
@@ -47,7 +44,7 @@
       </div>
 
       <!-- Additional Content Slot -->
-      <div v-if="$slots.content" class="mt-16">
+      <div v-if="$slots.content" class="benefits-additional-content">
         <slot name="content"></slot>
       </div>
     </div>
@@ -100,45 +97,51 @@ const props = withDefaults(defineProps<Props>(), {
     {
       id: 'speed',
       title: 'Lightning Fast Setup',
-      description: 'Deploy production-ready RoadRunner servers in minutes, not hours. Automated dependency resolution eliminates configuration headaches.',
+      description:
+        'Deploy production-ready RoadRunner servers in minutes, not hours. Automated dependency resolution eliminates configuration headaches.',
       iconType: 'speed',
-      variant: 'yellow'
+      variant: 'yellow',
     },
     {
       id: 'security',
       title: 'Zero Conflicts',
-      description: 'Intelligent conflict detection prevents incompatible plugin combinations. Our validation engine ensures stable, reliable configurations every time.',
+      description:
+        'Intelligent conflict detection prevents incompatible plugin combinations. Our validation engine ensures stable, reliable configurations every time.',
       iconType: 'security',
-      variant: 'green'
+      variant: 'green',
     },
     {
       id: 'optimization',
       title: 'Optimized Binaries',
-      description: 'Generate lean, purpose-built binaries containing only what you need. Reduce memory footprint and improve startup performance significantly.',
+      description:
+        'Generate lean, purpose-built binaries containing only what you need. Reduce memory footprint and improve startup performance significantly.',
       iconType: 'optimization',
-      variant: 'purple'
+      variant: 'purple',
     },
     {
       id: 'enterprise',
       title: 'Enterprise Ready',
-      description: 'Battle-tested presets used in production by teams worldwide. Includes monitoring, security, and scalability features out of the box.',
+      description:
+        'Battle-tested presets used in production by teams worldwide. Includes monitoring, security, and scalability features out of the box.',
       iconType: 'enterprise',
-      variant: 'blue'
+      variant: 'blue',
     },
     {
       id: 'experience',
       title: 'Developer Experience',
-      description: 'Intuitive interface designed for developers, by developers. Clear documentation, helpful tooltips, and smart defaults make configuration effortless.',
+      description:
+        'Intuitive interface designed for developers, by developers. Clear documentation, helpful tooltips, and smart defaults make configuration effortless.',
       iconType: 'experience',
-      variant: 'pink'
+      variant: 'pink',
     },
     {
       id: 'format',
       title: 'Multi-Format Output',
-      description: 'Generate configurations in TOML, JSON, or complete Dockerfiles. Perfect integration with your existing CI/CD pipelines and deployment workflows.',
+      description:
+        'Generate configurations in TOML, JSON, or complete Dockerfiles. Perfect integration with your existing CI/CD pipelines and deployment workflows.',
       iconType: 'format',
-      variant: 'indigo'
-    }
+      variant: 'indigo',
+    },
   ],
   cardSize: 'md',
   showBackground: true,
@@ -148,22 +151,22 @@ const props = withDefaults(defineProps<Props>(), {
     {
       text: '🔧 Start Building',
       variant: 'primary',
-      to: '/plugins'
+      to: '/plugins',
     },
     {
       text: '⚡ Quick Start',
       variant: 'secondary',
-      to: '/presets'
-    }
+      to: '/presets',
+    },
   ],
-  variant: 'default'
+  variant: 'default',
 })
 
 const sectionClasses = computed(() => {
   const variantClasses = {
     default: 'bg-gradient-to-br from-black via-gray-900 to-black',
     dark: 'bg-gray-900',
-    gradient: 'bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900'
+    gradient: 'bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900',
   }
 
   return variantClasses[props.variant]
@@ -171,130 +174,39 @@ const sectionClasses = computed(() => {
 </script>
 
 <style scoped>
-/* Grid layout responsive improvements */
-.grid {
-  gap: 2rem;
+.benefits-section {
+  @apply py-20 relative overflow-hidden;
 }
 
-@media (min-width: 768px) {
-  .md\:grid-cols-2 {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
+.benefits-background {
+  @apply absolute inset-0 opacity-10;
 }
 
-@media (min-width: 1024px) {
-  .lg\:grid-cols-3 {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
+.benefits-gradient {
+  @apply absolute top-0 left-0 w-full h-full bg-gradient-to-r from-blue-400/10 to-purple-400/10;
 }
 
-/* Section spacing */
-.py-20 {
-  padding-top: 5rem;
-  padding-bottom: 5rem;
+.benefits-container {
+  @apply relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
 }
 
-.mb-16 {
-  margin-bottom: 4rem;
+.benefits-header {
+  @apply text-center mb-16;
 }
 
-.mt-16 {
-  margin-top: 4rem;
+.benefits-title {
+  @apply text-3xl sm:text-4xl font-bold text-white mb-4;
 }
 
-/* Responsive adjustments */
-@media (max-width: 640px) {
-  .py-20 {
-    padding-top: 3rem;
-    padding-bottom: 3rem;
-  }
-  
-  .text-3xl {
-    font-size: 1.875rem;
-  }
-  
-  .text-4xl {
-    font-size: 2.25rem;
-  }
-  
-  .gap-8 {
-    gap: 1.5rem;
-  }
-  
-  .mb-16 {
-    margin-bottom: 2rem;
-  }
-  
-  .mt-16 {
-    margin-top: 2rem;
-  }
+.benefits-subtitle {
+  @apply text-xl text-gray-300 max-w-3xl mx-auto;
 }
 
-/* Enhanced focus management */
-.grid:focus-within {
-  outline: 2px solid #3b82f6;
-  outline-offset: 4px;
-  border-radius: 1rem;
+.benefits-grid {
+  @apply grid md:grid-cols-2 lg:grid-cols-3 gap-8;
 }
 
-/* Section entrance animation */
-.section-animate {
-  animation: staggerFadeIn 0.8s ease-out;
-}
-
-@keyframes staggerFadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Stagger child animations */
-.grid > *:nth-child(1) { animation-delay: 0.1s; }
-.grid > *:nth-child(2) { animation-delay: 0.2s; }
-.grid > *:nth-child(3) { animation-delay: 0.3s; }
-.grid > *:nth-child(4) { animation-delay: 0.4s; }
-.grid > *:nth-child(5) { animation-delay: 0.5s; }
-.grid > *:nth-child(6) { animation-delay: 0.6s; }
-
-/* Enhanced visual hierarchy */
-.text-gray-300 {
-  line-height: 1.6;
-}
-
-/* Button group improvements */
-.flex.gap-4 {
-  gap: 1rem;
-}
-
-@media (max-width: 640px) {
-  .flex.gap-4 {
-    gap: 0.75rem;
-    flex-direction: column;
-    align-items: center;
-  }
-}
-
-/* Accessibility improvements */
-@media (prefers-reduced-motion: reduce) {
-  .section-animate,
-  .grid > * {
-    animation: none;
-  }
-}
-
-/* High contrast mode support */
-@media (prefers-contrast: high) {
-  .text-gray-300 {
-    color: #ffffff;
-  }
-  
-  .bg-gradient-to-br {
-    background: #000000;
-  }
+.benefits-additional-content {
+  @apply mt-16;
 }
 </style>
