@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Application;
 
+use App\Module\Github\GithubBootloader;
 use App\Module\Velox\VeloxBootloader;
 use Spiral\Boot\Bootloader\CoreBootloader;
 use Spiral\Bootloader as Framework;
@@ -82,11 +83,15 @@ class Kernel extends \Spiral\Framework\Kernel
             RoadRunnerBridge\CommandBootloader::class,
             CycleBridge\CommandBootloader::class,
 
+            \Spiral\Cache\Bootloader\CacheBootloader::class,
+            RoadRunnerBridge\CacheBootloader::class,
+
             // Configure route groups, middleware for route groups
             Bootloader\RoutesBootloader::class,
             // Application domain
             Bootloader\AppBootloader::class,
 
+            GithubBootloader::class,
             VeloxBootloader::class,
         ];
     }
