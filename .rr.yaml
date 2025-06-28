@@ -20,6 +20,11 @@ http:
     supervisor:
       max_worker_memory: ${RR_HTTP_MAX_WORKER_MEMORY:-128}
 
+kv:
+  memory:
+    driver: memory
+    config: { }
+
 server:
   command: 'php app.php'
   relay: pipes
