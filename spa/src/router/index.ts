@@ -3,6 +3,7 @@ import { navigationDirection } from '@/navigation'
 
 const routes = [
   { path: '/', component: () => import('@/views/MainView.vue'), meta: { depth: 1 } },
+  { path: '/introduction', component: () => import('@/views/IntroductionView.vue'), meta: { depth: 2 } },
   { path: '/plugins', component: () => import('@/views/PluginsList.vue'), meta: { depth: 2 } },
   { path: '/presets', component: () => import('@/views/PresetsList.vue'), meta: { depth: 2 } },
   {

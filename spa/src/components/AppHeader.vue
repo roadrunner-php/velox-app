@@ -33,6 +33,15 @@
           Home
         </RouterLink>
         <RouterLink
+          to="/introduction"
+          :class="[
+            'app-header__nav-link',
+            route.path === '/introduction' ? 'app-header__nav-link--active' : '',
+          ]"
+        >
+          Getting Started
+        </RouterLink>
+        <RouterLink
           to="/plugins"
           :class="[
             'app-header__nav-link',
@@ -97,6 +106,16 @@
             ]"
           >
             Home
+          </RouterLink>
+          <RouterLink
+            to="/introduction"
+            @click="mobileMenuOpen = false"
+            :class="[
+              'app-header__mobile-link',
+              route.path === '/introduction' ? 'app-header__mobile-link--active' : '',
+            ]"
+          >
+            Getting Started
           </RouterLink>
           <RouterLink
             to="/plugins"

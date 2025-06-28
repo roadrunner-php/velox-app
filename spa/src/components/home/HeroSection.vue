@@ -57,6 +57,19 @@
           />
         </div>
 
+        <!-- Getting Started Link -->
+        <div class="hero-getting-started" :class="benefitsAnimation">
+          <RouterLink
+            to="/introduction"
+            class="hero-getting-started-link"
+          >
+            📖 New to Velox? Check out our step-by-step guide
+            <svg class="hero-getting-started-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+            </svg>
+          </RouterLink>
+        </div>
+
         <!-- Key Benefits Pills -->
         <div class="hero-benefits" :class="benefitsAnimation">
           <span
@@ -194,11 +207,23 @@ const benefitsAnimation = computed(() =>
 }
 
 .hero-cta-buttons {
-  @apply flex flex-col sm:flex-row gap-4 justify-center items-center;
+  @apply flex flex-col sm:flex-row gap-4 justify-center items-center mb-8;
+}
+
+.hero-getting-started {
+  @apply mb-8;
+}
+
+.hero-getting-started-link {
+  @apply inline-flex items-center gap-2 px-4 py-2 text-cyan-400 hover:text-cyan-300 font-medium transition-colors duration-200 rounded-lg hover:bg-gray-800/30 border border-cyan-500/20 hover:border-cyan-400/40;
+}
+
+.hero-getting-started-icon {
+  @apply w-4 h-4;
 }
 
 .hero-benefits {
-  @apply flex flex-wrap justify-center gap-3 mt-12;
+  @apply flex flex-wrap justify-center gap-3;
 }
 
 .hero-benefit-pill {
