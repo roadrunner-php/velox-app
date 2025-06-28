@@ -1,17 +1,17 @@
 <template>
-  <div class="text-center py-16">
+  <div class="empty-state">
     <!-- Icon -->
-    <div class="text-slate-500 mb-6">
-      <component :is="iconComponent" class="w-20 h-20 mx-auto" />
+    <div class="empty-state__icon">
+      <component :is="iconComponent" class="empty-state__icon-svg" />
     </div>
     
     <!-- Title -->
-    <h3 class="text-xl font-semibold text-white mb-3">
+    <h3 class="empty-state__title">
       {{ title }}
     </h3>
     
     <!-- Description -->
-    <p class="text-slate-400 text-lg mb-6 max-w-md mx-auto leading-relaxed">
+    <p class="empty-state__description">
       {{ description }}
     </p>
     
@@ -20,13 +20,16 @@
       v-if="showActionButton"
       @click="$emit('action')"
       :disabled="actionDisabled"
-      class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-slate-600 disabled:text-slate-400 disabled:cursor-not-allowed transition-colors duration-200 font-medium"
+      class="empty-state__button"
+      :class="{
+        'empty-state__button--disabled': actionDisabled
+      }"
     >
       {{ actionText }}
     </button>
 
     <!-- Secondary Actions Slot -->
-    <div v-if="$slots.actions" class="mt-4">
+    <div v-if="$slots.actions" class="empty-state__actions">
       <slot name="actions"></slot>
     </div>
   </div>
@@ -86,3 +89,37 @@ const iconComponent = computed(() => {
   ])
 })
 </script>
+
+<style scoped>
+.empty-state {
+  @apply text-center py-16;
+}
+
+.empty-state__icon {
+  @apply text-slate-500 mb-6;
+}
+
+.empty-state__icon-svg {
+  @apply w-20 h-20 mx-auto;
+}
+
+.empty-state__title {
+  @apply text-xl font-semibold text-white mb-3;
+}
+
+.empty-state__description {
+  @apply text-slate-400 text-lg mb-6 max-w-md mx-auto leading-relaxed;
+}
+
+.empty-state__button {
+  @apply px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 font-medium;
+}
+
+.empty-state__button--disabled {
+  @apply bg-slate-600 text-slate-400 cursor-not-allowed;
+}
+
+.empty-state__actions {
+  @apply mt-4;
+}
+</style>
