@@ -268,7 +268,6 @@ function clearAllSelections() {
       title="Generate Configuration"
       description="Choose your preferred format and generate the configuration file"
       button-text="Generate Configuration"
-      help-text="Your configuration will include all selected plugins and their dependencies."
       @generate="handleGenerate"
     />
 

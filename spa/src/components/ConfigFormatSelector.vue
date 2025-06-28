@@ -10,34 +10,25 @@
         :key="option.value"
         class="config-format-selector__option"
         :class="{
-          'config-format-selector__option--disabled': disabled,
+          'config-format-selector__option--disabled': option.disabled,
         }"
-        @click="selectFormat(option.value)"
+        @click="!option.disabled && selectFormat(option.value)"
         @keydown="handleKeydown($event, option.value)"
         tabindex="0"
         role="radio"
         :aria-checked="selectedValue === option.value"
-        :aria-disabled="disabled"
+        :aria-disabled="option.disabled"
       >
-        <!-- Hidden radio input for form compatibility -->
-        <input
-          type="radio"
-          :name="`config-format-${Math.random()}`"
-          :value="option.value"
-          :checked="selectedValue === option.value"
-          :disabled="disabled"
-          class="sr-only"
-          @change="selectFormat(option.value)"
-        />
-
         <!-- Card -->
         <div
           class="config-format-selector__card"
           :class="{
-            'config-format-selector__card--selected': selectedValue === option.value && !disabled,
-            'config-format-selector__card--unselected': selectedValue !== option.value && !disabled,
-            'config-format-selector__card--disabled': disabled,
-            'config-format-selector__card--focusable': !disabled,
+            'config-format-selector__card--selected':
+              selectedValue === option.value && !option.disabled,
+            'config-format-selector__card--unselected':
+              selectedValue !== option.value && !option.disabled,
+            'config-format-selector__card--disabled': option.disabled,
+            'config-format-selector__card--focusable': !option.disabled,
           }"
         >
           <!-- Recommended badge -->
@@ -81,7 +72,7 @@
 
           <!-- Hover indicator -->
           <div
-            v-if="!disabled"
+            v-if="!option.disabled"
             class="config-format-selector__hover-ring"
             :class="{
               'config-format-selector__hover-ring--selected': selectedValue === option.value,
@@ -128,19 +119,20 @@ const formatOptions: FormatOption[] = [
     label: 'TOML',
     description: 'Human-readable configuration format (recommended)',
     icon: '📄',
-    // recommended: true
-  },
-  {
-    value: 'json',
-    label: 'JSON',
-    description: 'Machine-readable format for programmatic use',
-    icon: '🔧',
   },
   {
     value: 'dockerfile',
     label: 'Dockerfile',
     description: 'Complete Dockerfile with RoadRunner setup',
+    icon: '🌊',
+  },
+  {
+    value: 'binary',
+    label: 'Binary',
+    description: 'Will be soon available',
     icon: '📦',
+    recommended: true,
+    disabled: true,
   },
 ]
 
