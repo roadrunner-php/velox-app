@@ -302,7 +302,7 @@ const primaryActionText = computed(() => {
 }
 
 .repository-link {
-  @apply flex items-center gap-3 p-4 bg-gray-900/40 rounded-lg border border-gray-700/30 hover:border-gray-600/50 transition-all duration-200 group;
+  @apply flex items-center gap-3 p-4 bg-gray-900/40 rounded-lg border border-gray-700/30 hover:border-gray-600/50 transition-all duration-200;
 }
 
 .repository-link-icon {
