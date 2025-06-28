@@ -3,7 +3,7 @@
     <div class="contributors-container">
       <div>
         <h2 class="contributors-title">
-          We are RoadRunner contributors
+          We are Velox builder contributors
         </h2>
 
         <!-- Loading State -->
