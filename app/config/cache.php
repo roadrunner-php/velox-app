@@ -3,10 +3,13 @@
 declare(strict_types=1);
 
 return [
-    'default' => env('CACHE_STORAGE', 'roadrunner'),
+    'default' => env('CACHE_STORAGE', 'memory'),
 
     'aliases' => [
-        'github' => 'memory',
+        'github' => [
+            'storage' => 'memory',
+            'prefix' => 'github_',
+        ],
     ],
 
     'storages' => [
