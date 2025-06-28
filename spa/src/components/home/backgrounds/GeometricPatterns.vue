@@ -124,27 +124,3 @@ const secondaryLines = computed<GeometricLine[]>(() => {
   ]
 })
 </script>
-
-<style scoped>
-/* Pulse animation for SVG elements */
-.animate-pulse {
-  animation: svg-pulse 4s ease-in-out infinite;
-}
-
-@keyframes svg-pulse {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.6;
-  }
-}
-
-/* Respect reduced motion preferences */
-@media (prefers-reduced-motion: reduce) {
-  .animate-pulse {
-    animation: none;
-  }
-}
-</style>

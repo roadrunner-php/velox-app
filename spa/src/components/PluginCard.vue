@@ -16,7 +16,9 @@ interface Props {
 
 interface Emits {
   (e: 'toggle', name: string, includeDependencies: boolean): void
+
   (e: 'view-details', name: string): void
+
   (e: 'load-dependencies', name: string): void
 }
 
@@ -39,7 +41,8 @@ const isHovered = ref(false)
 const isSelected = computed(() => props.selectionState !== 'none')
 
 const cardClasses = computed(() => {
-  const base = 'relative p-6 rounded-2xl shadow-xl transition-all duration-300 cursor-pointer group border backdrop-blur-sm'
+  const base =
+    'relative p-6 rounded-2xl shadow-xl transition-all duration-300 cursor-pointer group border backdrop-blur-sm'
 
   switch (props.selectionState) {
     case 'manual':
@@ -158,28 +161,24 @@ watch(isHovered, (hovered) => {
       <!-- Official/Community Badge -->
       <div
         class="absolute top-3 left-3 text-xs font-medium z-10 flex items-center gap-1"
-        :class="plugin.is_official
-          ? 'text-emerald-300'
-          : 'text-gray-400'"
+        :class="plugin.is_official ? 'text-emerald-300' : 'text-gray-400'"
       >
         <!-- Certificate icon for official plugins -->
-        <svg
-          v-if="plugin.is_official"
-          class="w-6 h-6"
-          fill="currentColor"
-          viewBox="0 0 20 20"
-        >
-          <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+        <svg v-if="plugin.is_official" class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+          <path
+            fill-rule="evenodd"
+            d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+            clip-rule="evenodd"
+          />
         </svg>
         <!-- Globe icon for community plugins -->
-        <svg
-          v-else
-          class="w-6 h-6"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9m0-9v9" />
+        <svg v-else class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9m0-9v9"
+          />
         </svg>
         <span>{{ plugin.is_official ? 'Official' : 'Community' }}</span>
       </div>
@@ -187,7 +186,9 @@ watch(isHovered, (hovered) => {
       <!-- Main Content -->
       <div class="mt-8">
         <!-- Plugin Name -->
-        <h3 class="text-xl font-bold text-white mb-3 pr-8 group-hover:text-blue-300 transition-colors">
+        <h3
+          class="text-xl font-bold text-white mb-3 pr-8 group-hover:text-blue-300 transition-colors"
+        >
           {{ plugin.name }}
         </h3>
 
@@ -198,10 +199,15 @@ watch(isHovered, (hovered) => {
 
         <!-- Plugin Details -->
         <div class="flex flex-wrap gap-2 text-xs mb-4">
-          <span v-if="plugin.category" class="bg-gray-700/50 text-gray-300 px-2 py-1 rounded-lg border border-gray-600/30">
+          <span
+            v-if="plugin.category"
+            class="bg-gray-700/50 text-gray-300 px-2 py-1 rounded-lg border border-gray-600/30"
+          >
             {{ plugin.category }}
           </span>
-          <span class="bg-purple-900/30 text-purple-300 px-2 py-1 rounded-lg border border-purple-500/30">
+          <span
+            class="bg-purple-900/30 text-purple-300 px-2 py-1 rounded-lg border border-purple-500/30"
+          >
             {{ plugin.version }}
           </span>
           <span class="bg-blue-900/30 text-blue-300 px-2 py-1 rounded-lg border border-blue-500/30">
@@ -244,7 +250,10 @@ watch(isHovered, (hovered) => {
           >
             <div v-if="showDependencyDetails" class="mt-3 overflow-hidden">
               <!-- Loading State -->
-              <div v-if="isLoadingDependencies" class="flex items-center gap-2 text-sm text-gray-400">
+              <div
+                v-if="isLoadingDependencies"
+                class="flex items-center gap-2 text-sm text-gray-400"
+              >
                 <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-cyan-400"></div>
                 <span>Loading dependencies...</span>
               </div>
@@ -260,12 +269,6 @@ watch(isHovered, (hovered) => {
                     <span class="font-medium text-white">{{ dep.name }}</span>
                     <span class="text-gray-400">{{ dep.version }}</span>
                   </div>
-                  <button
-                    @click.stop="$emit('view-details', dep.name)"
-                    class="text-cyan-400 hover:text-cyan-300 text-xs font-medium transition-colors"
-                  >
-                    View
-                  </button>
                 </div>
               </div>
 
@@ -277,12 +280,6 @@ watch(isHovered, (hovered) => {
                   class="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg text-sm border border-gray-700/30"
                 >
                   <span class="font-medium text-white">{{ depName }}</span>
-                  <button
-                    @click.stop="$emit('view-details', depName)"
-                    class="text-cyan-400 hover:text-cyan-300 text-xs font-medium transition-colors"
-                  >
-                    View
-                  </button>
                 </div>
               </div>
             </div>
@@ -291,7 +288,9 @@ watch(isHovered, (hovered) => {
 
         <!-- Selection Context -->
         <div v-if="selectionState === 'dependency' && selectedBy?.length" class="mt-4">
-          <div class="text-xs text-green-300 bg-green-900/20 p-3 rounded-lg border border-green-500/30">
+          <div
+            class="text-xs text-green-300 bg-green-900/20 p-3 rounded-lg border border-green-500/30"
+          >
             <span class="font-medium">Auto-selected:</span>
             Required by {{ selectedBy.join(', ') }}
           </div>
@@ -310,7 +309,7 @@ watch(isHovered, (hovered) => {
     <div class="flex gap-3 mt-6">
       <button
         @click.stop="handleToggleSelection"
-        class="flex-1 px-4 py-2.5 text-sm font-semibold rounded-xl transition-all duration-200 border"
+        class="px-6 py-1.5 text-sm font-semibold rounded-xl transition-all duration-200 border"
         :class="
           isSelected
             ? 'bg-gray-700/50 text-gray-300 hover:bg-gray-600/50 border-gray-600/50 hover:border-gray-500/70'
@@ -322,134 +321,10 @@ watch(isHovered, (hovered) => {
 
       <button
         @click.stop="handleViewDetails"
-        class="px-4 py-2.5 text-sm font-semibold text-gray-300 border border-gray-600/50 rounded-xl hover:bg-gray-700/30 hover:border-gray-500/70 hover:text-white transition-all duration-200"
+        class="px-4 py-1.5 text-sm font-semibold text-gray-300 border border-gray-600/50 rounded-xl hover:bg-gray-700/30 hover:border-gray-500/70 hover:text-white transition-all duration-200"
       >
         Details
       </button>
     </div>
   </div>
 </template>
-
-<style scoped>
-.line-clamp-3 {
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-/* FIXED: Dependencies toggle button styling */
-.dependency-toggle-btn {
-  /* Reset button styling */
-  background: none;
-  border: none;
-  padding: 0;
-  margin: 0;
-
-  /* Text styling */
-  font-size: 0.875rem; /* text-sm */
-  font-weight: 500;
-  text-align: left;
-  cursor: pointer;
-
-  /* Remove default button appearance */
-  appearance: none;
-  -webkit-appearance: none;
-
-  /* Focus styles */
-  outline: none;
-  border-radius: 0.25rem;
-}
-
-.dependency-toggle-btn:focus-visible {
-  outline: 2px solid #3b82f6;
-  outline-offset: 2px;
-}
-
-.dependency-toggle-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-/* Smooth transitions for dependency expansion */
-.transition-all {
-  transition-property: all;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* Focus states for accessibility */
-.group:focus-within {
-  @apply ring-2 ring-blue-500/50 ring-offset-2 ring-offset-gray-900;
-}
-
-/* Enhanced hover effects */
-.group:hover {
-  transform: translateY(-4px);
-}
-
-/* Custom scrollbar for dependency list */
-.space-y-2::-webkit-scrollbar {
-  width: 4px;
-}
-
-.space-y-2::-webkit-scrollbar-track {
-  background: #374151;
-  border-radius: 2px;
-}
-
-.space-y-2::-webkit-scrollbar-thumb {
-  background: #6b7280;
-  border-radius: 2px;
-}
-
-.space-y-2::-webkit-scrollbar-thumb:hover {
-  background: #9ca3af;
-}
-
-/* Gradient animation for selected states */
-.bg-gradient-to-br {
-  background-size: 200% 200%;
-  animation: gradient-shift 6s ease infinite;
-}
-
-@keyframes gradient-shift {
-  0%, 100% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-}
-
-/* Enhanced shadow effects */
-.shadow-xl {
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
-}
-
-/* Backdrop blur support */
-.backdrop-blur-sm {
-  backdrop-filter: blur(4px);
-}
-
-/* Button hover glow effects */
-.hover\:shadow-blue-500\/30:hover {
-  box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.3), 0 4px 6px -2px rgba(59, 130, 246, 0.2);
-}
-
-/* Card glow effects based on state */
-.hover\:shadow-blue-500\/20:hover {
-  box-shadow: 0 20px 25px -5px rgba(59, 130, 246, 0.2), 0 10px 10px -5px rgba(59, 130, 246, 0.1);
-}
-
-.hover\:shadow-green-500\/20:hover {
-  box-shadow: 0 20px 25px -5px rgba(34, 197, 94, 0.2), 0 10px 10px -5px rgba(34, 197, 94, 0.1);
-}
-
-.hover\:shadow-red-500\/20:hover {
-  box-shadow: 0 20px 25px -5px rgba(239, 68, 68, 0.2), 0 10px 10px -5px rgba(239, 68, 68, 0.1);
-}
-
-.hover\:shadow-gray-900\/50:hover {
-  box-shadow: 0 20px 25px -5px rgba(17, 24, 39, 0.5), 0 10px 10px -5px rgba(17, 24, 39, 0.3);
-}
-</style>

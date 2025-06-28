@@ -68,32 +68,3 @@ onBeforeUnmount(() => {
     </transition>
   </Teleport>
 </template>
-
-<style scoped>
-.modal-fade-enter-active,
-.modal-fade-leave-active {
-  transition: opacity 0.3s ease;
-}
-
-.modal-fade-enter-from,
-.modal-fade-leave-to {
-  opacity: 0;
-}
-
-.modal-content-enter-active,
-.modal-content-leave-active {
-  transition:
-    transform 0.3s ease,
-    opacity 0.3s ease;
-}
-
-.modal-content-enter-from {
-  opacity: 0;
-  transform: scale(0.95);
-}
-
-.modal-content-leave-to {
-  opacity: 0;
-  transform: scale(0.95);
-}
-</style>

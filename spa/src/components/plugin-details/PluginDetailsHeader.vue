@@ -1,5 +1,7 @@
 <template>
-  <div class="bg-gradient-to-br from-gray-800/60 to-gray-900/40 border border-gray-700/50 rounded-2xl p-8 mb-8 backdrop-blur-sm">
+  <div
+    class="bg-gradient-to-br from-gray-800/60 to-gray-900/40 border border-gray-700/50 rounded-2xl p-8 mb-8 backdrop-blur-sm"
+  >
     <!-- Plugin Header with Status -->
     <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
       <!-- Left Section: Plugin Info -->
@@ -7,15 +9,16 @@
         <!-- Plugin Name & Badges -->
         <div class="flex items-start gap-4 mb-4">
           <div class="flex-1">
-
             <!-- Badges Row -->
             <div class="flex flex-wrap gap-2 mb-4">
               <!-- Official/Community Badge -->
               <span
                 class="inline-flex items-center gap-1 px-3 py-1 text-sm font-medium rounded-full border"
-                :class="plugin.is_official
-                  ? 'bg-emerald-900/20 text-emerald-300 border-emerald-500/30'
-                  : 'bg-gray-700/60 text-gray-300 border-gray-600/50'"
+                :class="
+                  plugin.is_official
+                    ? 'bg-emerald-900/20 text-emerald-300 border-emerald-500/30'
+                    : 'bg-gray-700/60 text-gray-300 border-gray-600/50'
+                "
               >
                 <svg
                   v-if="plugin.is_official"
@@ -23,16 +26,19 @@
                   fill="currentColor"
                   viewBox="0 0 20 20"
                 >
-                  <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                  <path
+                    fill-rule="evenodd"
+                    d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                    clip-rule="evenodd"
+                  />
                 </svg>
-                <svg
-                  v-else
-                  class="w-4 h-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9m0-9v9" />
+                <svg v-else class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9m0-9v9"
+                  />
                 </svg>
                 {{ plugin.is_official ? 'Official' : 'Community' }}
               </span>
@@ -46,7 +52,9 @@
               </span>
 
               <!-- Version Badge -->
-              <span class="px-3 py-1 text-sm font-medium bg-purple-900/20 text-purple-300 border border-purple-500/30 rounded-full">
+              <span
+                class="px-3 py-1 text-sm font-medium bg-purple-900/20 text-purple-300 border border-purple-500/30 rounded-full"
+              >
                 {{ plugin.version }}
               </span>
 
@@ -89,7 +97,6 @@
       </div>
     </div>
 
-
     <div class="space-y-3">
       <a
         v-if="plugin.repository_url"
@@ -101,12 +108,7 @@
         <div
           class="w-10 h-10 bg-blue-900/30 rounded-lg flex items-center justify-center group-hover:bg-blue-800/40 transition-colors"
         >
-          <svg
-            class="w-5 h-5 text-blue-400"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
+          <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
               stroke-linecap="round"
               stroke-linejoin="round"
@@ -154,6 +156,7 @@ interface Props {
 
 interface Emits {
   (e: 'toggleSelection'): void
+
   (e: 'share'): void
 }
 
@@ -190,11 +193,11 @@ const selectionStatusText = computed(() => {
 
 const primaryActionClasses = computed(() => {
   const isSelected = props.selectionState !== 'none'
-  
+
   if (isSelected) {
     return 'bg-gray-700/50 text-gray-300 hover:bg-gray-600/50 border-gray-600/50 hover:border-gray-500/70'
   }
-  
+
   return 'bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-500 hover:to-blue-600 border-blue-500/50 shadow-lg shadow-blue-500/20 hover:shadow-blue-500/30'
 })
 
@@ -202,94 +205,7 @@ const primaryActionText = computed(() => {
   if (props.isLoadingDependencies) {
     return 'Loading...'
   }
-  
+
   return props.selectionState !== 'none' ? 'Deselect Plugin' : 'Select Plugin'
 })
 </script>
-
-<style scoped>
-/* Loading animation */
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.animate-spin {
-  animation: spin 1s linear infinite;
-}
-
-/* Backdrop blur support */
-.backdrop-blur-sm {
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-}
-
-/* Enhanced gradient effects */
-.bg-gradient-to-br {
-  background-size: 200% 200%;
-  animation: gradient-shift 6s ease infinite;
-}
-
-.bg-gradient-to-r {
-  background-size: 200% 200%;
-  animation: gradient-shift 4s ease infinite;
-}
-
-@keyframes gradient-shift {
-  0%, 100% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-}
-
-/* Enhanced hover effects */
-button:not(:disabled):hover {
-  transform: translateY(-1px);
-}
-
-button:not(:disabled):active {
-  transform: scale(0.98);
-}
-
-a:hover {
-  transform: translateY(-1px);
-}
-
-/* Focus states for accessibility */
-button:focus-visible,
-a:focus-visible {
-  outline: 2px solid #3b82f6;
-  outline-offset: 2px;
-}
-
-/* Responsive improvements */
-@media (max-width: 640px) {
-  .grid-cols-2 {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-  
-  .md\:grid-cols-4 {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-  
-  .lg\:min-w-\[200px\] {
-    min-width: auto;
-  }
-}
-
-/* Enhanced shadow effects */
-.shadow-lg {
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
-}
-
-.shadow-blue-500\/20 {
-  box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.2), 0 4px 6px -2px rgba(59, 130, 246, 0.1);
-}
-
-.hover\:shadow-blue-500\/30:hover {
-  box-shadow: 0 20px 25px -5px rgba(59, 130, 246, 0.3), 0 10px 10px -5px rgba(59, 130, 246, 0.2);
-}
-</style>

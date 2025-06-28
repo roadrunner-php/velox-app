@@ -75,27 +75,3 @@ onMounted(() => {
   generateParticles()
 })
 </script>
-
-<style scoped>
-/* Pulse animation with better performance */
-.animate-pulse {
-  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}
-
-@keyframes pulse {
-  0%,
-  100% {
-    opacity: var(--particle-opacity, 0.5);
-  }
-  50% {
-    opacity: calc(var(--particle-opacity, 0.5) * 0.3);
-  }
-}
-
-/* Respect reduced motion preferences */
-@media (prefers-reduced-motion: reduce) {
-  .animate-pulse {
-    animation: none;
-  }
-}
-</style>

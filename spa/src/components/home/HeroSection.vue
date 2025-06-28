@@ -1,10 +1,7 @@
 <template>
-  <section 
-    class="relative overflow-hidden"
-    :class="sectionClasses"
-  >
+  <section class="relative overflow-hidden" :class="sectionClasses">
     <!-- Background -->
-    <AnimatedBackground 
+    <AnimatedBackground
       v-if="showBackground"
       :particle-count="30"
       :pattern-opacity="0.1"
@@ -15,7 +12,7 @@
     <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 sm:py-32">
       <div class="text-center">
         <!-- Main Headline with Animation -->
-        <h1 
+        <h1
           class="text-4xl sm:text-6xl lg:text-7xl font-bold text-white mb-6"
           :class="headlineAnimation"
         >
@@ -63,10 +60,7 @@
         </div>
 
         <!-- Key Benefits Pills -->
-        <div
-          class="flex flex-wrap justify-center gap-3 mt-12"
-          :class="benefitsAnimation"
-        >
+        <div class="flex flex-wrap justify-center gap-3 mt-12" :class="benefitsAnimation">
           <span
             v-for="benefit in benefits"
             :key="benefit"
@@ -79,7 +73,7 @@
     </div>
 
     <!-- Scroll Indicator -->
-    <div 
+    <div
       v-if="showScrollIndicator"
       class="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce"
     >
@@ -124,141 +118,50 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), {
   mainTitle: 'Build Your Perfect',
   highlightTitle: 'RoadRunner Server',
-  subtitle: 'Create optimized, lightweight server configurations with our intelligent plugin system and proven presets.',
+  subtitle:
+    'Create optimized, lightweight server configurations with our intelligent plugin system and proven presets.',
   subtitleHighlight: 'Deploy faster, run leaner, scale better.',
   primaryCta: () => ({
     text: '🚀 Start Building',
-    to: '/plugins'
+    to: '/plugins',
   }),
   secondaryCta: () => ({
     text: '⚡ Quick Presets',
-    to: '/presets'
+    to: '/presets',
   }),
   benefits: () => [
     '✅ Zero Configuration Conflicts',
     '⚡ Instant Deployment',
     '🔧 Auto Dependency Resolution',
-    '📦 Optimized Binaries'
+    '📦 Optimized Binaries',
   ],
   showBackground: true,
   showScrollIndicator: true,
   variant: 'default',
-  reducedMotion: false
+  reducedMotion: false,
 })
 
 const sectionClasses = computed(() => {
   const variantClasses = {
     default: 'bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-900',
     dark: 'bg-gradient-to-br from-gray-900 via-black to-gray-900',
-    gradient: 'bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900'
+    gradient: 'bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900',
   }
 
   return variantClasses[props.variant]
 })
 
-const headlineAnimation = computed(() => 
-  props.reducedMotion ? '' : 'animate-fade-in-up'
+const headlineAnimation = computed(() => (props.reducedMotion ? '' : 'animate-fade-in-up'))
+
+const subtitleAnimation = computed(() =>
+  props.reducedMotion ? '' : 'animate-fade-in-up animation-delay-200',
 )
 
-const subtitleAnimation = computed(() => 
-  props.reducedMotion ? '' : 'animate-fade-in-up animation-delay-200'
+const ctaAnimation = computed(() =>
+  props.reducedMotion ? '' : 'animate-fade-in-up animation-delay-400',
 )
 
-const ctaAnimation = computed(() => 
-  props.reducedMotion ? '' : 'animate-fade-in-up animation-delay-400'
-)
-
-const benefitsAnimation = computed(() => 
-  props.reducedMotion ? '' : 'animate-fade-in-up animation-delay-600'
+const benefitsAnimation = computed(() =>
+  props.reducedMotion ? '' : 'animate-fade-in-up animation-delay-600',
 )
 </script>
-
-<style scoped>
-/* Custom animations */
-@keyframes fade-in-up {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes gradient-x {
-  0%, 100% {
-    background-size: 200% 200%;
-    background-position: left center;
-  }
-  50% {
-    background-size: 200% 200%;
-    background-position: right center;
-  }
-}
-
-.animate-fade-in-up {
-  animation: fade-in-up 0.8s ease-out forwards;
-}
-
-.animation-delay-200 {
-  animation-delay: 0.2s;
-}
-
-.animation-delay-400 {
-  animation-delay: 0.4s;
-}
-
-.animation-delay-600 {
-  animation-delay: 0.6s;
-}
-
-.animate-gradient-x {
-  animation: gradient-x 3s ease infinite;
-  background-size: 200% 200%;
-}
-
-/* Text gradient */
-.bg-clip-text {
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-/* Backdrop blur support */
-.backdrop-blur-sm {
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-}
-
-/* Responsive adjustments */
-@media (max-width: 640px) {
-  .text-4xl {
-    font-size: 2.5rem;
-  }
-
-  .text-6xl {
-    font-size: 3.5rem;
-  }
-
-  .text-7xl {
-    font-size: 4rem;
-  }
-}
-
-/* Reduced motion support */
-@media (prefers-reduced-motion: reduce) {
-  .animate-fade-in-up,
-  .animate-gradient-x,
-  .animate-bounce {
-    animation: none;
-  }
-}
-
-/* Enhanced hover effects for benefits */
-.transition-colors {
-  transition-property: color, background-color, border-color;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 200ms;
-}
-</style>

@@ -52,30 +52,3 @@ const props = withDefaults(defineProps<Props>(), {
   animationsDisabled: false,
 })
 </script>
-
-<style scoped>
-@keyframes spin-slow {
-  from {
-    transform: translate(-50%, -50%) rotate(0deg);
-  }
-  to {
-    transform: translate(-50%, -50%) rotate(360deg);
-  }
-}
-
-.animate-spin-slow {
-  animation: spin-slow 20s linear infinite;
-}
-
-.delay-1000 {
-  animation-delay: 1s;
-}
-
-/* Respect reduced motion preferences */
-@media (prefers-reduced-motion: reduce) {
-  .animate-pulse,
-  .animate-spin-slow {
-    animation: none;
-  }
-}
-</style>

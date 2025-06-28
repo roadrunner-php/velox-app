@@ -160,22 +160,3 @@ function handleKeydown(event: KeyboardEvent, format: ConfigFormat) {
     </div>
   </div>
 </template>
-
-<style scoped>
-/* Custom focus styles for better accessibility */
-[role="radio"]:focus {
-  outline: none;
-}
-
-/* Ensure smooth transitions */
-.group .absolute {
-  transition: all 0.2s ease;
-}
-
-/* Better mobile touch targets */
-@media (max-width: 640px) {
-  [role="radio"] {
-    min-height: 44px;
-  }
-}
-</style>
