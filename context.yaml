@@ -36,6 +36,13 @@ documents:
         sourcePaths:
           - app/src/Module/Velox
 
+  - description: Github module
+    outputPath: modules/github.md
+    sources:
+      - type: file
+        sourcePaths:
+          - app/src/Module/Github
+
   - description: HTTP endpoints
     outputPath: modules/http-endpoints.md
     sources:
