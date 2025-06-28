@@ -7,6 +7,7 @@
         <RouterView :key="$route.fullPath" />
       </div>
     </main>
+    <ContributorsSection />
     <AppFooter />
   </div>
 </template>
@@ -15,6 +16,7 @@
 import { RouterView } from 'vue-router'
 import AppHeader from './components/AppHeader.vue'
 import AppFooter from './components/AppFooter.vue'
+import ContributorsSection from './components/contributors/ContributorsSection.vue'
 import BackgroundPattern from './components/BackgroundPattern.vue'
 </script>
 

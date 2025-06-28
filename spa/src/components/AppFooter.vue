@@ -1,36 +1,8 @@
 <template>
   <footer class="bg-gray-900 border-t border-gray-800 text-gray-400 w-full">
     <div class="max-w-6xl mx-auto px-4 py-6">
-      <div>
-        <h2 class="text-lg font-semibold mb-6 text-white text-center">
-          We are Buggregator developers
-        </h2>
-
-        <div class="flex flex-wrap gap-5 justify-center">
-          <a
-            v-for="user in users"
-            :key="user.name"
-            :href="user.github"
-            target="_blank"
-            class="group flex flex-col items-center justify-between bg-gray-800 hover:bg-gray-700 rounded-lg px-5 py-4 transition transform hover:-translate-y-1 hover:shadow-lg w-56 h-44"
-          >
-            <div
-              class="border-2 border-gray-400 group-hover:border-transparent rounded-full p-1 transition bg-gradient-to-br group-hover:from-blue-500 group-hover:to-purple-600"
-            >
-              <img :src="user.avatar" alt="avatar" class="w-16 h-16 rounded-full" loading="lazy" />
-            </div>
-
-            <div class="text-center">
-              <div class="text-white font-medium group-hover:text-blue-400 transition">
-                {{ user.name }}
-              </div>
-              <div class="text-sm text-gray-400">{{ user.role }}</div>
-            </div>
-          </a>
-        </div>
-      </div>
       <div
-        class="mt-8 flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0"
+        class="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0"
       >
         <div class="flex items-center space-x-2">
           <div
@@ -51,16 +23,22 @@
         <div class="flex items-center space-x-6 text-sm">
           <a
             href="https://docs.roadrunner.dev/docs/customization/build"
+            target="_blank"
+            rel="noopener noreferrer"
             class="hover:text-white transition-colors duration-200"
             >Documentation</a
           >
           <a
             href="https://github.com/roadrunner-php/velox-app"
+            target="_blank"
+            rel="noopener noreferrer"
             class="hover:text-white transition-colors duration-200"
             >GitHub</a
           >
           <a
             href="https://t.me/spiralphp/4983"
+            target="_blank"
+            rel="noopener noreferrer"
             class="hover:text-white transition-colors duration-200"
             >Support</a
           >
@@ -70,19 +48,75 @@
   </footer>
 </template>
 
-<script setup>
-const users = [
-  {
-    name: 'Pavel Buchnev',
-    role: 'Creator of Buggregator',
-    github: 'https://github.com/butschster',
-    avatar: 'https://avatars.githubusercontent.com/u/773481?v=4',
-  },
-  {
-    name: 'Nickolay Arbuzov',
-    role: 'Frontend part',
-    github: 'https://github.com/nickolayArbuzov',
-    avatar: 'https://avatars.githubusercontent.com/u/56513866?v=4',
-  },
-]
-</script>
+<style scoped>
+/* Smooth transitions */
+.transition-colors {
+  transition-property: color, background-color, border-color;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 200ms;
+}
+
+/* Focus states for accessibility */
+a:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+  border-radius: 0.25rem;
+}
+
+/* Enhanced hover effects */
+a:hover {
+  transform: translateY(-1px);
+}
+
+a:active {
+  transform: scale(0.98);
+}
+
+/* Gradient animation for the logo */
+.bg-gradient-to-br {
+  background-size: 200% 200%;
+  animation: gradient-shift 3s ease infinite;
+}
+
+@keyframes gradient-shift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+/* Responsive improvements */
+@media (max-width: 640px) {
+  .space-x-6 {
+    gap: 1rem;
+  }
+  
+  .flex {
+    text-align: center;
+  }
+}
+
+/* Enhanced border styling */
+.border-t {
+  border-top-width: 1px;
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .transition-colors,
+  .bg-gradient-to-br {
+    transition: none;
+    animation: none;
+  }
+  
+  a:hover {
+    transform: none;
+  }
+  
+  a:active {
+    transform: none;
+  }
+}
+</style>
