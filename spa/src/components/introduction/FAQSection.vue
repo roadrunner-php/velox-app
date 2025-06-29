@@ -143,7 +143,7 @@ function toggleFaq(index: number) {
 }
 
 .faq-section__answer {
-  @apply px-6 pb-6 overflow-hidden;
+  @apply p-6 overflow-hidden;
 }
 
 .faq-section__answer-text {
