@@ -42,7 +42,8 @@ final class PluginsBootloader extends Bootloader
                 owner: 'butschster',
                 repository: 'rr-sentry-transport',
                 repositoryType: PluginRepository::Github,
-                source: PluginSource::Community,
+                source: PluginSource::Community, // Added logger dependency
+                dependencies: ['logger'],
                 description: 'Sentry collector plugin allowing delegation of Sentry events delivery to the Sentry server through the RoadRunner server.',
                 category: PluginCategory::Monitoring,
             ),
@@ -53,6 +54,7 @@ final class PluginsBootloader extends Bootloader
                 repository: 'rr-redis-queue',
                 repositoryType: PluginRepository::Github,
                 source: PluginSource::Community,
+                dependencies: ['logger'],
                 description: 'This is a plugin for roadrunner adding support for a redis backed queue. This plugin is still under development and should not be considered production ready.',
                 category: PluginCategory::Jobs,
             ),
@@ -63,26 +65,18 @@ final class PluginsBootloader extends Bootloader
     {
         return [
             new Plugin(
-                name: 'appLogger',
-                ref: $env->get('RR_PLUGIN_APP_LOGGER', 'v5.0.2'),
-                owner: 'roadrunner-server',
-                repository: 'app-logger',
-                repositoryType: PluginRepository::Github,
-                source: PluginSource::Official,
-                dependencies: ['logger'],
-                description: 'Application logger plugin for RoadRunner',
-                category: PluginCategory::Logging,
-            ),
-            new Plugin(
                 name: 'logger',
                 ref: $env->get('RR_PLUGIN_LOGGER', 'v5.0.2'),
                 owner: 'roadrunner-server',
                 repository: 'logger',
                 repositoryType: PluginRepository::Github,
                 source: PluginSource::Official,
+                dependencies: [], // No dependencies (foundational)
                 description: 'Core logging functionality',
                 category: PluginCategory::Logging,
             ),
+
+            // SERVER & CORE PLUGINS
             new Plugin(
                 name: 'server',
                 ref: $env->get('RR_PLUGIN_SERVER', 'v5.0.2'),
@@ -90,206 +84,11 @@ final class PluginsBootloader extends Bootloader
                 repository: 'server',
                 repositoryType: PluginRepository::Github,
                 source: PluginSource::Official,
+                dependencies: ['logger'], // Added logger dependency
                 description: 'Core server functionality',
                 category: PluginCategory::Core,
             ),
-            new Plugin(
-                name: 'http',
-                ref: $env->get('RR_PLUGIN_HTTP', 'v5.0.2'),
-                owner: 'roadrunner-server',
-                repository: 'http',
-                repositoryType: PluginRepository::Github,
-                source: PluginSource::Official,
-                dependencies: ['server'],
-                description: 'HTTP server plugin',
-                category: PluginCategory::Http,
-            ),
-            new Plugin(
-                name: 'gzip',
-                ref: $env->get('RR_PLUGIN_GZIP', 'v5.0.2'),
-                owner: 'roadrunner-server',
-                repository: 'gzip',
-                repositoryType: PluginRepository::Github,
-                source: PluginSource::Official,
-                dependencies: ['http'],
-                description: 'GZIP compression middleware',
-                category: PluginCategory::Http,
-            ),
-            new Plugin(
-                name: 'headers',
-                ref: $env->get('RR_PLUGIN_HEADERS', 'v5.0.2'),
-                owner: 'roadrunner-server',
-                repository: 'headers',
-                repositoryType: PluginRepository::Github,
-                source: PluginSource::Official,
-                dependencies: ['http'],
-                description: 'HTTP headers middleware',
-                category: PluginCategory::Http,
-            ),
-            new Plugin(
-                name: 'static',
-                ref: $env->get('RR_PLUGIN_STATIC', 'v5.0.1'),
-                owner: 'roadrunner-server',
-                repository: 'static',
-                repositoryType: PluginRepository::Github,
-                source: PluginSource::Official,
-                dependencies: ['http'],
-                description: 'Static file serving middleware',
-                category: PluginCategory::Http,
-            ),
-            new Plugin(
-                name: 'jobs',
-                ref: $env->get('RR_PLUGIN_JOBS', 'v5.0.2'),
-                owner: 'roadrunner-server',
-                repository: 'jobs',
-                repositoryType: PluginRepository::Github,
-                source: PluginSource::Official,
-                dependencies: ['server'],
-                description: 'Job queue management',
-                category: PluginCategory::Jobs,
-            ),
-            new Plugin(
-                name: 'amqp',
-                ref: $env->get('RR_PLUGIN_AMQP', 'v5.0.2'),
-                owner: 'roadrunner-server',
-                repository: 'amqp',
-                repositoryType: PluginRepository::Github,
-                source: PluginSource::Official,
-                dependencies: ['jobs'],
-                description: 'AMQP job driver',
-                category: PluginCategory::Jobs,
-            ),
-            new Plugin(
-                name: 'sqs',
-                ref: $env->get('RR_PLUGIN_SQS', 'v5.0.2'),
-                owner: 'roadrunner-server',
-                repository: 'sqs',
-                repositoryType: PluginRepository::Github,
-                source: PluginSource::Official,
-                dependencies: ['jobs'],
-                description: 'AWS SQS job driver',
-                category: PluginCategory::Jobs,
-            ),
-            new Plugin(
-                name: 'beanstalk',
-                ref: $env->get('RR_PLUGIN_BEANSTALK', 'v5.0.2'),
-                owner: 'roadrunner-server',
-                repository: 'beanstalk',
-                repositoryType: PluginRepository::Github,
-                source: PluginSource::Official,
-                dependencies: ['jobs'],
-                description: 'Beanstalk job driver',
-                category: PluginCategory::Jobs,
-            ),
-            new Plugin(
-                name: 'nats',
-                ref: $env->get('RR_PLUGIN_NATS', 'v5.0.2'),
-                owner: 'roadrunner-server',
-                repository: 'nats',
-                repositoryType: PluginRepository::Github,
-                source: PluginSource::Official,
-                dependencies: ['jobs'],
-                description: 'NATS job driver',
-                category: PluginCategory::Jobs,
-            ),
-            new Plugin(
-                name: 'kafka',
-                ref: $env->get('RR_PLUGIN_KAFKA', 'v5.0.2'),
-                owner: 'roadrunner-server',
-                repository: 'kafka',
-                repositoryType: PluginRepository::Github,
-                source: PluginSource::Official,
-                dependencies: ['jobs'],
-                description: 'Apache Kafka job driver',
-                category: PluginCategory::Jobs,
-            ),
-            new Plugin(
-                name: 'kv',
-                ref: $env->get('RR_PLUGIN_KV', 'v5.0.2'),
-                owner: 'roadrunner-server',
-                repository: 'kv',
-                repositoryType: PluginRepository::Github,
-                source: PluginSource::Official,
-                dependencies: ['server'],
-                description: 'Key-value storage interface',
-                category: PluginCategory::Kv,
-            ),
-            new Plugin(
-                name: 'redis',
-                ref: $env->get('RR_PLUGIN_REDIS', 'v5.0.2'),
-                owner: 'roadrunner-server',
-                repository: 'redis',
-                repositoryType: PluginRepository::Github,
-                source: PluginSource::Official,
-                dependencies: ['kv'],
-                description: 'Redis key-value storage',
-                category: PluginCategory::Kv,
-            ),
-            new Plugin(
-                name: 'memory',
-                ref: $env->get('RR_PLUGIN_MEMORY', 'v5.0.2'),
-                owner: 'roadrunner-server',
-                repository: 'memory',
-                repositoryType: PluginRepository::Github,
-                source: PluginSource::Official,
-                dependencies: ['kv'],
-                description: 'In-memory key-value storage',
-                category: PluginCategory::Kv,
-            ),
-            new Plugin(
-                name: 'boltdb',
-                ref: $env->get('RR_PLUGIN_BOLTDB', 'v5.0.2'),
-                owner: 'roadrunner-server',
-                repository: 'boltdb',
-                repositoryType: PluginRepository::Github,
-                source: PluginSource::Official,
-                dependencies: ['kv'],
-                description: 'BoltDB key-value storage',
-                category: PluginCategory::Kv,
-            ),
-            new Plugin(
-                name: 'memcached',
-                ref: $env->get('RR_PLUGIN_MEMCACHED', 'v5.0.2'),
-                owner: 'roadrunner-server',
-                repository: 'memcached',
-                repositoryType: PluginRepository::Github,
-                source: PluginSource::Official,
-                dependencies: ['kv'],
-                description: 'Memcached key-value storage',
-                category: PluginCategory::Kv,
-            ),
-            new Plugin(
-                name: 'metrics',
-                ref: $env->get('RR_PLUGIN_METRICS', 'v5.0.2'),
-                owner: 'roadrunner-server',
-                repository: 'metrics',
-                repositoryType: PluginRepository::Github,
-                source: PluginSource::Official,
-                description: 'Metrics collection and reporting',
-                category: PluginCategory::Metrics,
-            ),
-            new Plugin(
-                name: 'prometheus',
-                ref: $env->get('RR_PLUGIN_PROMETHEUS', 'v5.0.1'),
-                owner: 'roadrunner-server',
-                repository: 'prometheus',
-                repositoryType: PluginRepository::Github,
-                source: PluginSource::Official,
-                dependencies: ['metrics'],
-                description: 'Prometheus metrics exporter',
-                category: PluginCategory::Metrics,
-            ),
-            new Plugin(
-                name: 'grpc',
-                ref: $env->get('RR_PLUGIN_GRPC', 'v5.0.2'),
-                owner: 'roadrunner-server',
-                repository: 'grpc',
-                repositoryType: PluginRepository::Github,
-                source: PluginSource::Official,
-                dependencies: ['server'],
-                description: 'gRPC server plugin',
-                category: PluginCategory::Grpc,
-            ),
+
             new Plugin(
                 name: 'rpc',
                 ref: $env->get('RR_PLUGIN_RPC', 'v5.0.2'),
@@ -297,73 +96,11 @@ final class PluginsBootloader extends Bootloader
                 repository: 'rpc',
                 repositoryType: PluginRepository::Github,
                 source: PluginSource::Official,
+                dependencies: ['logger'], // Added logger dependency
                 description: 'RPC communication plugin',
                 category: PluginCategory::Core,
             ),
-            new Plugin(
-                name: 'status',
-                ref: $env->get('RR_PLUGIN_STATUS', 'v5.0.2'),
-                owner: 'roadrunner-server',
-                repository: 'status',
-                repositoryType: PluginRepository::Github,
-                source: PluginSource::Official,
-                description: 'Health checks and readiness probes',
-                category: PluginCategory::Monitoring,
-            ),
-            new Plugin(
-                name: 'fileserver',
-                ref: $env->get('RR_PLUGIN_FILESERVER', 'v5.0.1'),
-                owner: 'roadrunner-server',
-                repository: 'fileserver',
-                repositoryType: PluginRepository::Github,
-                source: PluginSource::Official,
-                dependencies: ['http'],
-                description: 'Static file server',
-                category: PluginCategory::Http,
-            ),
-            new Plugin(
-                name: 'tcp',
-                ref: $env->get('RR_PLUGIN_TCP', 'v5.0.2'),
-                owner: 'roadrunner-server',
-                repository: 'tcp',
-                repositoryType: PluginRepository::Github,
-                source: PluginSource::Official,
-                dependencies: ['server'],
-                description: 'Raw TCP payload handling',
-                category: PluginCategory::Network,
-            ),
-            new Plugin(
-                name: 'centrifuge',
-                ref: $env->get('RR_PLUGIN_CENTRIFUGE', 'v5.0.2'),
-                owner: 'roadrunner-server',
-                repository: 'centrifuge',
-                repositoryType: PluginRepository::Github,
-                source: PluginSource::Official,
-                dependencies: ['server'],
-                description: 'Centrifuge broadcasting platform',
-                category: PluginCategory::Broadcasting,
-            ),
-            new Plugin(
-                name: 'temporal',
-                ref: $env->get('RR_PLUGIN_TEMPORAL', 'v5.1.0'),
-                owner: 'temporalio',
-                repository: 'roadrunner-temporal',
-                repositoryType: PluginRepository::Github,
-                source: PluginSource::Official,
-                dependencies: ['server'],
-                description: 'Temporal workflow engine',
-                category: PluginCategory::Workflow,
-            ),
-            new Plugin(
-                name: 'otel',
-                ref: $env->get('RR_PLUGIN_OTEL', 'v5.0.1'),
-                owner: 'roadrunner-server',
-                repository: 'otel',
-                repositoryType: PluginRepository::Github,
-                source: PluginSource::Official,
-                description: 'OpenTelemetry tracing',
-                category: PluginCategory::Observability,
-            ),
+
             new Plugin(
                 name: 'service',
                 ref: $env->get('RR_PLUGIN_SERVICE', 'v5.0.2'),
@@ -371,9 +108,11 @@ final class PluginsBootloader extends Bootloader
                 repository: 'service',
                 repositoryType: PluginRepository::Github,
                 source: PluginSource::Official,
+                dependencies: ['logger'], // Added logger dependency
                 description: 'Lightweight systemd-like service manager',
                 category: PluginCategory::Core,
             ),
+
             new Plugin(
                 name: 'lock',
                 ref: $env->get('RR_PLUGIN_LOCK', 'v5.0.2'),
@@ -381,9 +120,97 @@ final class PluginsBootloader extends Bootloader
                 repository: 'lock',
                 repositoryType: PluginRepository::Github,
                 source: PluginSource::Official,
+                dependencies: ['logger', 'rpc'], // Added logger and rpc dependencies
                 description: 'Distributed locking mechanism',
                 category: PluginCategory::Core,
             ),
+
+            // COMMUNICATION LAYER
+            new Plugin(
+                name: 'http',
+                ref: $env->get('RR_PLUGIN_HTTP', 'v5.0.2'),
+                owner: 'roadrunner-server',
+                repository: 'http',
+                repositoryType: PluginRepository::Github,
+                source: PluginSource::Official,
+                dependencies: ['logger', 'server'], // Added logger dependency
+                description: 'HTTP server plugin',
+                category: PluginCategory::Http,
+            ),
+
+            new Plugin(
+                name: 'grpc',
+                ref: $env->get('RR_PLUGIN_GRPC', 'v5.0.2'),
+                owner: 'roadrunner-server',
+                repository: 'grpc',
+                repositoryType: PluginRepository::Github,
+                source: PluginSource::Official,
+                dependencies: ['logger', 'server'], // Added logger dependency
+                description: 'gRPC server plugin',
+                category: PluginCategory::Grpc,
+            ),
+
+            new Plugin(
+                name: 'tcp',
+                ref: $env->get('RR_PLUGIN_TCP', 'v5.0.2'),
+                owner: 'roadrunner-server',
+                repository: 'tcp',
+                repositoryType: PluginRepository::Github,
+                source: PluginSource::Official,
+                dependencies: ['logger', 'server'], // Added logger dependency
+                description: 'Raw TCP payload handling',
+                category: PluginCategory::Network,
+            ),
+
+            // HTTP MIDDLEWARE - All need logger + http
+            new Plugin(
+                name: 'gzip',
+                ref: $env->get('RR_PLUGIN_GZIP', 'v5.0.2'),
+                owner: 'roadrunner-server',
+                repository: 'gzip',
+                repositoryType: PluginRepository::Github,
+                source: PluginSource::Official,
+                dependencies: ['logger', 'http'], // Added logger dependency
+                description: 'GZIP compression middleware',
+                category: PluginCategory::Http,
+            ),
+
+            new Plugin(
+                name: 'headers',
+                ref: $env->get('RR_PLUGIN_HEADERS', 'v5.0.2'),
+                owner: 'roadrunner-server',
+                repository: 'headers',
+                repositoryType: PluginRepository::Github,
+                source: PluginSource::Official,
+                dependencies: ['logger', 'http'], // Added logger dependency
+                description: 'HTTP headers middleware',
+                category: PluginCategory::Http,
+            ),
+
+            new Plugin(
+                name: 'static',
+                ref: $env->get('RR_PLUGIN_STATIC', 'v5.0.1'),
+                owner: 'roadrunner-server',
+                repository: 'static',
+                repositoryType: PluginRepository::Github,
+                source: PluginSource::Official,
+                dependencies: ['logger', 'http'], // Added logger dependency
+                description: 'Static file serving middleware',
+                category: PluginCategory::Http,
+            ),
+
+            new Plugin(
+                name: 'fileserver',
+                ref: $env->get('RR_PLUGIN_FILESERVER', 'v5.0.1'),
+                owner: 'roadrunner-server',
+                repository: 'fileserver',
+                repositoryType: PluginRepository::Github,
+                source: PluginSource::Official,
+                dependencies: ['logger', 'http'], // Added logger dependency
+                description: 'Static file server',
+                category: PluginCategory::Http,
+            ),
+
             new Plugin(
                 name: 'proxy',
                 ref: $env->get('RR_PLUGIN_PROXY', 'v5.0.2'),
@@ -391,10 +218,11 @@ final class PluginsBootloader extends Bootloader
                 repository: 'proxy_ip_parser',
                 repositoryType: PluginRepository::Github,
                 source: PluginSource::Official,
-                dependencies: ['http'],
+                dependencies: ['logger', 'http'], // Added logger dependency
                 description: 'Proxy IP parser middleware',
                 category: PluginCategory::Http,
             ),
+
             new Plugin(
                 name: 'send',
                 ref: $env->get('RR_PLUGIN_SEND', 'v5.0.1'),
@@ -402,10 +230,85 @@ final class PluginsBootloader extends Bootloader
                 repository: 'send',
                 repositoryType: PluginRepository::Github,
                 source: PluginSource::Official,
-                dependencies: ['http'],
+                dependencies: ['logger', 'http'], // Added logger dependency
                 description: 'Send file response middleware',
                 category: PluginCategory::Http,
             ),
+
+            // JOBS LAYER
+            new Plugin(
+                name: 'jobs',
+                ref: $env->get('RR_PLUGIN_JOBS', 'v5.0.2'),
+                owner: 'roadrunner-server',
+                repository: 'jobs',
+                repositoryType: PluginRepository::Github,
+                source: PluginSource::Official,
+                dependencies: ['logger', 'server', 'rpc'], // Added logger dependency
+                description: 'Job queue management',
+                category: PluginCategory::Jobs,
+            ),
+
+            // JOB DRIVERS - All need logger + jobs
+            new Plugin(
+                name: 'amqp',
+                ref: $env->get('RR_PLUGIN_AMQP', 'v5.0.2'),
+                owner: 'roadrunner-server',
+                repository: 'amqp',
+                repositoryType: PluginRepository::Github,
+                source: PluginSource::Official,
+                dependencies: ['logger', 'jobs'], // Added logger dependency
+                description: 'AMQP job driver',
+                category: PluginCategory::Jobs,
+            ),
+
+            new Plugin(
+                name: 'sqs',
+                ref: $env->get('RR_PLUGIN_SQS', 'v5.0.2'),
+                owner: 'roadrunner-server',
+                repository: 'sqs',
+                repositoryType: PluginRepository::Github,
+                source: PluginSource::Official,
+                dependencies: ['logger', 'jobs'], // Added logger dependency
+                description: 'AWS SQS job driver',
+                category: PluginCategory::Jobs,
+            ),
+
+            new Plugin(
+                name: 'beanstalk',
+                ref: $env->get('RR_PLUGIN_BEANSTALK', 'v5.0.2'),
+                owner: 'roadrunner-server',
+                repository: 'beanstalk',
+                repositoryType: PluginRepository::Github,
+                source: PluginSource::Official,
+                dependencies: ['logger', 'jobs'], // Added logger dependency
+                description: 'Beanstalk job driver',
+                category: PluginCategory::Jobs,
+            ),
+
+            new Plugin(
+                name: 'nats',
+                ref: $env->get('RR_PLUGIN_NATS', 'v5.0.2'),
+                owner: 'roadrunner-server',
+                repository: 'nats',
+                repositoryType: PluginRepository::Github,
+                source: PluginSource::Official,
+                dependencies: ['logger', 'jobs'], // Added logger dependency
+                description: 'NATS job driver',
+                category: PluginCategory::Jobs,
+            ),
+
+            new Plugin(
+                name: 'kafka',
+                ref: $env->get('RR_PLUGIN_KAFKA', 'v5.0.2'),
+                owner: 'roadrunner-server',
+                repository: 'kafka',
+                repositoryType: PluginRepository::Github,
+                source: PluginSource::Official,
+                dependencies: ['logger', 'jobs'], // Added logger dependency
+                description: 'Apache Kafka job driver',
+                category: PluginCategory::Jobs,
+            ),
+
             new Plugin(
                 name: 'googlepubsub',
                 ref: $env->get('RR_PLUGIN_GOOGLEPUBSUB', 'v5.0.2'),
@@ -413,9 +316,158 @@ final class PluginsBootloader extends Bootloader
                 repository: 'google-pub-sub',
                 repositoryType: PluginRepository::Github,
                 source: PluginSource::Official,
-                dependencies: ['jobs'],
+                dependencies: ['logger', 'jobs'], // Added logger dependency
                 description: 'Google Pub/Sub job driver',
                 category: PluginCategory::Jobs,
+            ),
+
+            // KEY-VALUE LAYER
+            new Plugin(
+                name: 'kv',
+                ref: $env->get('RR_PLUGIN_KV', 'v5.0.2'),
+                owner: 'roadrunner-server',
+                repository: 'kv',
+                repositoryType: PluginRepository::Github,
+                source: PluginSource::Official,
+                dependencies: ['logger', 'rpc'], // Changed from ['server'] to ['logger']
+                description: 'Key-value storage interface',
+                category: PluginCategory::Kv,
+            ),
+
+            // KV DRIVERS - All need logger + kv
+            new Plugin(
+                name: 'redis',
+                ref: $env->get('RR_PLUGIN_REDIS', 'v5.0.2'),
+                owner: 'roadrunner-server',
+                repository: 'redis',
+                repositoryType: PluginRepository::Github,
+                source: PluginSource::Official,
+                dependencies: ['logger', 'kv'], // Added logger dependency
+                description: 'Redis key-value storage',
+                category: PluginCategory::Kv,
+            ),
+
+            new Plugin(
+                name: 'memory',
+                ref: $env->get('RR_PLUGIN_MEMORY', 'v5.0.2'),
+                owner: 'roadrunner-server',
+                repository: 'memory',
+                repositoryType: PluginRepository::Github,
+                source: PluginSource::Official,
+                dependencies: ['logger', 'kv'], // Added logger dependency
+                description: 'In-memory key-value storage',
+                category: PluginCategory::Kv,
+            ),
+
+            new Plugin(
+                name: 'boltdb',
+                ref: $env->get('RR_PLUGIN_BOLTDB', 'v5.0.2'),
+                owner: 'roadrunner-server',
+                repository: 'boltdb',
+                repositoryType: PluginRepository::Github,
+                source: PluginSource::Official,
+                dependencies: ['logger', 'kv'], // Added logger dependency
+                description: 'BoltDB key-value storage',
+                category: PluginCategory::Kv,
+            ),
+
+            new Plugin(
+                name: 'memcached',
+                ref: $env->get('RR_PLUGIN_MEMCACHED', 'v5.0.2'),
+                owner: 'roadrunner-server',
+                repository: 'memcached',
+                repositoryType: PluginRepository::Github,
+                source: PluginSource::Official,
+                dependencies: ['logger', 'kv'], // Added logger dependency
+                description: 'Memcached key-value storage',
+                category: PluginCategory::Kv,
+            ),
+
+            // METRICS LAYER
+            new Plugin(
+                name: 'metrics',
+                ref: $env->get('RR_PLUGIN_METRICS', 'v5.0.2'),
+                owner: 'roadrunner-server',
+                repository: 'metrics',
+                repositoryType: PluginRepository::Github,
+                source: PluginSource::Official,
+                dependencies: ['logger', 'rpc'], // Added logger dependency
+                description: 'Metrics collection and reporting',
+                category: PluginCategory::Metrics,
+            ),
+
+            new Plugin(
+                name: 'prometheus',
+                ref: $env->get('RR_PLUGIN_PROMETHEUS', 'v5.0.1'),
+                owner: 'roadrunner-server',
+                repository: 'prometheus',
+                repositoryType: PluginRepository::Github,
+                source: PluginSource::Official,
+                dependencies: ['logger', 'metrics'], // Added logger dependency
+                description: 'Prometheus metrics exporter',
+                category: PluginCategory::Metrics,
+            ),
+
+            // MONITORING & OBSERVABILITY
+            new Plugin(
+                name: 'status',
+                ref: $env->get('RR_PLUGIN_STATUS', 'v5.0.2'),
+                owner: 'roadrunner-server',
+                repository: 'status',
+                repositoryType: PluginRepository::Github,
+                source: PluginSource::Official,
+                dependencies: ['logger'], // Added logger dependency
+                description: 'Health checks and readiness probes',
+                category: PluginCategory::Monitoring,
+            ),
+
+            new Plugin(
+                name: 'otel',
+                ref: $env->get('RR_PLUGIN_OTEL', 'v5.0.1'),
+                owner: 'roadrunner-server',
+                repository: 'otel',
+                repositoryType: PluginRepository::Github,
+                source: PluginSource::Official,
+                dependencies: ['logger'], // Added logger dependency
+                description: 'OpenTelemetry tracing',
+                category: PluginCategory::Observability,
+            ),
+
+            new Plugin(
+                name: 'appLogger',
+                ref: $env->get('RR_PLUGIN_APP_LOGGER', 'v5.0.2'),
+                owner: 'roadrunner-server',
+                repository: 'app-logger',
+                repositoryType: PluginRepository::Github,
+                source: PluginSource::Official,
+                dependencies: ['logger', 'rpc'], // Keep existing
+                description: 'Application logger plugin for RoadRunner',
+                category: PluginCategory::Logging,
+            ),
+
+            // BROADCASTING & WORKFLOW
+            new Plugin(
+                name: 'centrifuge',
+                ref: $env->get('RR_PLUGIN_CENTRIFUGE', 'v5.0.2'),
+                owner: 'roadrunner-server',
+                repository: 'centrifuge',
+                repositoryType: PluginRepository::Github,
+                source: PluginSource::Official,
+                dependencies: ['logger', 'server'], // Added logger dependency
+                description: 'Centrifuge broadcasting platform',
+                category: PluginCategory::Broadcasting,
+            ),
+
+            new Plugin(
+                name: 'temporal',
+                ref: $env->get('RR_PLUGIN_TEMPORAL', 'v5.1.0'),
+                owner: 'temporalio',
+                repository: 'roadrunner-temporal',
+                repositoryType: PluginRepository::Github,
+                source: PluginSource::Official,
+                dependencies: ['logger', 'server'], // Added logger dependency
+                description: 'Temporal workflow engine',
+                category: PluginCategory::Workflow,
             ),
         ];
     }
