@@ -234,28 +234,47 @@ const steps = [
     codeExample: {
       title: 'Example .velox.toml configuration:',
       language: 'toml',
-      code: `[velox]
-build_args = ['-trimpath', '-ldflags', '-s -w']
+      code: `[roadrunner]
+ref = "v2025.1.1"
+
+[log]
+level = "info"
+mode = "production"
 
 [github]
+[github.token]
 token = "\${RT_TOKEN}"
-refresh_interval = "10m"
 
-[roadrunner]
-ref = "v2024.2.0"
+[github.plugins]
+[github.plugins.http]
+ref = "v5.2.7"
+owner = "roadrunner-server"
+repository = "http"
 
-[github.packages]
-[github.packages.server]
-repo = "roadrunner-server/server"
+[github.plugins.server]
+ref = "v5.2.9"
+owner = "roadrunner-server"
+repository = "server"
 
-[github.packages.http]
-repo = "roadrunner-server/http"
+[github.plugins.lock]
+ref = "v5.1.8"
+owner = "roadrunner-server"
+repository = "lock"
 
-[github.packages.gzip]
-repo = "roadrunner-server/gzip"
+[github.plugins.otel]
+ref = "v5.1.8"
+owner = "roadrunner-server"
+repository = "otel"
 
-[github.packages.logger]
-repo = "roadrunner-server/logger"`,
+[github.plugins.status]
+ref = "v5.1.8"
+owner = "roadrunner-server"
+repository = "status"
+
+[github.plugins.metrics]
+ref = "v5.1.8"
+owner = "roadrunner-server"
+repository = "metrics""`,
     },
   },
   {
@@ -276,23 +295,9 @@ repo = "roadrunner-server/logger"`,
     icon: '🐹',
     content:
       "Velox requires Go 1.22 or later to compile your RoadRunner binary. If you don't have Go installed, download it from the official website.",
-    actionText: 'Download Go',
-    actionLink: 'https://golang.org/dl/',
+    actionText: 'Download and install',
+    actionLink: 'https://go.dev/doc/install',
     external: true,
-    codeExample: {
-      title: 'Verify Go installation:',
-      language: 'bash',
-      code: `# Check Go version (should be 1.22+)
-go version
-
-# Set up Go environment (if needed)
-export GOPATH=$HOME/go
-export PATH=$PATH:$GOPATH/bin
-
-# For Windows (PowerShell)
-$env:GOPATH = "$HOME\\go"
-$env:PATH += ";$env:GOPATH\\bin"`,
-    },
   },
   {
     id: 5,
@@ -311,17 +316,14 @@ $env:PATH += ";$env:GOPATH\\bin"`,
 export RT_TOKEN=your_github_token_here
 
 # Run the build (this will create a 'rr' binary)
-./velox build -c velox.toml .
+./vx build -c velox.toml .
 
 # For Windows
 set RT_TOKEN=your_github_token_here
-velox.exe build -c velox.toml .
+vx.exe build -c velox.toml .
 
 # Run your custom RoadRunner server
-./rr serve
-
-# Or specify a custom output name
-./velox build -o my-custom-server`,
+./rr serve`,
     },
   },
 ]
