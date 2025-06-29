@@ -67,3 +67,22 @@ documents:
       - type: file
         sourcePaths:
           - spa/src
+
+  - description: SPA component Plugins
+    outputPath: spa/plugins.md
+    sources:
+      - type: file
+        sourcePaths:
+          - spa/src/views/PluginsList.vue
+          - spa/src/components/ConfigFormatSelector.vue
+          - spa/src/components/PluginCard.vue
+          - spa/src/components/ConfigModal.vue
+
+  - description: SPA component Getting started
+    outputPath: spa/getting-started.md
+    sources:
+      - type: file
+        sourcePaths:
+          - spa/src/views
+          - spa/src/components/introduction
+

@@ -13,7 +13,7 @@
               />
             </svg>
           </div>
-          <span class="app-footer__text">© 2025 Velox UI - RoadRunner Configuration Builder</span>
+          <span class="app-footer__text">© 2025 Velox Builder - RoadRunner Configuration Builder</span>
         </div>
 
         <div class="app-footer__links">
