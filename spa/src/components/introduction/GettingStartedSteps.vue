@@ -35,10 +35,7 @@
                 <p class="getting-started-steps__step-details">{{ step.content }}</p>
 
                 <!-- Additional Tips -->
-                <div
-                  v-if="step.tips"
-                  class="getting-started-steps__tips"
-                >
+                <div v-if="step.tips" class="getting-started-steps__tips">
                   <div class="getting-started-steps__tips-content">
                     <svg
                       class="getting-started-steps__tips-icon"
@@ -61,15 +58,63 @@
                 </div>
               </div>
 
-              <!-- Action Button -->
-              <div v-if="step.actionText" class="getting-started-steps__action">
+              <!-- Action Buttons -->
+              <div
+                v-if="step.actions && step.actions.length > 0"
+                class="getting-started-steps__actions"
+              >
+                <component
+                  v-for="(action, actionIndex) in step.actions"
+                  :key="actionIndex"
+                  :is="action.external ? 'a' : 'RouterLink'"
+                  :href="action.external ? action.link : undefined"
+                  :to="action.external ? undefined : action.link"
+                  :target="action.external ? '_blank' : undefined"
+                  :rel="action.external ? 'noopener noreferrer' : undefined"
+                  class="getting-started-steps__action-button"
+                  :class="getActionButtonClasses(action.variant)"
+                >
+                  {{ action.text }}
+                  <svg
+                    v-if="action.external"
+                    class="getting-started-steps__action-icon"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                    />
+                  </svg>
+                  <svg
+                    v-else
+                    class="getting-started-steps__action-icon"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M13 7l5 5m0 0l-5 5m5-5H6"
+                    />
+                  </svg>
+                </component>
+              </div>
+
+              <!-- Backward Compatibility: Single Action Button -->
+              <div v-else-if="step.actionText" class="getting-started-steps__actions">
                 <component
                   :is="step.external ? 'a' : 'RouterLink'"
                   :href="step.external ? step.actionLink : undefined"
                   :to="step.external ? undefined : step.actionLink"
                   :target="step.external ? '_blank' : undefined"
                   :rel="step.external ? 'noopener noreferrer' : undefined"
-                  class="getting-started-steps__action-button"
+                  class="getting-started-steps__action-button getting-started-steps__action-button--primary"
                 >
                   {{ step.actionText }}
                   <svg
@@ -86,7 +131,13 @@
                       d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
                     />
                   </svg>
-                  <svg v-else class="getting-started-steps__action-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg
+                    v-else
+                    class="getting-started-steps__action-icon"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
                     <path
                       stroke-linecap="round"
                       stroke-linejoin="round"
@@ -99,12 +150,17 @@
 
               <!-- Code Example -->
               <div v-if="step.codeExample" class="getting-started-steps__code-example">
-                <div class="getting-started-steps__code-header" @click="toggleCodeExpansion(step.id)">
+                <div
+                  class="getting-started-steps__code-header"
+                  @click="toggleCodeExpansion(step.id)"
+                >
                   <h3 class="getting-started-steps__code-title">{{ step.codeExample.title }}</h3>
                   <button class="getting-started-steps__code-toggle">
                     <svg
                       class="getting-started-steps__code-toggle-icon"
-                      :class="{ 'getting-started-steps__code-toggle-icon--expanded': expandedCode[step.id] }"
+                      :class="{
+                        'getting-started-steps__code-toggle-icon--expanded': expandedCode[step.id],
+                      }"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -130,11 +186,15 @@
                   <div v-show="expandedCode[step.id]" class="getting-started-steps__code-content">
                     <div class="getting-started-steps__code-block">
                       <div class="getting-started-steps__code-block-header">
-                        <span class="getting-started-steps__code-language">{{ step.codeExample.language }}</span>
+                        <span class="getting-started-steps__code-language">{{
+                          step.codeExample.language
+                        }}</span>
                         <button
                           @click="copyToClipboard(step.codeExample.code, step.id)"
                           class="getting-started-steps__copy-button"
-                          :class="{ 'getting-started-steps__copy-button--copied': copiedStep === step.id }"
+                          :class="{
+                            'getting-started-steps__copy-button--copied': copiedStep === step.id,
+                          }"
                         >
                           <svg
                             v-if="copiedStep !== step.id"
@@ -167,7 +227,8 @@
                           {{ copiedStep === step.id ? 'Copied!' : 'Copy' }}
                         </button>
                       </div>
-                      <pre class="getting-started-steps__code-pre"><code class="getting-started-steps__code-text">{{ step.codeExample.code }}</code></pre>
+                      <pre class="getting-started-steps__code-pre"><code
+                        class="getting-started-steps__code-text">{{ step.codeExample.code }}</code></pre>
                     </div>
                   </div>
                 </transition>
@@ -192,6 +253,13 @@ interface StepCodeExample {
   code: string
 }
 
+interface StepAction {
+  text: string
+  link: string
+  external?: boolean
+  variant?: 'primary' | 'secondary' | 'outline' | 'ghost'
+}
+
 interface Step {
   id: number
   title: string
@@ -200,6 +268,9 @@ interface Step {
   difficulty: string
   content: string
   tips?: string
+  // New multiple actions support
+  actions?: StepAction[]
+  // Backward compatibility with single action
   actionText?: string
   actionLink?: string
   external?: boolean
@@ -221,9 +292,20 @@ const props = withDefaults(defineProps<Props>(), {
       content:
         'Browse our plugin catalog and select the ones that match your requirements. Our intelligent dependency resolver will automatically include any required dependencies.',
       tips: "Start with presets if you're unsure which plugins to choose. They're pre-configured for common use cases.",
-      actionText: 'Browse Plugins',
-      actionLink: '/plugins',
-      external: false,
+      actions: [
+        {
+          text: 'Browse Plugins',
+          link: '/plugins',
+          external: false,
+          variant: 'primary',
+        },
+        {
+          text: 'View Presets',
+          link: '/presets',
+          external: false,
+          variant: 'secondary',
+        },
+      ],
     },
     {
       id: 2,
@@ -234,7 +316,14 @@ const props = withDefaults(defineProps<Props>(), {
       content:
         "Once you've selected your plugins, generate a configuration file in your preferred format. We support TOML, JSON, and Dockerfile formats.",
       tips: "TOML format is recommended for most use cases as it's more readable and widely supported.",
-      external: false,
+      actions: [
+        {
+          text: 'Configuration Guide',
+          link: 'https://docs.roadrunner.dev/docs/customization/build',
+          external: true,
+          variant: 'outline',
+        },
+      ],
       codeExample: {
         title: 'Example .velox.toml configuration:',
         language: 'toml',
@@ -290,9 +379,14 @@ repository = "metrics"`,
       content:
         'Download the Velox binary for your operating system. Velox is the tool that compiles your custom RoadRunner binary with only the plugins you selected.',
       tips: 'Choose the correct binary for your OS. Linux users might need to make the binary executable with chmod +x.',
-      actionText: 'Download Velox',
-      actionLink: 'https://github.com/roadrunner-server/velox/releases',
-      external: true,
+      actions: [
+        {
+          text: 'Download Velox',
+          link: 'https://github.com/roadrunner-server/velox/releases',
+          external: true,
+          variant: 'primary',
+        },
+      ],
     },
     {
       id: 4,
@@ -303,9 +397,20 @@ repository = "metrics"`,
       content:
         "Velox requires Go 1.22 or later to compile your RoadRunner binary. If you don't have Go installed, download it from the official website.",
       tips: 'Make sure to add Go to your PATH environment variable. You can verify installation with: go version',
-      actionText: 'Download Go',
-      actionLink: 'https://go.dev/doc/install',
-      external: true,
+      actions: [
+        {
+          text: 'Download Go',
+          link: 'https://go.dev/doc/install',
+          external: true,
+          variant: 'primary',
+        },
+        {
+          text: 'Ubuntu Guide',
+          link: 'https://ubuntuhandbook.org/index.php/2024/02/how-to-install-go-golang-1-22-in-ubuntu-22-04/',
+          external: true,
+          variant: 'secondary',
+        },
+      ],
       codeExample: {
         title: 'Verify Go installation:',
         language: 'bash',
@@ -345,7 +450,7 @@ vx.exe build -c .velox.toml
 ./rr --version`,
       },
     },
-  ]
+  ],
 })
 
 const currentStep = ref(1)
@@ -443,6 +548,23 @@ function getDifficultyClasses(difficulty: string) {
       return 'getting-started-steps__difficulty-badge--hard'
     default:
       return 'getting-started-steps__difficulty-badge--medium'
+  }
+}
+
+function getActionButtonClasses(variant: StepAction['variant'] = 'primary') {
+  const baseClasses = 'getting-started-steps__action-button'
+
+  switch (variant) {
+    case 'primary':
+      return `${baseClasses} getting-started-steps__action-button--primary`
+    case 'secondary':
+      return `${baseClasses} getting-started-steps__action-button--secondary`
+    case 'outline':
+      return `${baseClasses} getting-started-steps__action-button--outline`
+    case 'ghost':
+      return `${baseClasses} getting-started-steps__action-button--ghost`
+    default:
+      return `${baseClasses} getting-started-steps__action-button--primary`
   }
 }
 </script>
@@ -551,15 +673,33 @@ function getDifficultyClasses(difficulty: string) {
   @apply text-blue-200 text-sm;
 }
 
-.getting-started-steps__action {
-  /* No additional styling needed */
+.getting-started-steps__actions {
+  @apply flex flex-wrap gap-3;
 }
 
 .getting-started-steps__action-button {
-  @apply inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700;
-  @apply text-white cursor-pointer font-semibold rounded-xl hover:from-blue-500 hover:to-blue-600;
-  @apply transition-all duration-200 shadow-lg shadow-blue-500/20 hover:shadow-blue-500/30;
-  @apply transform hover:scale-105;
+  @apply inline-flex items-center gap-2 px-6 py-3 font-semibold rounded-xl;
+  @apply transition-all duration-200 shadow-lg transform hover:scale-105;
+}
+
+.getting-started-steps__action-button--primary {
+  @apply bg-gradient-to-r from-blue-600 to-blue-700 text-white;
+  @apply hover:from-blue-500 hover:to-blue-600 shadow-blue-500/20 hover:shadow-blue-500/30;
+}
+
+.getting-started-steps__action-button--secondary {
+  @apply bg-gradient-to-r from-purple-600 to-purple-700 text-white;
+  @apply hover:from-purple-500 hover:to-purple-600 shadow-purple-500/20 hover:shadow-purple-500/30;
+}
+
+.getting-started-steps__action-button--outline {
+  @apply bg-transparent border-2 border-gray-600 text-gray-300;
+  @apply hover:border-gray-500 hover:text-white hover:bg-gray-800/20;
+}
+
+.getting-started-steps__action-button--ghost {
+  @apply bg-transparent text-gray-400 hover:text-white hover:bg-gray-800/30;
+  @apply shadow-none hover:shadow-sm;
 }
 
 .getting-started-steps__action-icon {
@@ -653,6 +793,24 @@ function getDifficultyClasses(difficulty: string) {
 @media (max-width: 768px) {
   .getting-started-steps__step-number {
     @apply w-12 h-12 text-lg;
+  }
+
+  .getting-started-steps__actions {
+    @apply flex-col;
+  }
+
+  .getting-started-steps__action-button {
+    @apply justify-center;
+  }
+}
+
+@media (max-width: 640px) {
+  .getting-started-steps__actions {
+    @apply gap-2;
+  }
+
+  .getting-started-steps__action-button {
+    @apply px-4 py-2 text-sm;
   }
 }
 </style>

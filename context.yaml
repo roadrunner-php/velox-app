@@ -83,8 +83,6 @@ documents:
     sources:
       - type: file
         sourcePaths:
-          - spa/src/views/IntroductionView.vue
-          - spa/src/views/MainView.vue
-          - spa/src/views/PluginsList.vue
-          - spa/src/components/home
+          - spa/src/views
+          - spa/src/components/introduction
 
