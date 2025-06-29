@@ -17,7 +17,7 @@
           to="/"
           :class="['app-header__title', route.path === '/' ? 'app-header__title--active' : '']"
         >
-          Velox UI
+          Velox<span class="text-white font-bold">Builder</span>
         </RouterLink>
       </div>
 
