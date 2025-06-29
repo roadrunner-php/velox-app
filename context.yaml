@@ -83,6 +83,14 @@ documents:
     sources:
       - type: file
         sourcePaths:
-          - spa/src/views
+          - spa/src/views/IntroductionView.vue
           - spa/src/components/introduction
+
+  - description: SPA component Home
+    outputPath: spa/home.md
+    sources:
+      - type: file
+        sourcePaths:
+          - spa/src/views/MainView.vue
+          - spa/src/components/home
 
