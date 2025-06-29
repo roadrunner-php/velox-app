@@ -325,7 +325,7 @@ const props = withDefaults(defineProps<Props>(), {
         },
       ],
       codeExample: {
-        title: 'Example .velox.toml configuration:',
+        title: 'Example velox.toml configuration:',
         language: 'toml',
         code: `[roadrunner]
 ref = "v2025.1.1"
@@ -428,7 +428,7 @@ go version
       icon: '🚀',
       difficulty: 'Medium',
       content:
-        'Place your generated .velox.toml configuration file in your project directory and run the Velox build command. The tool will download all required plugins and compile your custom binary.',
+        'Place your generated velox.toml configuration file in your project directory and run the Velox build command. The tool will download all required plugins and compile your custom binary.',
       tips: 'The build process may take a few minutes on first run as it downloads dependencies. Subsequent builds will be faster.',
       codeExample: {
         title: 'Build commands:',
@@ -437,11 +437,11 @@ go version
 export RT_TOKEN=your_github_token_here
 
 # Run the build (this will create a 'rr' binary)
-./vx build -c .velox.toml
+./vx build -c velox.toml
 
 # For Windows
 set RT_TOKEN=your_github_token_here
-vx.exe build -c .velox.toml
+vx.exe build -c velox.toml
 
 # Run your custom RoadRunner server
 ./rr serve -c .rr.yaml

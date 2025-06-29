@@ -77,7 +77,7 @@ const props = withDefaults(defineProps<Props>(), {
     {
       question: 'How do I update plugins in my configuration?',
       answer:
-        'You can update plugin versions by modifying the "ref" field in your .velox.toml configuration file, then rebuilding your binary. Always test updates in a staging environment first.',
+        'You can update plugin versions by modifying the "ref" field in your velox.toml configuration file, then rebuilding your binary. Always test updates in a staging environment first.',
     },
     {
       question: 'What if my build fails?',
