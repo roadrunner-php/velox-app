@@ -7,6 +7,7 @@
         <RouterView :key="$route.fullPath" />
       </div>
     </main>
+    <StickyConfiguration />
     <ContributorsSection />
     <AppFooter />
   </div>
@@ -18,6 +19,7 @@ import AppHeader from './components/AppHeader.vue'
 import AppFooter from './components/AppFooter.vue'
 import ContributorsSection from './components/contributors/ContributorsSection.vue'
 import BackgroundPattern from './components/BackgroundPattern.vue'
+import StickyConfiguration from './components/StickyConfiguration.vue'
 </script>
 
 <style scoped>
