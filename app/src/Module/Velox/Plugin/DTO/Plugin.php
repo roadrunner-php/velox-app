@@ -21,6 +21,7 @@ final readonly class Plugin implements \JsonSerializable
         public array $dependencies = [],
         public string $description = '',
         public ?PluginCategory $category = null,
+        public ?string $docsUrl = null,
     ) {}
 
     public function jsonSerialize(): array
@@ -37,6 +38,10 @@ final readonly class Plugin implements \JsonSerializable
 
         if ($this->replace !== null) {
             $data['replace'] = $this->replace;
+        }
+
+        if ($this->docsUrl !== null) {
+            $data['docs_url'] = $this->docsUrl;
         }
 
         return $data;
