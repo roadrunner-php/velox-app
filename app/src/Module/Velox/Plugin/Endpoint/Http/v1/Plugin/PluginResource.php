@@ -119,6 +119,13 @@ use OpenApi\Attributes as OA;
             type: 'string',
             example: 'roadrunner-server/http',
         ),
+        new OA\Property(
+            property: 'docs_url',
+            description: 'URL to the plugin documentation',
+            type: 'string',
+            format: 'uri',
+            example: 'https://roadrunner.dev/docs/plugins/http',
+        ),
     ],
 )]
 /**
@@ -144,6 +151,7 @@ final class PluginResource extends JsonResource
             'replace' => $this->data->replace,
             'is_official' => $this->data->source === PluginSource::Official,
             'full_name' => "{$this->data->owner}/{$this->data->repository}",
+            'docs_url' => $this->data->docsUrl,
         ];
     }
 
