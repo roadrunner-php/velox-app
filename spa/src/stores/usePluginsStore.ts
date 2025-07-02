@@ -1,6 +1,5 @@
 import { defineStore } from 'pinia'
 import { watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
 import * as pluginApi from '@/api/pluginsApi'
 import type {
   Plugin,
