@@ -1,4 +1,6 @@
 import { defineStore } from 'pinia'
+import { watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import * as pluginApi from '@/api/pluginsApi'
 import type {
   Plugin,
@@ -29,6 +31,12 @@ export const usePluginsStore = defineStore('plugins', {
     selections: new Map<string, PluginSelectionInfo>(),
     dependencyCache: new Map<string, PluginDependencyResponse>(),
     loadingDependencies: new Set<string>(),
+    
+    // URL sync state
+    urlSyncEnabled: false,
+    route: null as any,
+    router: null as any,
+    isUpdatingFromUrl: false, // Prevent recursive updates
   }),
 
   getters: {
@@ -78,12 +86,136 @@ export const usePluginsStore = defineStore('plugins', {
   },
 
   actions: {
+    // Initialize URL sync
+    initUrlSync(route: any, router: any) {
+      this.route = route
+      this.router = router
+      this.urlSyncEnabled = true
+      
+      // Load selections from URL on init
+      this.loadSelectionsFromUrl()
+      
+      // Watch URL changes, но ТОЛЬКО внешние
+      if (route && router) {
+        watch(
+          () => route.query.plugins,
+          (newValue, oldValue) => {
+            // Игнорируем изменения если мы сами обновляем URL
+            if (this.isUpdatingFromUrl) return
+            
+            console.log('🌐 External URL change detected:', { old: oldValue, new: newValue })
+            this.loadSelectionsFromUrl()
+          }
+        )
+      }
+    },
+
+    // Load selections from URL
+    async loadSelectionsFromUrl() {
+      if (!this.route || this.isUpdatingFromUrl) return
+      
+      this.isUpdatingFromUrl = true
+      
+      try {
+        const pluginsParam = this.route.query.plugins
+        
+        // Получаем новый список плагинов из URL
+        const newPluginNames = !pluginsParam ? [] : (
+          Array.isArray(pluginsParam) 
+            ? pluginsParam.flatMap((p: string) => p.split(',')).filter(Boolean)
+            : String(pluginsParam).split(',').filter(Boolean)
+        )
+        
+        // Получаем текущие manually selected плагины
+        const currentManualPlugins = this.manuallySelectedPlugins
+        
+        // Проверяем, изменился ли список (избегаем ненужных обновлений)
+        const hasChanged = 
+          newPluginNames.length !== currentManualPlugins.length ||
+          !newPluginNames.every(name => currentManualPlugins.includes(name))
+        
+        if (!hasChanged) {
+          return
+        }
+        
+        // Удаляем только те manual плагины, которых нет в новом списке
+        for (const pluginName of currentManualPlugins) {
+          if (!newPluginNames.includes(pluginName)) {
+            this.deselectPlugin(pluginName)
+          }
+        }
+        
+        // Добавляем новые плагины
+        for (const name of newPluginNames) {
+          if (this.plugins.some(p => p.name === name) && !currentManualPlugins.includes(name)) {
+            await this.selectPlugin(name, true)
+          }
+        }
+        
+      } finally {
+        this.isUpdatingFromUrl = false
+      }
+    },
+
+    // Update URL with current selections (only manual selections)
+    updateUrl() {
+      if (!this.urlSyncEnabled || !this.route) return
+      
+      const manualPlugins = this.manuallySelectedPlugins
+      const currentPluginsInUrl = this.route.query.plugins
+      
+      // Проверяем, нужно ли обновлять URL
+      const newUrlValue = manualPlugins.length === 0 ? undefined : manualPlugins.join(',')
+      const currentUrlValue = Array.isArray(currentPluginsInUrl) 
+        ? currentPluginsInUrl.join(',') 
+        : currentPluginsInUrl
+      
+      // Если значения одинаковые, не обновляем URL
+      if (newUrlValue === currentUrlValue) {
+        return
+      }
+      
+      // Отмечаем что мы обновляем URL
+      this.isUpdatingFromUrl = true
+      
+      // Создаем новый URL с query string вручную (без энкодинга запятых)
+      const baseUrl = `${window.location.protocol}//${window.location.host}${window.location.pathname}`
+      const searchParams = new URLSearchParams(window.location.search)
+      
+      // Удаляем plugins параметр из существующих params
+      searchParams.delete('plugins')
+      
+      // Собираем финальный URL
+      let finalUrl = baseUrl
+      const otherParams = searchParams.toString()
+      const pluginsParam = manualPlugins.length > 0 ? `plugins=${manualPlugins.join(',')}` : ''
+      
+      // Собираем query string
+      const queryParts = [otherParams, pluginsParam].filter(Boolean)
+      if (queryParts.length > 0) {
+        finalUrl += '?' + queryParts.join('&')
+      }
+      
+      // Используем нативный history API вместо Vue Router
+      window.history.replaceState(null, '', finalUrl)
+      
+      // Сбрасываем флаг асинхронно
+      setTimeout(() => {
+        this.isUpdatingFromUrl = false
+      }, 0)
+    },
+
     async loadPlugins(params?: PluginListParams) {
       this.loading = true
       this.error = null
       try {
         const res = await pluginApi.fetchPlugins(params)
         this.plugins = res.data.data
+        
+        // Reload selections from URL after plugins loaded
+        if (this.urlSyncEnabled) {
+          await this.loadSelectionsFromUrl()
+        }
       } catch (e: any) {
         this.error = e.message
       } finally {
@@ -171,6 +303,9 @@ export const usePluginsStore = defineStore('plugins', {
           this.deselectPlugin(pluginName)
         }
       }
+      
+      // Всегда обновляем URL после изменения выбора
+      this.updateUrl()
     },
 
     async selectPlugin(pluginName: string, includeDependencies = true) {
@@ -186,11 +321,13 @@ export const usePluginsStore = defineStore('plugins', {
         try {
           // Load and select dependencies
           const dependencyData = await this.loadDependencies(pluginName)
-          await this.selectDependencies(pluginName, dependencyData.resolved_dependencies)
+          if (dependencyData) {
+            await this.selectDependencies(pluginName, dependencyData.resolved_dependencies)
 
-          // Handle conflicts
-          if (dependencyData.conflicts.length > 0) {
-            this.handleConflicts(pluginName, dependencyData.conflicts)
+            // Handle conflicts
+            if (dependencyData.conflicts.length > 0) {
+              this.handleConflicts(pluginName, dependencyData.conflicts)
+            }
           }
         } catch (e) {
           console.error('Failed to load dependencies for', pluginName, e)
@@ -203,7 +340,7 @@ export const usePluginsStore = defineStore('plugins', {
         const existing = this.selections.get(dep.name)
 
         if (!existing || existing.state === 'none') {
-          // Auto-select as dependency
+          // Auto-select as dependency (NOT manual, so won't appear in URL)
           this.selections.set(dep.name, {
             name: dep.name,
             state: 'dependency',
@@ -279,6 +416,7 @@ export const usePluginsStore = defineStore('plugins', {
     // Clear all selections
     clearAllSelections() {
       this.selections.clear()
+      this.updateUrl()
     },
 
     // Get selection info for a specific plugin

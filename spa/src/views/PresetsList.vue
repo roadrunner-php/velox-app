@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { usePresetsStore } from '@/stores/usePresetsStore'
 import PresetCard from '@/components/PresetCard.vue'
 import ConfigModal from '@/components/ConfigModal.vue'
@@ -14,7 +15,10 @@ import EmptyState from '@/components/EmptyState.vue'
 import ConfigurationGeneration from '@/components/ConfigurationGeneration.vue'
 import SelectionConfirmationModal from '@/components/SelectionConfirmationModal.vue'
 
+const route = useRoute()
+const router = useRouter()
 const presetStore = usePresetsStore()
+
 const configFormat = ref<'toml' | 'json' | 'docker' | 'dockerfile'>('toml')
 
 const showModal = ref(false)
@@ -38,8 +42,12 @@ const searchQuery = ref('')
 const sourceFilter = ref<'all' | 'official' | 'community'>('all')
 const activeTags = ref<Tag[]>([])
 
-onMounted(() => {
-  presetStore.loadPresets()
+onMounted(async () => {
+  // Initialize URL sync
+  presetStore.initUrlSync(route, router)
+  
+  // Load data
+  await presetStore.loadPresets()
 })
 
 const filteredPresets = computed(() => {
