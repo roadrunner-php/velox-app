@@ -94,12 +94,12 @@ export const usePluginsStore = defineStore('plugins', {
       // Load selections from URL on init
       this.loadSelectionsFromUrl()
       
-      // Watch URL changes, но ТОЛЬКО внешние
+      // Watch URL changes, but only external ones
       if (route && router) {
         watch(
           () => route.query.plugins,
           (newValue, oldValue) => {
-            // Игнорируем изменения если мы сами обновляем URL
+            // Ignore changes if we're updating the URL ourselves
             if (this.isUpdatingFromUrl) return
             
             console.log('🌐 External URL change detected:', { old: oldValue, new: newValue })
@@ -118,17 +118,17 @@ export const usePluginsStore = defineStore('plugins', {
       try {
         const pluginsParam = this.route.query.plugins
         
-        // Получаем новый список плагинов из URL
+        // Get new plugin list from URL
         const newPluginNames = !pluginsParam ? [] : (
           Array.isArray(pluginsParam) 
             ? pluginsParam.flatMap((p: string) => p.split(',')).filter(Boolean)
             : String(pluginsParam).split(',').filter(Boolean)
         )
         
-        // Получаем текущие manually selected плагины
+        // Get current manually selected plugins
         const currentManualPlugins = this.manuallySelectedPlugins
         
-        // Проверяем, изменился ли список (избегаем ненужных обновлений)
+        // Check if the list has changed (avoid unnecessary updates)
         const hasChanged = 
           newPluginNames.length !== currentManualPlugins.length ||
           !newPluginNames.every(name => currentManualPlugins.includes(name))
@@ -137,14 +137,14 @@ export const usePluginsStore = defineStore('plugins', {
           return
         }
         
-        // Удаляем только те manual плагины, которых нет в новом списке
+        // Remove only those manual plugins that are not in the new list
         for (const pluginName of currentManualPlugins) {
           if (!newPluginNames.includes(pluginName)) {
             this.deselectPlugin(pluginName)
           }
         }
         
-        // Добавляем новые плагины
+        // Add new plugins
         for (const name of newPluginNames) {
           if (this.plugins.some(p => p.name === name) && !currentManualPlugins.includes(name)) {
             await this.selectPlugin(name, true)
@@ -163,42 +163,42 @@ export const usePluginsStore = defineStore('plugins', {
       const manualPlugins = this.manuallySelectedPlugins
       const currentPluginsInUrl = this.route.query.plugins
       
-      // Проверяем, нужно ли обновлять URL
+      // Check if URL needs updating
       const newUrlValue = manualPlugins.length === 0 ? undefined : manualPlugins.join(',')
       const currentUrlValue = Array.isArray(currentPluginsInUrl) 
         ? currentPluginsInUrl.join(',') 
         : currentPluginsInUrl
       
-      // Если значения одинаковые, не обновляем URL
+      // If values are the same, don't update URL
       if (newUrlValue === currentUrlValue) {
         return
       }
       
-      // Отмечаем что мы обновляем URL
+      // Mark that we're updating the URL
       this.isUpdatingFromUrl = true
       
-      // Создаем новый URL с query string вручную (без энкодинга запятых)
+      // Create new URL with query string manually (without encoding commas)
       const baseUrl = `${window.location.protocol}//${window.location.host}${window.location.pathname}`
       const searchParams = new URLSearchParams(window.location.search)
       
-      // Удаляем plugins параметр из существующих params
+      // Remove plugins parameter from existing params
       searchParams.delete('plugins')
       
-      // Собираем финальный URL
+      // Build final URL
       let finalUrl = baseUrl
       const otherParams = searchParams.toString()
       const pluginsParam = manualPlugins.length > 0 ? `plugins=${manualPlugins.join(',')}` : ''
       
-      // Собираем query string
+      // Build query string
       const queryParts = [otherParams, pluginsParam].filter(Boolean)
       if (queryParts.length > 0) {
         finalUrl += '?' + queryParts.join('&')
       }
       
-      // Используем нативный history API вместо Vue Router
+      // Use native history API instead of Vue Router
       window.history.replaceState(null, '', finalUrl)
       
-      // Сбрасываем флаг асинхронно
+      // Reset flag asynchronously
       setTimeout(() => {
         this.isUpdatingFromUrl = false
       }, 0)
@@ -303,7 +303,7 @@ export const usePluginsStore = defineStore('plugins', {
         }
       }
       
-      // Всегда обновляем URL после изменения выбора
+      // Always update URL after changing selection
       this.updateUrl()
     },
 
