@@ -108,12 +108,12 @@ export const usePresetsStore = defineStore('presets', {
       // Load selections from URL on init
       this.loadSelectionsFromUrl()
 
-      // Watch URL changes, но ТОЛЬКО внешние
+      // Watch URL changes, but ONLY external ones
       if (route && router) {
         watch(
           () => route.query.presets,
           (newValue, oldValue) => {
-            // Игнорируем изменения если мы сами обновляем URL
+            // Ignore changes if we are updating the URL ourselves
             if (this.isUpdatingFromUrl) return
 
             console.log('🌐 External preset URL change detected:', { old: oldValue, new: newValue })
@@ -132,17 +132,17 @@ export const usePresetsStore = defineStore('presets', {
       try {
         const presetsParam = this.route.query.presets
 
-        // Получаем новый список пресетов из URL
+        // Get new preset list from URL
         const newPresetNames = !presetsParam ? [] : (
           Array.isArray(presetsParam)
             ? presetsParam.flatMap((p: string) => p.split(',')).filter(Boolean)
             : String(presetsParam).split(',').filter(Boolean)
         )
 
-        // Получаем текущие manually selected пресеты
+        // Get current manually selected presets
         const currentManualPresets = this.manuallySelectedPresets
 
-        // Проверяем, изменился ли список (избегаем ненужных обновлений)
+        // Check if the list has changed (avoid unnecessary updates)
         const hasChanged =
           newPresetNames.length !== currentManualPresets.length ||
           !newPresetNames.every(name => currentManualPresets.includes(name))
@@ -151,14 +151,14 @@ export const usePresetsStore = defineStore('presets', {
           return
         }
 
-        // Удаляем только те manual пресеты, которых нет в новом списке
+        // Remove only those manual presets that are not in the new list
         for (const presetName of currentManualPresets) {
           if (!newPresetNames.includes(presetName)) {
             this.deselectPreset(presetName)
           }
         }
 
-        // Добавляем новые пресеты
+        // Add new presets
         for (const name of newPresetNames) {
           if (this.presets.some(p => p.name === name) && !currentManualPresets.includes(name)) {
             await this.selectPreset(name, true)
@@ -177,42 +177,42 @@ export const usePresetsStore = defineStore('presets', {
       const manualPresets = this.manuallySelectedPresets
       const currentPresetsInUrl = this.route.query.presets
 
-      // Проверяем, нужно ли обновлять URL
+      // Check if URL needs to be updated
       const newUrlValue = manualPresets.length === 0 ? undefined : manualPresets.join(',')
       const currentUrlValue = Array.isArray(currentPresetsInUrl)
         ? currentPresetsInUrl.join(',')
         : currentPresetsInUrl
 
-      // Если значения одинаковые, не обновляем URL
+      // If values are the same, don't update URL
       if (newUrlValue === currentUrlValue) {
         return
       }
 
-      // Отмечаем что мы обновляем URL
+      // Mark that we are updating the URL
       this.isUpdatingFromUrl = true
 
-      // Создаем новый URL с query string вручную (без энкодинга запятых)
+      // Create new URL with query string manually (without encoding commas)
       const baseUrl = `${window.location.protocol}//${window.location.host}${window.location.pathname}`
       const searchParams = new URLSearchParams(window.location.search)
 
-      // Удаляем presets параметр из существующих params
+      // Remove presets parameter from existing params
       searchParams.delete('presets')
 
-      // Собираем финальный URL
+      // Build final URL
       let finalUrl = baseUrl
       const otherParams = searchParams.toString()
       const presetsParam = manualPresets.length > 0 ? `presets=${manualPresets.join(',')}` : ''
 
-      // Собираем query string
+      // Build query string
       const queryParts = [otherParams, presetsParam].filter(Boolean)
       if (queryParts.length > 0) {
         finalUrl += '?' + queryParts.join('&')
       }
 
-      // Используем нативный history API вместо Vue Router
+      // Use native history API instead of Vue Router
       window.history.replaceState(null, '', finalUrl)
 
-      // Сбрасываем флаг асинхронно
+      // Reset flag asynchronously
       setTimeout(() => {
         this.isUpdatingFromUrl = false
       }, 0)
@@ -265,7 +265,7 @@ export const usePresetsStore = defineStore('presets', {
         }
       }
 
-      // Всегда обновляем URL после изменения выбора
+      // Always update URL after selection change
       this.updateUrl()
     },
 
@@ -280,7 +280,7 @@ export const usePresetsStore = defineStore('presets', {
 
       if (includeDependencies) {
         try {
-          // For presets, we can analyze plugin overlaps as \"dependencies\"
+          // For presets, we can analyze plugin overlaps as dependencies
           await this.analyzePresetRelationships(presetName)
         } catch (e) {
           console.error('Failed to analyze preset relationships for', presetName, e)
