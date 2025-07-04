@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { usePluginsStore } from '@/stores/usePluginsStore'
 import PluginCard from '@/components/PluginCard.vue'
 import ConfigModal from '@/components/ConfigModal.vue'
@@ -15,7 +16,10 @@ import ConfigurationGeneration from '@/components/ConfigurationGeneration.vue'
 import SelectionConfirmationModal from '@/components/SelectionConfirmationModal.vue'
 import type { PluginCategory } from '@/api/pluginsApi.ts'
 
+const route = useRoute()
+const router = useRouter()
 const pluginStore = usePluginsStore()
+
 const activeCategories = ref<PluginCategory[] | Tag[]>([])
 const configFormat = ref<'toml' | 'json' | 'docker' | 'dockerfile'>('toml')
 
@@ -33,9 +37,15 @@ const pendingSelection = ref<{
   }
 } | null>(null)
 
-onMounted(() => {
-  pluginStore.loadCategories()
-  pluginStore.loadPlugins()
+onMounted(async () => {
+  // Initialize URL sync
+  pluginStore.initUrlSync(route, router)
+  
+  // Load data
+  await Promise.all([
+    pluginStore.loadCategories(),
+    pluginStore.loadPlugins()
+  ])
 })
 
 const filteredPlugins = computed(() => {
