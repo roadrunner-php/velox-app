@@ -31,3 +31,6 @@ list:
 
 log-tail:
 	docker compose $(DEV) logs --tail=50 -f;
+
+build-app:
+	docker compose $(DEV) build vx-app;

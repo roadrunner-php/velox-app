@@ -8,6 +8,7 @@ use App\Module\Velox\Plugin\DTO\Plugin;
 use App\Module\Velox\Plugin\DTO\PluginCategory;
 use App\Module\Velox\Plugin\DTO\PluginRepository;
 use App\Module\Velox\Plugin\DTO\PluginSource;
+use App\Module\Velox\Plugin\Discovery\Service\GitHubDiscoveryPluginProvider;
 use App\Module\Velox\Plugin\Service\CompositePluginProvider;
 use App\Module\Velox\Plugin\Service\ConfigPluginProvider;
 use App\Module\Velox\Plugin\Service\PluginProviderInterface;
@@ -16,19 +17,23 @@ use Spiral\Boot\EnvironmentInterface;
 
 final class PluginsBootloader extends Bootloader
 {
-    #[\Override]
     public function defineSingletons(): array
     {
         return [
             PluginProviderInterface::class => fn(
                 EnvironmentInterface $env,
-            ) => new CompositePluginProvider(
-                providers: [
+                ?GitHubDiscoveryPluginProvider $discoveryProvider = null,
+            )
+                => new CompositePluginProvider(
+                providers: \array_filter([
+                    // Priority 1: Official and manually configured plugins
                     new ConfigPluginProvider([
                         ...$this->initCorePlugins($env),
                         ...$this->initCommonPlugins($env),
                     ]),
-                ],
+                    // Priority 2: Discovered community plugins (can override official)
+                    $discoveryProvider,
+                ]),
             ),
         ];
     }
@@ -37,7 +42,7 @@ final class PluginsBootloader extends Bootloader
     {
         return [
             new Plugin(
-                name: '/circuit-breaker',
+                name: 'circuit-breaker',
                 ref: $env->get('RR_PLUGIN_CIRCUIT_BREAKER', 'master'),
                 owner: 'roadrunner-server',
                 repository: 'circuit-breaker',
@@ -83,24 +88,13 @@ final class PluginsBootloader extends Bootloader
                 docsUrl: 'https://docs.roadrunner.dev/docs/community-plugins/cache',
             ),
             new Plugin(
-                name: 'sentry-collector',
-                ref: $env->get('RR_PLUGIN_SENTRY_COLLECTOR', 'master'),
-                owner: 'butschster',
-                repository: 'rr-sentry-transport',
-                repositoryType: PluginRepository::Github,
-                source: PluginSource::Community, // Added logger dependency
-                dependencies: ['logger'],
-                description: 'Sentry collector plugin allowing delegation of Sentry events delivery to the Sentry server through the RoadRunner server.',
-                category: PluginCategory::Monitoring,
-            ),
-            new Plugin(
                 name: 'redis-queue',
                 ref: $env->get('RR_PLUGIN_REDIS_QUEUE', 'master'),
                 owner: 'ASG-Digital',
                 repository: 'rr-redis-queue',
                 repositoryType: PluginRepository::Github,
                 source: PluginSource::Community,
-                dependencies: ['logger'],
+                dependencies: ['logger', 'jobs'],
                 description: 'This is a plugin for roadrunner adding support for a redis backed queue. This plugin is still under development and should not be considered production ready.',
                 category: PluginCategory::Jobs,
             ),
@@ -117,13 +111,11 @@ final class PluginsBootloader extends Bootloader
                 repository: 'logger',
                 repositoryType: PluginRepository::Github,
                 source: PluginSource::Official,
-                dependencies: [], // No dependencies (foundational)
+                dependencies: [],
                 description: 'Core logging functionality',
                 category: PluginCategory::Logging,
                 docsUrl: 'https://docs.roadrunner.dev/docs/logging-and-observability/logger',
             ),
-
-            // SERVER & CORE PLUGINS
             new Plugin(
                 name: 'server',
                 ref: $env->get('RR_PLUGIN_SERVER', 'v5.0.2'),
@@ -131,12 +123,11 @@ final class PluginsBootloader extends Bootloader
                 repository: 'server',
                 repositoryType: PluginRepository::Github,
                 source: PluginSource::Official,
-                dependencies: ['logger'], // Added logger dependency
+                dependencies: ['logger'],
                 description: 'Core server functionality',
                 category: PluginCategory::Core,
                 docsUrl: 'https://docs.roadrunner.dev/docs/plugins/server',
             ),
-
             new Plugin(
                 name: 'rpc',
                 ref: $env->get('RR_PLUGIN_RPC', 'v5.0.2'),
@@ -144,12 +135,11 @@ final class PluginsBootloader extends Bootloader
                 repository: 'rpc',
                 repositoryType: PluginRepository::Github,
                 source: PluginSource::Official,
-                dependencies: ['logger'], // Added logger dependency
+                dependencies: ['logger'],
                 description: 'RPC communication plugin',
                 category: PluginCategory::Core,
                 docsUrl: 'https://docs.roadrunner.dev/docs/php-worker/rpc',
             ),
-
             new Plugin(
                 name: 'service',
                 ref: $env->get('RR_PLUGIN_SERVICE', 'v5.0.2'),
@@ -157,12 +147,11 @@ final class PluginsBootloader extends Bootloader
                 repository: 'service',
                 repositoryType: PluginRepository::Github,
                 source: PluginSource::Official,
-                dependencies: ['logger'], // Added logger dependency
+                dependencies: ['logger'],
                 description: 'Lightweight systemd-like service manager',
                 category: PluginCategory::Core,
                 docsUrl: 'https://docs.roadrunner.dev/docs/plugins/service',
             ),
-
             new Plugin(
                 name: 'lock',
                 ref: $env->get('RR_PLUGIN_LOCK', 'v5.0.2'),
@@ -170,13 +159,11 @@ final class PluginsBootloader extends Bootloader
                 repository: 'lock',
                 repositoryType: PluginRepository::Github,
                 source: PluginSource::Official,
-                dependencies: ['logger', 'rpc'], // Added logger and rpc dependencies
+                dependencies: ['logger', 'rpc'],
                 description: 'Distributed locking mechanism',
                 category: PluginCategory::Core,
                 docsUrl: 'https://docs.roadrunner.dev/docs/plugins/locks',
             ),
-
-            // COMMUNICATION LAYER
             new Plugin(
                 name: 'http',
                 ref: $env->get('RR_PLUGIN_HTTP', 'v5.0.2'),
@@ -184,12 +171,11 @@ final class PluginsBootloader extends Bootloader
                 repository: 'http',
                 repositoryType: PluginRepository::Github,
                 source: PluginSource::Official,
-                dependencies: ['logger', 'server'], // Added logger dependency
+                dependencies: ['logger', 'server'],
                 description: 'HTTP server plugin',
                 category: PluginCategory::Http,
                 docsUrl: 'https://docs.roadrunner.dev/docs/http/http',
             ),
-
             new Plugin(
                 name: 'grpc',
                 ref: $env->get('RR_PLUGIN_GRPC', 'v5.0.2'),
@@ -197,12 +183,11 @@ final class PluginsBootloader extends Bootloader
                 repository: 'grpc',
                 repositoryType: PluginRepository::Github,
                 source: PluginSource::Official,
-                dependencies: ['logger', 'server'], // Added logger dependency
+                dependencies: ['logger', 'server'],
                 description: 'gRPC server plugin',
                 category: PluginCategory::Grpc,
                 docsUrl: 'https://docs.roadrunner.dev/docs/plugins/grpc',
             ),
-
             new Plugin(
                 name: 'tcp',
                 ref: $env->get('RR_PLUGIN_TCP', 'v5.0.2'),
@@ -210,13 +195,11 @@ final class PluginsBootloader extends Bootloader
                 repository: 'tcp',
                 repositoryType: PluginRepository::Github,
                 source: PluginSource::Official,
-                dependencies: ['logger', 'server'], // Added logger dependency
+                dependencies: ['logger', 'server'],
                 description: 'Raw TCP payload handling',
                 category: PluginCategory::Network,
                 docsUrl: 'https://docs.roadrunner.dev/docs/plugins/tcp',
             ),
-
-            // HTTP MIDDLEWARE - All need logger + http
             new Plugin(
                 name: 'gzip',
                 ref: $env->get('RR_PLUGIN_GZIP', 'v5.0.2'),
@@ -224,12 +207,11 @@ final class PluginsBootloader extends Bootloader
                 repository: 'gzip',
                 repositoryType: PluginRepository::Github,
                 source: PluginSource::Official,
-                dependencies: ['logger', 'http'], // Added logger dependency
+                dependencies: ['logger', 'http'],
                 description: 'GZIP compression middleware',
                 category: PluginCategory::Http,
                 docsUrl: 'https://docs.roadrunner.dev/docs/http/gzip',
             ),
-
             new Plugin(
                 name: 'headers',
                 ref: $env->get('RR_PLUGIN_HEADERS', 'v5.0.2'),
@@ -237,12 +219,11 @@ final class PluginsBootloader extends Bootloader
                 repository: 'headers',
                 repositoryType: PluginRepository::Github,
                 source: PluginSource::Official,
-                dependencies: ['logger', 'http'], // Added logger dependency
+                dependencies: ['logger', 'http'],
                 description: 'HTTP headers middleware',
                 category: PluginCategory::Http,
                 docsUrl: 'https://docs.roadrunner.dev/docs/http/headers',
             ),
-
             new Plugin(
                 name: 'static',
                 ref: $env->get('RR_PLUGIN_STATIC', 'v5.0.1'),
@@ -250,12 +231,11 @@ final class PluginsBootloader extends Bootloader
                 repository: 'static',
                 repositoryType: PluginRepository::Github,
                 source: PluginSource::Official,
-                dependencies: ['logger', 'http'], // Added logger dependency
+                dependencies: ['logger', 'http'],
                 description: 'Static file serving middleware',
                 category: PluginCategory::Http,
                 docsUrl: 'https://docs.roadrunner.dev/docs/http/static',
             ),
-
             new Plugin(
                 name: 'fileserver',
                 ref: $env->get('RR_PLUGIN_FILESERVER', 'v5.0.1'),
@@ -263,12 +243,11 @@ final class PluginsBootloader extends Bootloader
                 repository: 'fileserver',
                 repositoryType: PluginRepository::Github,
                 source: PluginSource::Official,
-                dependencies: ['logger', 'http'], // Added logger dependency
+                dependencies: ['logger', 'http'],
                 description: 'Static file server',
                 category: PluginCategory::Http,
                 docsUrl: 'https://docs.roadrunner.dev/docs/http/static',
             ),
-
             new Plugin(
                 name: 'proxy',
                 ref: $env->get('RR_PLUGIN_PROXY', 'v5.0.2'),
@@ -276,12 +255,11 @@ final class PluginsBootloader extends Bootloader
                 repository: 'proxy_ip_parser',
                 repositoryType: PluginRepository::Github,
                 source: PluginSource::Official,
-                dependencies: ['logger', 'http'], // Added logger dependency
+                dependencies: ['logger', 'http'],
                 description: 'Proxy IP parser middleware',
                 category: PluginCategory::Http,
                 docsUrl: 'https://docs.roadrunner.dev/docs/http/proxy',
             ),
-
             new Plugin(
                 name: 'send',
                 ref: $env->get('RR_PLUGIN_SEND', 'v5.0.1'),
@@ -289,12 +267,11 @@ final class PluginsBootloader extends Bootloader
                 repository: 'send',
                 repositoryType: PluginRepository::Github,
                 source: PluginSource::Official,
-                dependencies: ['logger', 'http'], // Added logger dependency
+                dependencies: ['logger', 'http'],
                 description: 'Send file response middleware',
                 category: PluginCategory::Http,
                 docsUrl: 'https://docs.roadrunner.dev/docs/http/sendfile',
             ),
-
             new Plugin(
                 name: 'prometheus',
                 ref: $env->get('RR_PLUGIN_PROMETHEUS', 'v5.0.1'),
@@ -302,13 +279,11 @@ final class PluginsBootloader extends Bootloader
                 repository: 'prometheus',
                 repositoryType: PluginRepository::Github,
                 source: PluginSource::Official,
-                dependencies: ['logger', 'metrics'], // Added logger dependency
+                dependencies: ['logger', 'metrics'],
                 description: 'Prometheus metrics HTTP middleware',
                 category: PluginCategory::Metrics,
                 docsUrl: 'https://docs.roadrunner.dev/docs/logging-and-observability/metrics#http-metrics',
             ),
-
-            // JOBS LAYER
             new Plugin(
                 name: 'jobs',
                 ref: $env->get('RR_PLUGIN_JOBS', 'v5.0.2'),
@@ -316,13 +291,11 @@ final class PluginsBootloader extends Bootloader
                 repository: 'jobs',
                 repositoryType: PluginRepository::Github,
                 source: PluginSource::Official,
-                dependencies: ['logger', 'server', 'rpc'], // Added logger dependency
+                dependencies: ['logger', 'server', 'rpc'],
                 description: 'Job queue management',
                 category: PluginCategory::Jobs,
                 docsUrl: 'https://docs.roadrunner.dev/docs/queues-and-jobs/overview-queues',
             ),
-
-            // JOB DRIVERS - All need logger + jobs
             new Plugin(
                 name: 'amqp',
                 ref: $env->get('RR_PLUGIN_AMQP', 'v5.0.2'),
@@ -330,12 +303,11 @@ final class PluginsBootloader extends Bootloader
                 repository: 'amqp',
                 repositoryType: PluginRepository::Github,
                 source: PluginSource::Official,
-                dependencies: ['logger', 'jobs'], // Added logger dependency
+                dependencies: ['logger', 'jobs'],
                 description: 'AMQP job driver',
                 category: PluginCategory::Jobs,
                 docsUrl: 'https://docs.roadrunner.dev/docs/queues-and-jobs/amqp',
             ),
-
             new Plugin(
                 name: 'sqs',
                 ref: $env->get('RR_PLUGIN_SQS', 'v5.0.2'),
@@ -343,12 +315,11 @@ final class PluginsBootloader extends Bootloader
                 repository: 'sqs',
                 repositoryType: PluginRepository::Github,
                 source: PluginSource::Official,
-                dependencies: ['logger', 'jobs'], // Added logger dependency
+                dependencies: ['logger', 'jobs'],
                 description: 'AWS SQS job driver',
                 category: PluginCategory::Jobs,
                 docsUrl: 'https://docs.roadrunner.dev/docs/queues-and-jobs/sqs',
             ),
-
             new Plugin(
                 name: 'beanstalk',
                 ref: $env->get('RR_PLUGIN_BEANSTALK', 'v5.0.2'),
@@ -356,12 +327,11 @@ final class PluginsBootloader extends Bootloader
                 repository: 'beanstalk',
                 repositoryType: PluginRepository::Github,
                 source: PluginSource::Official,
-                dependencies: ['logger', 'jobs'], // Added logger dependency
+                dependencies: ['logger', 'jobs'],
                 description: 'Beanstalk job driver',
                 category: PluginCategory::Jobs,
                 docsUrl: 'https://docs.roadrunner.dev/docs/queues-and-jobs/beanstalk',
             ),
-
             new Plugin(
                 name: 'nats',
                 ref: $env->get('RR_PLUGIN_NATS', 'v5.0.2'),
@@ -369,12 +339,11 @@ final class PluginsBootloader extends Bootloader
                 repository: 'nats',
                 repositoryType: PluginRepository::Github,
                 source: PluginSource::Official,
-                dependencies: ['logger', 'jobs'], // Added logger dependency
+                dependencies: ['logger', 'jobs'],
                 description: 'NATS job driver',
                 category: PluginCategory::Jobs,
                 docsUrl: 'https://docs.roadrunner.dev/docs/queues-and-jobs/nats',
             ),
-
             new Plugin(
                 name: 'kafka',
                 ref: $env->get('RR_PLUGIN_KAFKA', 'v5.0.2'),
@@ -382,12 +351,11 @@ final class PluginsBootloader extends Bootloader
                 repository: 'kafka',
                 repositoryType: PluginRepository::Github,
                 source: PluginSource::Official,
-                dependencies: ['logger', 'jobs'], // Added logger dependency
+                dependencies: ['logger', 'jobs'],
                 description: 'Apache Kafka job driver',
                 category: PluginCategory::Jobs,
                 docsUrl: 'https://docs.roadrunner.dev/docs/queues-and-jobs/kafka',
             ),
-
             new Plugin(
                 name: 'googlepubsub',
                 ref: $env->get('RR_PLUGIN_GOOGLEPUBSUB', 'v5.0.2'),
@@ -395,13 +363,11 @@ final class PluginsBootloader extends Bootloader
                 repository: 'google-pub-sub',
                 repositoryType: PluginRepository::Github,
                 source: PluginSource::Official,
-                dependencies: ['logger', 'jobs'], // Added logger dependency
+                dependencies: ['logger', 'jobs'],
                 description: 'Google Pub/Sub job driver',
                 category: PluginCategory::Jobs,
                 docsUrl: 'https://docs.roadrunner.dev/docs/queues-and-jobs/google-pub-sub',
             ),
-
-            // KEY-VALUE LAYER
             new Plugin(
                 name: 'kv',
                 ref: $env->get('RR_PLUGIN_KV', 'v5.0.2'),
@@ -409,13 +375,11 @@ final class PluginsBootloader extends Bootloader
                 repository: 'kv',
                 repositoryType: PluginRepository::Github,
                 source: PluginSource::Official,
-                dependencies: ['logger', 'rpc'], // Changed from ['server'] to ['logger']
+                dependencies: ['logger', 'rpc'],
                 description: 'Key-value storage interface',
                 category: PluginCategory::Kv,
                 docsUrl: 'https://docs.roadrunner.dev/docs/key-value/overview-kv',
             ),
-
-            // KV DRIVERS - All need logger + kv
             new Plugin(
                 name: 'redis',
                 ref: $env->get('RR_PLUGIN_REDIS', 'v5.0.2'),
@@ -423,12 +387,11 @@ final class PluginsBootloader extends Bootloader
                 repository: 'redis',
                 repositoryType: PluginRepository::Github,
                 source: PluginSource::Official,
-                dependencies: ['logger', 'kv'], // Added logger dependency
+                dependencies: ['logger', 'kv'],
                 description: 'Redis key-value storage',
                 category: PluginCategory::Kv,
                 docsUrl: 'https://docs.roadrunner.dev/docs/key-value/redis',
             ),
-
             new Plugin(
                 name: 'memory',
                 ref: $env->get('RR_PLUGIN_MEMORY', 'v5.0.2'),
@@ -436,12 +399,11 @@ final class PluginsBootloader extends Bootloader
                 repository: 'memory',
                 repositoryType: PluginRepository::Github,
                 source: PluginSource::Official,
-                dependencies: ['logger', 'kv'], // Added logger dependency
+                dependencies: ['logger', 'kv'],
                 description: 'In-memory key-value storage',
                 category: PluginCategory::Kv,
                 docsUrl: 'https://docs.roadrunner.dev/docs/key-value/memory',
             ),
-
             new Plugin(
                 name: 'boltdb',
                 ref: $env->get('RR_PLUGIN_BOLTDB', 'v5.0.2'),
@@ -449,12 +411,11 @@ final class PluginsBootloader extends Bootloader
                 repository: 'boltdb',
                 repositoryType: PluginRepository::Github,
                 source: PluginSource::Official,
-                dependencies: ['logger', 'kv'], // Added logger dependency
+                dependencies: ['logger', 'kv'],
                 description: 'BoltDB key-value storage',
                 category: PluginCategory::Kv,
                 docsUrl: 'https://docs.roadrunner.dev/docs/key-value/boltdb',
             ),
-
             new Plugin(
                 name: 'memcached',
                 ref: $env->get('RR_PLUGIN_MEMCACHED', 'v5.0.2'),
@@ -462,13 +423,11 @@ final class PluginsBootloader extends Bootloader
                 repository: 'memcached',
                 repositoryType: PluginRepository::Github,
                 source: PluginSource::Official,
-                dependencies: ['logger', 'kv'], // Added logger dependency
+                dependencies: ['logger', 'kv'],
                 description: 'Memcached key-value storage',
                 category: PluginCategory::Kv,
                 docsUrl: 'https://docs.roadrunner.dev/docs/key-value/memcached',
             ),
-
-            // METRICS LAYER
             new Plugin(
                 name: 'metrics',
                 ref: $env->get('RR_PLUGIN_METRICS', 'v5.0.2'),
@@ -476,13 +435,11 @@ final class PluginsBootloader extends Bootloader
                 repository: 'metrics',
                 repositoryType: PluginRepository::Github,
                 source: PluginSource::Official,
-                dependencies: ['logger', 'rpc'], // Added logger dependency
+                dependencies: ['logger', 'rpc'],
                 description: 'Metrics collection and reporting',
                 category: PluginCategory::Metrics,
                 docsUrl: 'https://docs.roadrunner.dev/docs/logging-and-observability/metrics',
             ),
-
-            // MONITORING & OBSERVABILITY
             new Plugin(
                 name: 'status',
                 ref: $env->get('RR_PLUGIN_STATUS', 'v5.0.2'),
@@ -490,12 +447,11 @@ final class PluginsBootloader extends Bootloader
                 repository: 'status',
                 repositoryType: PluginRepository::Github,
                 source: PluginSource::Official,
-                dependencies: ['logger'], // Added logger dependency
+                dependencies: ['logger'],
                 description: 'Health checks and readiness probes',
                 category: PluginCategory::Monitoring,
                 docsUrl: 'https://docs.roadrunner.dev/docs/logging-and-observability/health',
             ),
-
             new Plugin(
                 name: 'otel',
                 ref: $env->get('RR_PLUGIN_OTEL', 'v5.0.1'),
@@ -503,12 +459,11 @@ final class PluginsBootloader extends Bootloader
                 repository: 'otel',
                 repositoryType: PluginRepository::Github,
                 source: PluginSource::Official,
-                dependencies: ['logger'], // Added logger dependency
+                dependencies: ['logger'],
                 description: 'OpenTelemetry tracing',
                 category: PluginCategory::Observability,
                 docsUrl: 'https://docs.roadrunner.dev/docs/logging-and-observability/otel',
             ),
-
             new Plugin(
                 name: 'appLogger',
                 ref: $env->get('RR_PLUGIN_APP_LOGGER', 'v5.0.2'),
@@ -516,13 +471,11 @@ final class PluginsBootloader extends Bootloader
                 repository: 'app-logger',
                 repositoryType: PluginRepository::Github,
                 source: PluginSource::Official,
-                dependencies: ['logger', 'rpc'], // Keep existing
+                dependencies: ['logger', 'rpc'],
                 description: 'Application logger plugin for RoadRunner',
                 category: PluginCategory::Logging,
                 docsUrl: 'https://docs.roadrunner.dev/docs/logging-and-observability/applogger',
             ),
-
-            // BROADCASTING & WORKFLOW
             new Plugin(
                 name: 'centrifuge',
                 ref: $env->get('RR_PLUGIN_CENTRIFUGE', 'v5.0.2'),
@@ -530,12 +483,11 @@ final class PluginsBootloader extends Bootloader
                 repository: 'centrifuge',
                 repositoryType: PluginRepository::Github,
                 source: PluginSource::Official,
-                dependencies: ['logger', 'server'], // Added logger dependency
+                dependencies: ['logger', 'server'],
                 description: 'Centrifuge broadcasting platform',
                 category: PluginCategory::Broadcasting,
                 docsUrl: 'https://docs.roadrunner.dev/docs/plugins/centrifuge',
             ),
-
             new Plugin(
                 name: 'temporal',
                 ref: $env->get('RR_PLUGIN_TEMPORAL', 'v5.1.0'),
@@ -543,7 +495,7 @@ final class PluginsBootloader extends Bootloader
                 repository: 'roadrunner-temporal',
                 repositoryType: PluginRepository::Github,
                 source: PluginSource::Official,
-                dependencies: ['logger', 'server'], // Added logger dependency
+                dependencies: ['logger', 'server'],
                 description: 'Temporal workflow engine',
                 category: PluginCategory::Workflow,
                 docsUrl: 'https://docs.roadrunner.dev/docs/workflow-engine/temporal',

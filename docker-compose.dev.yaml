@@ -1,7 +1,14 @@
 services:
   vx-app:
+    build:
+      dockerfile: .docker/app/Dockerfile
+      context: ./
+      args:
+        GH_TOKEN: ${GITHUB_TOKEN}
     environment:
       HTTP_WORKERS_DEBUG: true
+    ports:
+      - 2112:2112
     volumes:
       - type: bind
         source: .

@@ -10,6 +10,10 @@ return [
             'storage' => 'memory',
             'prefix' => 'github_',
         ],
+        'plugins' => [
+            'storage' => 'memory',
+            'prefix' => 'plugins_',
+        ],
     ],
 
     'storages' => [

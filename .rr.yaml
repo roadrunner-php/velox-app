@@ -3,6 +3,9 @@ version: '3'
 rpc:
   listen: 'tcp://127.0.0.1:6001'
 
+metrics:
+  address: ":2112"
+
 http:
   address: '0.0.0.0:8080'
   middleware:
@@ -15,7 +18,7 @@ http:
       allowed_methods: "GET,POST,PUT,DELETE"
       allow_credentials: true
   pool:
-    debug: ${HTTP_WORKERS_DEBUG:-false}
+    debug: ${HTTP_WORKERS_DEBUG:-true}
     num_workers: ${RR_HTTP_NUM_WORKERS:-4}
     supervisor:
       max_worker_memory: ${RR_HTTP_MAX_WORKER_MEMORY:-128}
@@ -24,6 +27,20 @@ kv:
   memory:
     driver: memory
     config: { }
+
+cron:
+  timezone: "UTC"
+  grace_period: "30s"
+
+  jobs:
+    - name: "discover-community-plugins"
+      command: "php app.php velox:discover-plugin"
+      schedule: "* * * * *"
+      allow_overlap: false
+      timeout: "5m"
+      log_file: "runtime/logs/discover-plugins.log"
+      max_log_size: 10485760
+      max_log_files: 5
 
 server:
   command: 'php app.php'

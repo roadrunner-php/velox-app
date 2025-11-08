@@ -25,12 +25,9 @@ documents:
     sources:
       - type: file
         sourcePaths:
-          - app/src/Application/HTTP/Response
-          - app/src/Module/Velox/Preset/DTO
           - app/src/Module/Velox/Plugin/DTO
           - app/src/Module/Velox/Dependency/DTO
           - app/src/Module/Velox/Configuration/DTO
-          - app/src/Module/Velox/BinaryBuilder/DTO
           - app/src/Module/Velox/Version/DTO
       - type: file
         sourcePaths:
@@ -42,6 +39,20 @@ documents:
       - type: file
         sourcePaths:
           - app/src/Module/Github
+
+  - description: Discovery module
+    outputPath: modules/discovery.md
+    sources:
+      - type: file
+        sourcePaths:
+          - app/src/Module/Velox/Plugin/Discovery
+
+  - description: RoadRunner plugins
+    outputPath: modules/plugins.md
+    sources:
+      - type: file
+        sourcePaths:
+          - app/src/Module/Velox/Plugin
 
   - description: HTTP endpoints
     outputPath: modules/http-endpoints.md
