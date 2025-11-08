@@ -45,6 +45,7 @@ jobs:
           push: true
           build-args: |
             APP_VERSION=${{ github.ref_name }}
+            GH_TOKEN=${{ secrets.GHCR_PASSWORD }}
             SERVICE=velox-app
           tags: ${{ steps.service-git.outputs.tags }}
           labels: ${{ steps.service-git.outputs.labels }}
