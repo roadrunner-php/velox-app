@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Module\Velox;
 
 use App\Module\Velox\BinaryBuilder\BinaryBuilderBootloader;
+use App\Module\Velox\BinaryGeneration\BinaryGenerationBootloader;
 use App\Module\Velox\Configuration\Service\ConfigurationGeneratorService;
 use App\Module\Velox\Configuration\Service\ConfigurationValidatorService;
 use App\Module\Velox\Dependency\Service\DependencyResolverService;
@@ -29,6 +30,7 @@ final class VeloxBootloader extends Bootloader
             PluginsBootloader::class,
             PresetBootloader::class,
             BinaryBuilderBootloader::class,
+            BinaryGenerationBootloader::class,
         ];
     }
 
