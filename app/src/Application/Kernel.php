@@ -13,10 +13,10 @@ use Spiral\Distribution\Bootloader\DistributionBootloader;
 use Spiral\DotEnv\Bootloader\DotenvBootloader;
 use Spiral\RoadRunnerBridge\Bootloader as RoadRunnerBridge;
 use Spiral\Sentry\Bootloader\SentryReporterBootloader;
+use Spiral\Stempler\Bootloader\StemplerBootloader;
 use Spiral\Storage\Bootloader\StorageBootloader;
 use Spiral\TemporalBridge\Bootloader as TemporalBridge;
 use Spiral\Tokenizer\Bootloader\TokenizerListenerBootloader;
-use Spiral\Twig\Bootloader\TwigBootloader;
 use Spiral\Views\Bootloader\ViewsBootloader;
 
 /**
@@ -69,7 +69,7 @@ class Kernel extends \Spiral\Framework\Kernel
 
             // Views
             ViewsBootloader::class,
-            TwigBootloader::class,
+            StemplerBootloader::class,
 
             // Storage
             StorageBootloader::class,

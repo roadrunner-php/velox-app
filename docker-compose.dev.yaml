@@ -16,10 +16,8 @@ services:
     image: ghcr.io/roadrunner-php/velox-spa:latest
     environment:
       VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://app.vx.localhost/api/v1}
-    command: |
-      npm run dev --host 0.0.0.0 --port 3000 --debug
-    ports:
-      - ${VX_HTTP_SPA_PORT:-3000}:3000
+      NODE_ENV: development
+    command: ["npm", "run", "dev", "--", "--host"]
     volumes:
       - type: bind
         source: ./spa
@@ -28,7 +26,21 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.vx-spa.entrypoints=web"
       - "traefik.http.routers.vx-spa.rule=Host(`spa.vx.localhost`)"
-      - "traefik.http.services.vx-spa.loadbalancer.server.port=3000"
+      - "traefik.http.services.vx-spa.loadbalancer.server.port=5173"
+
+  vx-buggregator:
+    container_name: vx-buggregator
+    image: ghcr.io/buggregator/server:latest
+    restart: always
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.buggregator.entrypoints=web"
+      - "traefik.http.routers.buggregator.rule=Host(`buggregator.vx.localhost`)"
+      - "traefik.http.services.buggregator.loadbalancer.server.port=8000"
+    networks:
+      - vx-network
+    logging:
+      driver: none
 
   vx-reverse-proxy:
     image: traefik:v2.9
