@@ -1,9 +1,28 @@
-ARG ROAD_RUNNER_IMAGE=2025.1
 ARG COMPOSER_VERSION="2.8.4"
+
+FROM ghcr.io/roadrunner-server/velox:2025.1.1 as velox
+
+FROM golang:1.25-alpine as rr
+
+ARG APP_VERSION="2025.1.1"
+ARG GH_TOKEN
+
+# copy required files from builder image
+COPY --from=velox /usr/bin/vx /usr/bin/vx
+COPY velox.toml .
+
+# we don't need CGO
+ENV CGO_ENABLED=0
+ENV GH_TOKEN=${GH_TOKEN}
+ARG CACHE_BUST=3
+
+RUN echo $CACHE_BUST
+
+# RUN build
+RUN vx build -c velox.toml -o /usr/bin/
 
 FROM composer:${COMPOSER_VERSION} AS composer
 
-FROM ghcr.io/roadrunner-server/roadrunner:$ROAD_RUNNER_IMAGE AS rr
 FROM ghcr.io/spiral/php-grpc:8.3
 
 ARG APP_VERSION=v1.0
