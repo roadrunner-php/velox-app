@@ -35,7 +35,7 @@ cron:
   jobs:
     - name: "discover-community-plugins"
       command: "php app.php velox:discover-plugin"
-      schedule: "* * * * *"
+      schedule: "0 */1 * * *"
       allow_overlap: false
       timeout: "5m"
       log_file: "runtime/logs/discover-plugins.log"
