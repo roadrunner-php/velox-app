@@ -1,5 +1,5 @@
 <template>
-  <component 
+  <component
     :is="tag"
     :to="to"
     :href="href"
@@ -10,35 +10,31 @@
   >
     <span class="gradient-button-content">
       <!-- Loading Spinner -->
-      <div 
-        v-if="loading"
-        class="gradient-button-spinner"
-        :class="spinnerSizeClass"
-      ></div>
-      
+      <div v-if="loading" class="gradient-button-spinner" :class="spinnerSizeClass"></div>
+
       <!-- Icon Slot -->
       <slot name="icon" v-if="!loading && $slots.icon" />
-      
+
       <!-- Default Icon -->
       <span v-else-if="!loading && icon" class="gradient-button-emoji">{{ icon }}</span>
-      
+
       <!-- Text Content -->
       <span>{{ loading ? loadingText : text }}</span>
-      
+
       <!-- Arrow Icon -->
-      <svg 
-        v-if="showArrow && !loading" 
+      <svg
+        v-if="showArrow && !loading"
         class="gradient-button-arrow"
         :class="iconSizeClass"
-        fill="none" 
-        stroke="currentColor" 
+        fill="none"
+        stroke="currentColor"
         viewBox="0 0 24 24"
       >
-        <path 
-          stroke-linecap="round" 
-          stroke-linejoin="round" 
-          stroke-width="2" 
-          d="M13 7l5 5m0 0l-5 5m5-5H6" 
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M13 7l5 5m0 0l-5 5m5-5H6"
         />
       </svg>
     </span>
@@ -74,7 +70,7 @@ const props = withDefaults(defineProps<Props>(), {
   loading: false,
   loadingText: 'Loading...',
   showArrow: true,
-  fullWidth: false
+  fullWidth: false,
 })
 
 const emit = defineEmits<Emits>()
@@ -113,23 +109,31 @@ const sizeClasses = computed(() => {
   }
 })
 
-const widthClass = computed(() => props.fullWidth ? 'w-full' : 'min-w-[200px]')
+const widthClass = computed(() => (props.fullWidth ? 'w-full' : 'min-w-[200px]'))
 
 const spinnerSizeClass = computed(() => {
   switch (props.size) {
-    case 'sm': return 'w-3 h-3'
-    case 'md': return 'w-5 h-5'
-    case 'lg': return 'w-6 h-6'
-    default: return 'w-5 h-5'
+    case 'sm':
+      return 'w-3 h-3'
+    case 'md':
+      return 'w-5 h-5'
+    case 'lg':
+      return 'w-6 h-6'
+    default:
+      return 'w-5 h-5'
   }
 })
 
 const iconSizeClass = computed(() => {
   switch (props.size) {
-    case 'sm': return 'w-4 h-4'
-    case 'md': return 'w-5 h-5'
-    case 'lg': return 'w-6 h-6'
-    default: return 'w-5 h-5'
+    case 'sm':
+      return 'w-4 h-4'
+    case 'md':
+      return 'w-5 h-5'
+    case 'lg':
+      return 'w-6 h-6'
+    default:
+      return 'w-5 h-5'
   }
 })
 
@@ -140,8 +144,8 @@ const buttonClasses = computed(() => [
   widthClass.value,
   {
     'gradient-button--hover': !props.disabled && !props.loading,
-    'gradient-button--disabled': props.disabled || props.loading
-  }
+    'gradient-button--disabled': props.disabled || props.loading,
+  },
 ])
 
 function handleClick(event: MouseEvent) {
@@ -153,7 +157,7 @@ function handleClick(event: MouseEvent) {
 
 <style scoped>
 .gradient-button-base {
-  @apply inline-flex items-center justify-center font-bold rounded-full transition-all duration-300 transform focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900;
+  @apply cursor-pointer inline-flex items-center justify-center font-bold rounded-full transition-all duration-300 transform focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900;
 }
 
 .gradient-button--hover:not(.gradient-button--disabled) {

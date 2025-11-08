@@ -680,6 +680,7 @@ function getActionButtonClasses(variant: StepAction['variant'] = 'primary') {
 .getting-started-steps__action-button {
   @apply inline-flex items-center gap-2 px-6 py-3 font-semibold rounded-xl;
   @apply transition-all duration-200 shadow-lg transform hover:scale-105;
+  @apply cursor-pointer;
 }
 
 .getting-started-steps__action-button--primary {
