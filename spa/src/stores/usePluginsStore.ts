@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { watch } from 'vue'
 import * as pluginApi from '@/api/pluginsApi'
+import * as binaryApi from '@/api/binaryApi'
 import type {
   Plugin,
   PluginCategory,
@@ -9,6 +10,7 @@ import type {
   GenerateConfigRequest,
 } from '@/api/pluginsApi'
 import type { PluginSelectionState, PluginSelectionInfo } from '@/types/plugin'
+import type { PlatformOption } from '@/api/binaryApi'
 
 interface PluginWithSelectionInfo extends Plugin {
   selectionState: PluginSelectionState
@@ -280,6 +282,33 @@ export const usePluginsStore = defineStore('plugins', {
         this.configOutput = res.data
       } catch (e: any) {
         this.error = e.message
+        throw e
+      }
+    },
+
+    async generateBinary(platform: PlatformOption) {
+      this.error = null
+      
+      try {
+        const plugins = this.allSelectedPlugins
+        
+        if (plugins.length === 0) {
+          throw new Error('No plugins selected')
+        }
+
+        // Generate binary
+        const blob = await binaryApi.generateBinary({
+          plugins,
+          target_os: platform.os,
+          target_arch: platform.arch,
+        })
+
+        // Download the file
+        const filename = binaryApi.getBinaryFilename(platform.os, platform.arch)
+        binaryApi.downloadBlob(blob, filename)
+        
+      } catch (e: any) {
+        this.error = e.message || 'Failed to generate binary'
         throw e
       }
     },

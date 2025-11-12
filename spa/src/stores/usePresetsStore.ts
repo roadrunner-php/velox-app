@@ -1,8 +1,10 @@
 import { defineStore } from 'pinia'
 import { watch } from 'vue'
 import * as presetApi from '@/api/presetsApi'
+import * as binaryApi from '@/api/binaryApi'
 import type { Preset, PresetQuery, GenerateConfigFromPresetsRequest } from '@/api/presetsApi'
 import type { PresetSelectionState, PresetSelectionInfo } from '@/types/preset'
+import type { PlatformOption } from '@/api/binaryApi'
 
 interface PresetWithSelectionInfo extends Preset {
   selectionState: PresetSelectionState
@@ -242,6 +244,42 @@ export const usePresetsStore = defineStore('presets', {
         this.configOutput = res.data
       } catch (e: any) {
         this.error = e.message
+        throw e
+      }
+    },
+
+    async generateBinary(platform: PlatformOption) {
+      this.error = null
+      
+      try {
+        const presets = this.allSelectedPresets
+        
+        if (presets.length === 0) {
+          throw new Error('No presets selected')
+        }
+
+        // Collect all plugins from selected presets
+        const allPlugins = new Set<string>()
+        for (const presetName of presets) {
+          const preset = this.presets.find(p => p.name === presetName)
+          if (preset) {
+            preset.plugins.forEach(plugin => allPlugins.add(plugin))
+          }
+        }
+
+        // Generate binary
+        const blob = await binaryApi.generateBinary({
+          plugins: Array.from(allPlugins),
+          target_os: platform.os,
+          target_arch: platform.arch,
+        })
+
+        // Download the file
+        const filename = binaryApi.getBinaryFilename(platform.os, platform.arch)
+        binaryApi.downloadBlob(blob, filename)
+        
+      } catch (e: any) {
+        this.error = e.message || 'Failed to generate binary'
         throw e
       }
     },

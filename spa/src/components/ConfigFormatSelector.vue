@@ -129,10 +129,9 @@ const formatOptions: FormatOption[] = [
   {
     value: 'binary',
     label: 'Binary',
-    description: 'Will be soon available',
+    description: 'Generate RoadRunner binary for different OS and architectures',
     icon: '📦',
     recommended: true,
-    disabled: true,
   },
 ]
 

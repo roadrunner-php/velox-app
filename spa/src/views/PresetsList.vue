@@ -4,7 +4,9 @@ import { useRoute, useRouter } from 'vue-router'
 import { usePresetsStore } from '@/stores/usePresetsStore'
 import PresetCard from '@/components/PresetCard.vue'
 import ConfigModal from '@/components/ConfigModal.vue'
+import BinaryPlatformSelector from '@/components/BinaryPlatformSelector.vue'
 import ErrorAlert from '@/components/ErrorAlert.vue'
+import type { PlatformOption } from '@/api/binaryApi'
 
 // New modular components
 import SearchAndFilters from '@/components/SearchAndFilters.vue'
@@ -19,9 +21,11 @@ const route = useRoute()
 const router = useRouter()
 const presetStore = usePresetsStore()
 
-const configFormat = ref<'toml' | 'json' | 'docker' | 'dockerfile'>('toml')
+const configFormat = ref<'toml' | 'json' | 'docker' | 'dockerfile' | 'binary'>('toml')
 
 const showModal = ref(false)
+const showPlatformSelector = ref(false)
+const isGeneratingBinary = ref(false)
 const showSelectionConfirm = ref(false)
 const pendingSelection = ref<{
   name: string
@@ -162,6 +166,12 @@ async function handleGenerate(format: typeof configFormat.value) {
   presetStore.error = null
   showModal.value = false
 
+  // If binary format is selected, show platform selector
+  if (format === 'binary') {
+    showPlatformSelector.value = true
+    return
+  }
+
   try {
     await presetStore.generateConfig({
       presets: presetStore.allSelectedPresets,
@@ -173,6 +183,26 @@ async function handleGenerate(format: typeof configFormat.value) {
     }
   } catch (e) {
     console.error(e)
+  }
+}
+
+async function handleGenerateBinary(platform: PlatformOption) {
+  isGeneratingBinary.value = true
+  presetStore.error = null
+
+  try {
+    await presetStore.generateBinary(platform)
+    showPlatformSelector.value = false
+  } catch (e) {
+    console.error('Failed to generate binary:', e)
+  } finally {
+    isGeneratingBinary.value = false
+  }
+}
+
+function handleClosePlatformSelector() {
+  if (!isGeneratingBinary.value) {
+    showPlatformSelector.value = false
   }
 }
 
@@ -197,6 +227,14 @@ function clearAllSelections() {
       dependency-type="related preset"
       @confirm="confirmSelection"
       @cancel="cancelSelection"
+    />
+
+    <!-- Binary Platform Selector Modal -->
+    <BinaryPlatformSelector
+      :show="showPlatformSelector"
+      :is-generating="isGeneratingBinary"
+      @close="handleClosePlatformSelector"
+      @generate="handleGenerateBinary"
     />
 
     <!-- Header -->
