@@ -25,7 +25,7 @@ final class DiscoveredPluginCollectionResource extends ResourceCollection
 
     public function toArray(): array
     {
-        $result = parent::toArray();
+        $result = null;
 
         if ($this->statistics !== null) {
             $result['meta'] = $this->statistics->toArray();

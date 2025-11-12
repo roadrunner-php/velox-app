@@ -13,6 +13,7 @@ use Symfony\Component\HttpClient\Psr18Client;
 
 final class GithubBootloader extends Bootloader
 {
+    #[\Override]
     public function defineDependencies(): array
     {
         return [
@@ -20,6 +21,7 @@ final class GithubBootloader extends Bootloader
         ];
     }
 
+    #[\Override]
     public function defineSingletons(): array
     {
         return [
@@ -28,8 +30,7 @@ final class GithubBootloader extends Bootloader
             Client::class => static fn(
                 EnvironmentInterface $env,
                 RequestFactoryInterface $requestFactory,
-            ): Client
-                => new Client(
+            ): Client => new Client(
                 httpClient: (new Psr18Client())->withOptions([
                     'base_uri' => $env->get('GITHUB_API_BASE_URI', 'https://api.github.com/'),
                     'headers' => [
@@ -47,8 +48,7 @@ final class GithubBootloader extends Bootloader
             DiscoveryClient::class => static fn(
                 RequestFactoryInterface $requestFactory,
                 EnvironmentInterface $env,
-            ): DiscoveryClient
-                => new DiscoveryClient(
+            ): DiscoveryClient => new DiscoveryClient(
                 httpClient: (new Psr18Client())->withOptions([
                     'base_uri' => $env->get('GITHUB_API_BASE_URI', 'https://api.github.com/'),
                     'headers' => [

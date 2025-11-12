@@ -11,6 +11,7 @@ use Spiral\Cache\CacheStorageProviderInterface;
 
 final class ContributorsBootloader extends Bootloader
 {
+    #[\Override]
     public function defineSingletons(): array
     {
         return [

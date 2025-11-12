@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Module\Velox\BinaryBuilder\Endpoint\Console;
 
+use App\Module\Velox\BinaryBuilder\DTO\TargetPlatform;
 use App\Module\Velox\BinaryBuilder\Exception\BuildException;
 use App\Module\Velox\BinaryBuilder\Service\BinaryBuilderService;
 use App\Module\Velox\ConfigurationBuilder;
@@ -24,6 +25,15 @@ final class BuildBinary extends Command
 
     #[Option(description: 'Base Docker image for Dockerfile')]
     private string $baseImage = 'php:8.3-cli';
+
+    #[Option(description: 'Target OS (linux, darwin, windows)')]
+    private ?string $targetOs = 'linux';
+
+    #[Option(description: 'Target architecture (amd64, arm64, 386, arm)')]
+    private ?string $targetArch = 'amd64';
+
+    #[Option(description: 'Force rebuild (bypass Velox server cache)')]
+    private bool $forceRebuild = false;
 
     private string $outputDir;
 
@@ -74,6 +84,24 @@ final class BuildBinary extends Command
         $this->info('Building RoadRunner binary from selected plugins...');
         $this->info('Selected plugins: ' . \implode(', ', $selectedPlugins));
 
+        // Parse target platform if specified
+        $targetPlatform = null;
+        if ($this->targetOs !== null || $this->targetArch !== null) {
+            try {
+                $currentPlatform = TargetPlatform::current();
+                $targetPlatform = TargetPlatform::fromStrings(
+                    os: $this->targetOs ?? $currentPlatform->os->value,
+                    arch: $this->targetArch ?? $currentPlatform->arch->value,
+                );
+                $this->info("Target platform: {$targetPlatform->toString()}");
+            } catch (\ValueError $e) {
+                $this->error("Invalid platform specification: {$e->getMessage()}");
+                $this->error('Valid OS: linux, darwin, windows, freebsd');
+                $this->error('Valid architectures: amd64, arm64, 386, arm');
+                return self::FAILURE;
+            }
+        }
+
         // Resolve dependencies
         $dependencyResult = $configBuilder->resolveDependencies($selectedPlugins);
 
@@ -94,18 +122,35 @@ final class BuildBinary extends Command
 
         $this->info('Final plugin list (including dependencies): ' . \implode(', ', $allPlugins));
 
-        return $this->buildBinaryOnly($binaryBuilder, $allPlugins);
+        return $this->buildBinaryOnly($binaryBuilder, $allPlugins, $targetPlatform);
     }
 
-    private function buildBinaryOnly(BinaryBuilderService $binaryBuilder, array $plugins): int
-    {
-        $buildResult = $binaryBuilder->buildFromPluginSelection($plugins, $this->outputDir);
+    private function buildBinaryOnly(
+        BinaryBuilderService $binaryBuilder,
+        array $plugins,
+        ?TargetPlatform $targetPlatform = null,
+    ): int {
+        $buildResult = $binaryBuilder->buildFromPluginSelection(
+            $plugins,
+            $this->outputDir,
+            $targetPlatform,
+            $this->forceRebuild,
+        );
 
         if ($buildResult->isSuccess()) {
-            $this->info('✅ Binary built successfully!');
+            $cacheStatus = $buildResult->fromCache ? '📦 (from cache)' : '🔨 (freshly built)';
+            $this->info("✅ Binary built successfully! {$cacheStatus}");
             $this->info("📁 Binary path: {$buildResult->binaryPath}");
-            $this->info("⏱️  Build time: {$buildResult->getBuildTime()}");
+
+            if (!$buildResult->fromCache) {
+                $this->info("⏱️  Build time: {$buildResult->getBuildTime()}");
+            }
+
             $this->info("📦 Binary size: {$buildResult->getBinarySize()}");
+
+            if ($buildResult->cacheKey !== null) {
+                $this->comment("🔑 Cache key: {$buildResult->cacheKey}");
+            }
 
             if (!empty($buildResult->logs)) {
                 $this->newLine();

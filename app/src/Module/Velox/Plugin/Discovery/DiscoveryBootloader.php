@@ -23,6 +23,7 @@ use Spiral\Cache\CacheStorageProviderInterface;
  */
 final class DiscoveryBootloader extends Bootloader
 {
+    #[\Override]
     public function defineSingletons(): array
     {
         return [
@@ -47,13 +48,13 @@ final class DiscoveryBootloader extends Bootloader
                 EnvironmentInterface $env,
             ): GitHubDiscoveryService
                 => new GitHubDiscoveryService(
-                githubClient: $githubClient,
-                manifestParser: $manifestParser,
-                pluginRegistry: $pluginRegistry,
-                logger: $logger,
-                organization: $env->get('VELOX_GITHUB_ORG', 'roadrunner-plugins'),
-                manifestFile: $env->get('VELOX_MANIFEST_FILE', '.velox.yaml'),
-            ),
+                    githubClient: $githubClient,
+                    manifestParser: $manifestParser,
+                    pluginRegistry: $pluginRegistry,
+                    logger: $logger,
+                    organization: $env->get('VELOX_GITHUB_ORG', 'roadrunner-plugins'),
+                    manifestFile: $env->get('VELOX_MANIFEST_FILE', '.velox.yaml'),
+                ),
 
             // Discovery plugin provider
             GitHubDiscoveryPluginProvider::class => static fn(
@@ -62,10 +63,10 @@ final class DiscoveryBootloader extends Bootloader
                 EnvironmentInterface $env,
             ): GitHubDiscoveryPluginProvider
                 => new GitHubDiscoveryPluginProvider(
-                repository: $repository,
-                discoveryService: $discoveryService,
-                lazyLoad: (bool) $env->get('VELOX_LAZY_LOAD', true),
-            ),
+                    repository: $repository,
+                    discoveryService: $discoveryService,
+                    lazyLoad: (bool) $env->get('VELOX_LAZY_LOAD', true),
+                ),
 
             // Webhook middleware
             WebhookMiddleware::class => static fn(
@@ -73,9 +74,9 @@ final class DiscoveryBootloader extends Bootloader
                 EnvironmentInterface $env,
             ): WebhookMiddleware
                 => new WebhookMiddleware(
-                responseFactory: $responseFactory,
-                webhookSecret: $env->get('VELOX_WEBHOOK_SECRET'),
-            ),
+                    responseFactory: $responseFactory,
+                    webhookSecret: $env->get('VELOX_WEBHOOK_SECRET'),
+                ),
         ];
     }
 }

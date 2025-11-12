@@ -48,7 +48,7 @@ final class ListPresetsFilter extends Filter implements HasFilterDefinition
         }
 
         return \array_filter(
-            \array_map('trim', \explode(',', $this->tags)),
+            \array_map(trim(...), \explode(',', $this->tags)),
             static fn(string $tag): bool => $tag !== '',
         );
     }

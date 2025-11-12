@@ -149,7 +149,7 @@ final readonly class GitHubDiscoveryService
                 $this->manifestFile,
                 $version,
             );
-        } catch (ServerErrorException $e) {
+        } catch (ServerErrorException) {
             throw new GitHubApiException(
                 "Manifest file not found: {$this->manifestFile}",
                 $repositoryName,

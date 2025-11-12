@@ -12,6 +12,14 @@ x-common-spiral-variables: &common-spiral-variables
   CYCLE_SCHEMA_CACHE: ${CYCLE_SCHEMA_CACHE:-true}
   HTTP_WORKERS_DEBUG: ${HTTP_WORKERS_DEBUG:-false}
   VELOX_MANIFEST_FILE: ${VELOX_MANIFEST_FILE:-.plugin.yaml}
+  VELOX_VERSION: ${VELOX_VERSION:-v2025.1.4}
+  RR_BUILD_VERSION: ${RR_BUILD_VERSION:-v2025.1.2}
+  VELOX_SERVER_URL: ${VELOX_SERVER_URL:-http://vx-server:9000}
+  AWS_KEY: ${AWS_KEY}
+  AWS_SECRET: ${AWS_SECRET}
+  AWS_DEFAULT_REGION: ${AWS_DEFAULT_REGION:-fra1}
+  AWS_BUCKET: ${AWS_BUCKET:-rr-builds}
+  AWS_ENDPOINT: ${AWS_ENDPOINT:-https://fra1.digitaloceanspaces.com}
 
 x-php-service:
   &php
@@ -32,6 +40,8 @@ services:
     image: ghcr.io/roadrunner-php/velox-app:latest
     ports:
       - ${VX_HTTP_APP_PORT:-8080}:8080
+    volumes:
+      - rr:/tmp
     environment:
       <<: *common-spiral-variables
       GITHUB_TOKEN: ${GITHUB_TOKEN}
@@ -47,9 +57,27 @@ services:
       - vx-network
     restart: always
 
+  vx-server:
+    image: ghcr.io/roadrunner-server/velox:2025.2-beta.1
+    command:
+      - server
+      - -a
+      - :9000
+    environment:
+      GITHUB_TOKEN: ${GITHUB_TOKEN}
+    volumes:
+      - rr:/tmp
+    networks:
+      - vx-network
+    restart: always
+
+volumes:
+  rr: { }
+
 networks:
   vx-network:
     ipam:
       driver: default
       config:
         - subnet: 172.0.61.0/24
+

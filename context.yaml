@@ -33,6 +33,13 @@ documents:
         sourcePaths:
           - app/src/Module/Velox
 
+  - description: BinaryBuilder
+    outputPath: modules/binary-builder.md
+    sources:
+      - type: file
+        sourcePaths:
+          - app/src/Module/Velox/BinaryBuilder
+
   - description: Github module
     outputPath: modules/github.md
     sources:
