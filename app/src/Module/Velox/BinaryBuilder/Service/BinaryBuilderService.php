@@ -21,8 +21,8 @@ final readonly class BinaryBuilderService
         private ConfigurationValidatorService $configValidator,
         private VeloxClientInterface $veloxClient,
         private ConfigToRequestConverter $configConverter,
+        private BinaryCacheService $cacheService,
         private FilesInterface $files,
-        private string $tempDir = '/tmp/velox-builds',
     ) {}
 
     /**
@@ -43,8 +43,30 @@ final readonly class BinaryBuilderService
             );
         }
 
+        // Use current platform if not specified
+        $platform = $targetPlatform ?? TargetPlatform::current();
+
+        // Generate cache key
+        $cacheKey = $this->cacheService->generateKey($config, $platform);
+
+        // Check cache unless force rebuild
+        if (!$forceRebuild && $this->cacheService->has($cacheKey)) {
+            // Ensure output directory exists
+            if (!$this->files->isDirectory($outputDirectory)) {
+                $this->files->ensureDirectory($outputDirectory);
+            }
+
+            $binaryPath = $outputDirectory . '/rr';
+            $cachedResult = $this->cacheService->get($cacheKey, $binaryPath);
+
+            if ($cachedResult !== null) {
+                return $cachedResult;
+            }
+            // Cache retrieval failed, proceed with build
+        }
+
         // Convert config to BuildRequest
-        $buildRequest = $this->configConverter->convert($config, $targetPlatform, $forceRebuild);
+        $buildRequest = $this->configConverter->convert($config, $platform, $forceRebuild);
 
         // Ensure output directory exists
         if (!$this->files->isDirectory($outputDirectory)) {
@@ -54,7 +76,14 @@ final readonly class BinaryBuilderService
         $binaryPath = $outputDirectory . '/rr';
 
         // Build via Velox server
-        return $this->veloxClient->build($buildRequest, $binaryPath);
+        $buildResult = $this->veloxClient->build($buildRequest, $binaryPath);
+
+        // Store in cache if build succeeded
+        if ($buildResult->isSuccess()) {
+            $this->cacheService->put($cacheKey, $binaryPath, $config, $platform);
+        }
+
+        return $buildResult;
     }
 
     /**
@@ -71,22 +100,5 @@ final readonly class BinaryBuilderService
         $config = $this->configGenerator->buildConfigFromSelection($selectedPlugins);
 
         return $this->buildBinary($config, $outputDirectory, $targetPlatform, $forceRebuild);
-    }
-
-    /**
-     * Check build requirements (supports both local and remote)
-     */
-    public function checkBuildRequirements(): array
-    {
-        $requirements = [
-            'temp_dir_writable' => $this->files->isDirectory($this->tempDir)
-                || $this->files->ensureDirectory($this->tempDir),
-        ];
-
-        $requirements['velox_server_available'] = $this->veloxClient->isAvailable();
-        $requirements['velox_server_version'] = $this->veloxClient->getServerVersion();
-        $requirements['build_mode'] = 'remote';
-
-        return $requirements;
     }
 }

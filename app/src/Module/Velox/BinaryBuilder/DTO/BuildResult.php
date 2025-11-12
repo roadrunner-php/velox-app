@@ -19,6 +19,8 @@ final readonly class BuildResult
         public array $errors = [],
         public ?string $configPath = null,
         public ?string $buildHash = null,
+        public bool $fromCache = false,
+        public ?string $cacheKey = null,
     ) {}
 
     public function isSuccess(): bool

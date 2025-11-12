@@ -17,6 +17,7 @@ use Spiral\Boot\EnvironmentInterface;
 
 final class PluginsBootloader extends Bootloader
 {
+    #[\Override]
     public function defineSingletons(): array
     {
         return [
@@ -25,16 +26,16 @@ final class PluginsBootloader extends Bootloader
                 ?GitHubDiscoveryPluginProvider $discoveryProvider = null,
             )
                 => new CompositePluginProvider(
-                providers: \array_filter([
-                    // Priority 1: Official and manually configured plugins
-                    new ConfigPluginProvider([
-                        ...$this->initCorePlugins($env),
-                        ...$this->initCommonPlugins($env),
+                    providers: \array_filter([
+                        // Priority 1: Official and manually configured plugins
+                        new ConfigPluginProvider([
+                            ...$this->initCorePlugins($env),
+                            ...$this->initCommonPlugins($env),
+                        ]),
+                        // Priority 2: Discovered community plugins (can override official)
+                        $discoveryProvider,
                     ]),
-                    // Priority 2: Discovered community plugins (can override official)
-                    $discoveryProvider,
-                ]),
-            ),
+                ),
         ];
     }
 

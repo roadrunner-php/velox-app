@@ -20,7 +20,7 @@ final readonly class ConfigurationGeneratorService
     public function __construct(
         private PluginProviderInterface $pluginProvider,
         private string $roadRunnerVersion = 'v2025.1.1',
-        private string $veloxVersion = '2025.1.1',
+        private string $veloxVersion = 'v2025.1.1',
         private ?string $githubToken = null,
         private ?string $gitlabToken = null,
         private ?string $gitlabEndpoint = null,
@@ -108,6 +108,8 @@ final readonly class ConfigurationGeneratorService
         }
 
         $githubToken ??= $this->githubToken;
+
+        trap($this);
 
         return new VeloxConfig(
             roadrunner: new RoadRunnerConfig(

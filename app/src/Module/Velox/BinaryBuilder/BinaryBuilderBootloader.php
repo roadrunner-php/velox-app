@@ -8,16 +8,21 @@ use App\Module\Velox\BinaryBuilder\Client\VeloxClient;
 use App\Module\Velox\BinaryBuilder\Client\VeloxClientInterface;
 use App\Module\Velox\BinaryBuilder\Converter\ConfigToRequestConverter;
 use App\Module\Velox\BinaryBuilder\Service\BinaryBuilderService;
-use App\Module\Velox\BinaryBuilder\Service\VeloxBinaryRunner;
-use App\Module\Velox\Configuration\Service\ConfigurationGeneratorService;
-use App\Module\Velox\Configuration\Service\ConfigurationValidatorService;
 use Spiral\Boot\Bootloader\Bootloader;
-use Spiral\Boot\DirectoriesInterface;
 use Spiral\Boot\EnvironmentInterface;
 use Spiral\Files\FilesInterface;
+use Symfony\Component\HttpClient\Psr18Client;
 
 final class BinaryBuilderBootloader extends Bootloader
 {
+    #[\Override]
+    public function defineDependencies(): array
+    {
+        return [
+            BinaryCacheBootloader::class,
+        ];
+    }
+
     #[\Override]
     public function defineSingletons(): array
     {
@@ -29,31 +34,27 @@ final class BinaryBuilderBootloader extends Bootloader
             VeloxClientInterface::class => static function (
                 EnvironmentInterface $env,
                 FilesInterface $files,
-            ): ?VeloxClient {
+            ): VeloxClient {
+                $httpClient = new Psr18Client();
+
                 return new VeloxClient(
-                    serverUrl: $env->get('VELOX_SERVER_URL', 'http:/vx-server:9000'),
-                    timeoutSeconds: (int) $env->get('VELOX_SERVER_TIMEOUT', 600),
+                    httpClient: $httpClient->withOptions([
+                        'base_uri' => $env->get('VELOX_SERVER_URL', 'http:/vx-server:9000'),
+                        'headers' => [
+                            'Content-Type' => 'application/json',
+                            'Accept' => 'application/json',
+                        ],
+                        'timeout' => (int) $env->get('VELOX_SERVER_TIMEOUT', 600),
+                    ]),
+                    requestFactory: $httpClient,
+                    streamFactory: $httpClient,
                     files: $files,
+                    serverUrl: $env->get('VELOX_SERVER_URL', 'http://vx-server:9000'),
                 );
             },
 
             // Binary builder service (supports both remote and local)
-            BinaryBuilderService::class => static fn(
-                VeloxBinaryRunner $binaryRunner,
-                FilesInterface $files,
-                DirectoriesInterface $dirs,
-                ConfigurationGeneratorService $configGenerator,
-                ConfigurationValidatorService $configValidator,
-                VeloxClientInterface $veloxClient,
-                ConfigToRequestConverter $configConverter,
-            ) => new BinaryBuilderService(
-                configGenerator: $configGenerator,
-                configValidator: $configValidator,
-                veloxClient: $veloxClient,
-                configConverter: $configConverter,
-                files: $files,
-                tempDir: $dirs->get('runtime') . 'velox-builds',
-            ),
+            BinaryBuilderService::class => BinaryBuilderService::class,
         ];
     }
 }

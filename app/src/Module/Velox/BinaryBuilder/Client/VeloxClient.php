@@ -9,54 +9,45 @@ use App\Module\Velox\BinaryBuilder\DTO\BuildResult;
 use App\Module\Velox\BinaryBuilder\Exception\VeloxBuildFailedException;
 use App\Module\Velox\BinaryBuilder\Exception\VeloxServerConnectionException;
 use App\Module\Velox\BinaryBuilder\Exception\VeloxTimeoutException;
-use Guzzle\Http\Client;
+use Psr\Http\Client\ClientExceptionInterface;
+use Psr\Http\Client\ClientInterface;
+use Psr\Http\Client\NetworkExceptionInterface;
+use Psr\Http\Message\RequestFactoryInterface;
+use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\StreamFactoryInterface;
 use Spiral\Files\FilesInterface;
 
 final readonly class VeloxClient implements VeloxClientInterface
 {
     private const string BUILD_ENDPOINT = '/api.service.v1.BuildService/Build';
 
-    private Client $httpClient;
-
     public function __construct(
-        private string $serverUrl,
-        private int $timeoutSeconds,
+        private ClientInterface $httpClient,
+        private RequestFactoryInterface $requestFactory,
+        private StreamFactoryInterface $streamFactory,
         private FilesInterface $files,
-    ) {
-        $this->httpClient = new Client($serverUrl, [
-            'timeout' => $timeoutSeconds,
-            'connect_timeout' => 10,
-            'headers' => [
-                'Content-Type' => 'application/json',
-                'Accept' => 'application/json',
-            ],
-        ]);
-    }
+        private string $serverUrl,
+    ) {}
 
     public function build(BuildRequest $request, string $outputPath): BuildResult
     {
         $startTime = \microtime(true);
 
         try {
-            $response = $this->httpClient->post(self::BUILD_ENDPOINT, [
-                'json' => $request->toArray(),
-            ]);
+            $httpRequest = $this->createJsonRequest('POST', self::BUILD_ENDPOINT, $request->toArray());
+            $response = $this->httpClient->sendRequest($httpRequest);
+
+            $this->ensureSuccessfulResponse($response, $request->requestId);
 
             return $this->handleSuccessResponse($response, $outputPath, $startTime, $request);
-        } catch (ConnectException $e) {
+        } catch (NetworkExceptionInterface $e) {
             throw new VeloxServerConnectionException($this->serverUrl, $e);
-        } catch (RequestException $e) {
-            if ($e->getCode() === 408 || \str_contains($e->getMessage(), 'timeout')) {
-                throw new VeloxTimeoutException($this->timeoutSeconds, $request->requestId, $e);
+        } catch (ClientExceptionInterface $e) {
+            if (\str_contains($e->getMessage(), 'timeout') || \str_contains($e->getMessage(), 'timed out')) {
+                throw new VeloxTimeoutException(300, $request->requestId, $e);
             }
 
-            throw new VeloxBuildFailedException(
-                $this->extractErrorMessage($e),
-                $request->requestId,
-                $e,
-            );
-        } catch (GuzzleException $e) {
             throw new VeloxBuildFailedException(
                 "HTTP request failed: {$e->getMessage()}",
                 $request->requestId,
@@ -68,7 +59,8 @@ final readonly class VeloxClient implements VeloxClientInterface
     public function isAvailable(): bool
     {
         try {
-            $response = $this->httpClient->get('/health', ['timeout' => 5]);
+            $request = $this->createRequest('GET', '/health');
+            $response = $this->httpClient->sendRequest($request);
             return $response->getStatusCode() === 200;
         } catch (\Exception) {
             return false;
@@ -78,11 +70,55 @@ final readonly class VeloxClient implements VeloxClientInterface
     public function getServerVersion(): ?string
     {
         try {
-            $response = $this->httpClient->get('/version', ['timeout' => 5]);
+            $request = $this->createRequest('GET', '/version');
+            $response = $this->httpClient->sendRequest($request);
+
+            if ($response->getStatusCode() !== 200) {
+                return null;
+            }
+
             $data = \json_decode($response->getBody()->getContents(), true, 512, \JSON_THROW_ON_ERROR);
             return $data['version'] ?? null;
         } catch (\Exception) {
             return null;
+        }
+    }
+
+    private function createRequest(string $method, string $path): RequestInterface
+    {
+        $uri = $this->serverUrl . $path;
+        return $this->requestFactory
+            ->createRequest($method, $uri)
+            ->withHeader('Accept', 'application/json');
+    }
+
+    private function createJsonRequest(string $method, string $path, array $data): RequestInterface
+    {
+        $json = \json_encode($data, \JSON_THROW_ON_ERROR);
+        $stream = $this->streamFactory->createStream($json);
+
+        return $this
+            ->createRequest($method, $path)
+            ->withHeader('Content-Type', 'application/json')
+            ->withBody($stream);
+    }
+
+    private function ensureSuccessfulResponse(ResponseInterface $response, string $requestId): void
+    {
+        $statusCode = $response->getStatusCode();
+
+        if ($statusCode === 408) {
+            throw new VeloxTimeoutException(300, $requestId);
+        }
+
+        if ($statusCode >= 400) {
+            $body = $response->getBody()->getContents();
+            $errorMessage = $this->extractErrorFromBody($body);
+
+            throw new VeloxBuildFailedException(
+                $errorMessage ?? "HTTP {$statusCode}: Request failed",
+                $requestId,
+            );
         }
     }
 
@@ -93,31 +129,51 @@ final readonly class VeloxClient implements VeloxClientInterface
         BuildRequest $request,
     ): BuildResult {
         $body = $response->getBody()->getContents();
-
-        // Check if response is JSON (error/status) or binary (success)
         $contentType = $response->getHeaderLine('Content-Type');
 
         if (\str_contains($contentType, 'application/json')) {
-            // JSON response - could be error or build info
+            // JSON response - contains build result with path and logs
             $data = \json_decode($body, true, 512, \JSON_THROW_ON_ERROR);
 
             if (isset($data['error'])) {
                 throw new VeloxBuildFailedException($data['error'], $request->requestId);
             }
 
-            // If JSON contains binary URL, download it
-            if (isset($data['binary_url'])) {
-                $this->downloadBinary($data['binary_url'], $outputPath);
-            } else {
-                throw new VeloxBuildFailedException(
-                    'Unexpected response format: no binary or download URL',
-                    $request->requestId,
+            // Velox server returns JSON with 'path' to temporary binary and 'logs'
+            if (isset($data['path'])) {
+                // Copy binary from the local filesystem path provided by server
+                $this->copyBinary($data['path'], $outputPath);
+
+                $endTime = \microtime(true);
+                $binarySize = $this->files->size($outputPath);
+
+                // Parse logs from response
+                $logs = ['Remote build via Velox server'];
+                if (isset($data['logs']) && \is_string($data['logs'])) {
+                    $logs = \array_merge($logs, \explode("\n", \trim($data['logs'])));
+                }
+
+                return new BuildResult(
+                    success: true,
+                    binaryPath: $outputPath,
+                    buildTimeSeconds: $endTime - $startTime,
+                    binarySizeBytes: $binarySize,
+                    logs: $logs,
+                    errors: [],
+                    configPath: null,
+                    buildHash: $request->requestId,
                 );
             }
-        } else {
-            // Binary response - save directly
-            $this->files->write($outputPath, $body);
+
+            throw new VeloxBuildFailedException(
+                'Unexpected response format: missing "path" field in JSON response',
+                $request->requestId,
+            );
         }
+
+        // Binary response - save directly (fallback for direct binary responses)
+        $this->files->write($outputPath, $body);
+        \chmod($outputPath, 0755); // Make executable
 
         $endTime = \microtime(true);
         $binarySize = $this->files->size($outputPath);
@@ -127,46 +183,41 @@ final readonly class VeloxClient implements VeloxClientInterface
             binaryPath: $outputPath,
             buildTimeSeconds: $endTime - $startTime,
             binarySizeBytes: $binarySize,
-            logs: ["Remote build via Velox server: {$this->serverUrl}"],
+            logs: ["Remote build via Velox server (direct binary response)"],
             errors: [],
             configPath: null,
             buildHash: $request->requestId,
         );
     }
 
-    private function downloadBinary(string $url, string $outputPath): void
+    private function copyBinary(string $serverPath, string $outputPath): void
     {
         try {
-            $response = $this->httpClient->get($url, ['sink' => $outputPath]);
-
-            if ($response->getStatusCode() !== 200) {
-                throw new \RuntimeException("Failed to download binary: HTTP {$response->getStatusCode()}");
+            // The server returns a path to the binary on the local filesystem
+            // Simply copy it to the output path
+            if (!$this->files->exists($serverPath)) {
+                throw new \RuntimeException("Binary not found at path: {$serverPath}");
             }
-        } catch (GuzzleException $e) {
-            throw new \RuntimeException("Binary download failed: {$e->getMessage()}", 0, $e);
+
+            $this->files->copy($serverPath, $outputPath);
+            \chmod($outputPath, 0755); // Make executable
+        } catch (\Exception $e) {
+            throw new \RuntimeException("Binary copy failed: {$e->getMessage()}", 0, $e);
         }
     }
 
-    private function extractErrorMessage(\Throwable $exception): string
+    private function extractErrorFromBody(string $body): ?string
     {
-        if ($exception instanceof RequestException && $exception->hasResponse()) {
-            $response = $exception->getResponse();
-            $body = $response->getBody()->getContents();
-
-            try {
-                $data = \json_decode($body, true, 512, \JSON_THROW_ON_ERROR);
-                if (isset($data['error'])) {
-                    return $data['error'];
-                }
-                if (isset($data['message'])) {
-                    return $data['message'];
-                }
-            } catch (\JsonException) {
-                // Response is not JSON, return raw body
-                return $body ?: $exception->getMessage();
-            }
+        if (empty($body)) {
+            return null;
         }
 
-        return $exception->getMessage();
+        try {
+            $data = \json_decode($body, true, 512, \JSON_THROW_ON_ERROR);
+            return $data['error'] ?? $data['message'] ?? null;
+        } catch (\JsonException) {
+            // Not JSON, return raw body if it's reasonably short
+            return \strlen($body) < 500 ? $body : null;
+        }
     }
 }

@@ -40,6 +40,11 @@ ref = "v5.1.8"
 owner = "roadrunner-server"
 repository = "gzip"
 
+[github.plugins.send]
+ref = "v5.1.5"
+owner = "roadrunner-server"
+repository = "send"
+
 [github.plugins.headers]
 ref = "v5.1.8"
 owner = "roadrunner-server"

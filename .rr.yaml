@@ -11,6 +11,7 @@ http:
   middleware:
     - gzip
     - headers
+    - sendfile
   headers:
     cors:
       allowed_origin: "*"
@@ -46,5 +47,18 @@ server:
   command: 'php app.php'
   relay: pipes
 
-#temporal:
-#  address: '127.0.0.1:7233'
+s3:
+  default: uploads
+  servers:
+    do:
+      region: ${AWS_DEFAULT_REGION:-us-east-1}
+      endpoint: ${AWS_ENDPOINT:-https://fra1.digitaloceanspaces.com}
+      credentials:
+        key: ${AWS_KEY}
+        secret: ${AWS_SECRET}
+
+  buckets:
+    uploads:
+      server: do
+      bucket: ${AWS_BUCKET:-uploads}
+      visibility: public

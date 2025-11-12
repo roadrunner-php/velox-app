@@ -130,31 +130,6 @@ final class BuildBinary extends Command
         array $plugins,
         ?TargetPlatform $targetPlatform = null,
     ): int {
-        // Check build requirements
-        $requirements = $binaryBuilder->checkBuildRequirements();
-
-        if (isset($requirements['build_mode'])) {
-            $mode = $requirements['build_mode'];
-            $this->info("Build mode: {$mode}");
-
-            if ($mode === 'remote' && isset($requirements['velox_server_available'])) {
-                if ($requirements['velox_server_available']) {
-                    $this->info('✓ Velox server is available');
-                    if (isset($requirements['velox_server_version'])) {
-                        $this->info("  Version: {$requirements['velox_server_version']}");
-                    }
-                } else {
-                    $this->error('✗ Velox server is not available');
-                    return self::FAILURE;
-                }
-            } elseif ($mode === 'local') {
-                if (!$requirements['vx_available']) {
-                    $this->error('✗ Local vx binary is not available');
-                    return self::FAILURE;
-                }
-            }
-        }
-
         $buildResult = $binaryBuilder->buildFromPluginSelection(
             $plugins,
             $this->outputDir,
@@ -163,10 +138,19 @@ final class BuildBinary extends Command
         );
 
         if ($buildResult->isSuccess()) {
-            $this->info('✅ Binary built successfully!');
+            $cacheStatus = $buildResult->fromCache ? '📦 (from cache)' : '🔨 (freshly built)';
+            $this->info("✅ Binary built successfully! {$cacheStatus}");
             $this->info("📁 Binary path: {$buildResult->binaryPath}");
-            $this->info("⏱️  Build time: {$buildResult->getBuildTime()}");
+
+            if (!$buildResult->fromCache) {
+                $this->info("⏱️  Build time: {$buildResult->getBuildTime()}");
+            }
+
             $this->info("📦 Binary size: {$buildResult->getBinarySize()}");
+
+            if ($buildResult->cacheKey !== null) {
+                $this->comment("🔑 Cache key: {$buildResult->cacheKey}");
+            }
 
             if (!empty($buildResult->logs)) {
                 $this->newLine();

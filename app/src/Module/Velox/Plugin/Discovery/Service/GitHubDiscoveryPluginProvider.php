@@ -47,7 +47,7 @@ final readonly class GitHubDiscoveryPluginProvider implements PluginProviderInte
     public function getPluginsByCategory(PluginCategory $category): array
     {
         $this->ensureDiscovered();
-        
+
         return \array_filter(
             $this->repository->findAll(),
             static fn(Plugin $plugin): bool => $plugin->category === $category,
@@ -57,12 +57,12 @@ final readonly class GitHubDiscoveryPluginProvider implements PluginProviderInte
     public function searchPlugins(string $query): array
     {
         $this->ensureDiscovered();
-        
+
         $query = \strtolower($query);
-        
+
         return \array_filter(
             $this->repository->findAll(),
-            static fn(Plugin $plugin): bool => 
+            static fn(Plugin $plugin): bool =>
                 \str_contains(\strtolower($plugin->name), $query) ||
                 \str_contains(\strtolower($plugin->description), $query),
         );
@@ -78,7 +78,7 @@ final readonly class GitHubDiscoveryPluginProvider implements PluginProviderInte
         }
 
         $metadata = $this->repository->getMetadata();
-        
+
         // If no metadata exists, discovery hasn't run yet
         if ($metadata === null) {
             $this->discoveryService->discover();

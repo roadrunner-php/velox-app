@@ -36,7 +36,7 @@ final readonly class Client
         }
 
         return \array_map(
-            static fn(array $contributorData): Contributor => Contributor::fromGithubApiResponse($contributorData),
+            Contributor::fromGithubApiResponse(...),
             $data,
         );
     }
