@@ -20,6 +20,7 @@ final readonly class ConfigurationGeneratorService
     public function __construct(
         private PluginProviderInterface $pluginProvider,
         private string $roadRunnerVersion = 'v2025.1.1',
+        private string $veloxVersion = '2025.1.1',
         private ?string $githubToken = null,
         private ?string $gitlabToken = null,
         private ?string $gitlabEndpoint = null,
@@ -32,17 +33,19 @@ final readonly class ConfigurationGeneratorService
 
     public function generateDockerfile(
         VeloxConfig $config,
-        string $veloxVersion = '2025.1.1',
-        string $baseImage = 'php:8.3-cli',
+        string $baseImage = 'php:8.4-cli',
     ): string {
         $dockerfile = [];
 
         $dockerfile[] = '# Multi-stage build for RoadRunner with Velox';
-        $dockerfile[] = 'FROM ghcr.io/roadrunner-server/velox:' . $veloxVersion . ' as velox';
+        $dockerfile[] = \sprintf(
+            'FROM --platform=${TARGETPLATFORM:-linux/amd64}  ghcr.io/roadrunner-server/velox:%s as velox',
+            $this->veloxVersion,
+        );
         $dockerfile[] = '';
 
         $dockerfile[] = '# Build arguments';
-        $dockerfile[] = 'ARG APP_VERSION="undefined"';
+        $dockerfile[] = 'ARG APP_VERSION="1.0.0"';
         $dockerfile[] = 'ARG BUILD_TIME="undefined"';
         $dockerfile[] = '';
 
@@ -58,7 +61,7 @@ final readonly class ConfigurationGeneratorService
         $dockerfile[] = '';
 
         $dockerfile[] = "# Runtime stage";
-        $dockerfile[] = "FROM {$baseImage}";
+        $dockerfile[] = \sprintf('FROM --platform=${TARGETPLATFORM:-linux/amd64} %s', $baseImage);
         $dockerfile[] = '';
 
         $dockerfile[] = '# Copy RoadRunner binary from build stage';
