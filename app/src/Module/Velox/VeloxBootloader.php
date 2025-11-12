@@ -46,6 +46,7 @@ final class VeloxBootloader extends Bootloader
                 EnvironmentInterface $env,
             ) => new ConfigurationGeneratorService(
                 pluginProvider: $pluginProvider,
+                veloxVersion: $env->get('VELOX_VERSION', 'v2025.1.1'),
                 githubToken: $env->get('GITHUB_TOKEN'),
             ),
             ConfigurationBuilder::class => ConfigurationBuilder::class,

@@ -31,7 +31,7 @@ final class BinaryBuilderBootloader extends Bootloader
                 FilesInterface $files,
             ): ?VeloxClient {
                 return new VeloxClient(
-                    serverUrl: $env->get('VELOX_SERVER_URL', 'vx-server:9000'),
+                    serverUrl: $env->get('VELOX_SERVER_URL', 'http:/vx-server:9000'),
                     timeoutSeconds: (int) $env->get('VELOX_SERVER_TIMEOUT', 600),
                     files: $files,
                 );
