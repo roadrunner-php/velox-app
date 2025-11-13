@@ -5,8 +5,6 @@ services:
       context: ./
       args:
         GH_TOKEN: ${GITHUB_TOKEN}
-    environment:
-      HTTP_WORKERS_DEBUG: true
     volumes:
       - type: bind
         source: .

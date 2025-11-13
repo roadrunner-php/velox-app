@@ -80,12 +80,12 @@ ref = "1.0.1"
 owner = "roadrunner-plugins"
 repository = "http-metrics"
 
-[github.plugins.s3]
-ref = "1.2.2"
-owner = "roadrunner-plugins"
-repository = "s3-storage"
-
 [github.plugins.cron]
 ref = "main"
 owner = "roadrunner-plugins"
 repository = "cron"
+
+[github.plugins.velox-middleware]
+ref = "main"
+owner = "roadrunner-plugins"
+repository = "velox-middleware"

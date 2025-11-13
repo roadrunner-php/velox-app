@@ -14,7 +14,7 @@ COPY velox.toml .
 # we don't need CGO
 ENV CGO_ENABLED=0
 ENV GH_TOKEN=${GH_TOKEN}
-ARG CACHE_BUST=3
+ARG CACHE_BUST=21
 
 RUN echo $CACHE_BUST
 
@@ -49,7 +49,5 @@ RUN chmod +x .docker/app/entrypoint.sh
 
 RUN composer config --no-plugins allow-plugins.spiral/composer-publish-plugin false
 RUN composer install --no-dev --optimize-autoloader
-
-RUN vendor/bin/dload
 
 CMD [".docker/app/entrypoint.sh"]

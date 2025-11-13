@@ -4,23 +4,20 @@ declare(strict_types=1);
 
 namespace App\Module\Velox\BinaryBuilder\Endpoint\Http\v1\Binary;
 
+use App\Module\Velox\BinaryBuilder\Converter\ConfigToRequestConverter;
 use App\Module\Velox\BinaryBuilder\DTO\TargetPlatform;
-use App\Module\Velox\BinaryBuilder\Exception\BuildException;
-use App\Module\Velox\BinaryBuilder\Service\BinaryBuilderService;
 use App\Module\Velox\ConfigurationBuilder;
 use App\Module\Velox\Plugin\DTO\Plugin;
 use Psr\Http\Message\ResponseInterface;
-use Spiral\Files\FilesInterface;
+use Ramsey\Uuid\Uuid;
 use Spiral\Http\ResponseWrapper;
 use Spiral\Router\Annotation\Route;
 use OpenApi\Attributes as OA;
 
 #[OA\Post(
     path: '/api/v1/binary/generate',
-    description: 'Generate a RoadRunner binary from a list of selected plugins. The system automatically resolves dependencies, builds the binary via Velox server, and returns detailed build information. Supports caching to speed up subsequent builds with identical configurations.',
-    summary: 'Generate RoadRunner binary from selected plugins',
     requestBody: new OA\RequestBody(
-        description: 'Binary generation configuration',
+        description: 'Binary generation configuration with plugin selection and optional platform targeting',
         required: true,
         content: new OA\JsonContent(ref: GenerateBinaryFilter::class),
     ),
@@ -28,23 +25,49 @@ use OpenApi\Attributes as OA;
     responses: [
         new OA\Response(
             response: 200,
-            description: 'Binary file download',
+            description: 'Binary file stream (handled by Velox middleware). PHP worker released immediately; actual build/cache/stream happens in Go.',
             headers: [
                 new OA\Header(
+                    header: 'Content-Type',
+                    description: 'Binary content type',
+                    schema: new OA\Schema(type: 'string', example: 'application/octet-stream'),
+                ),
+                new OA\Header(
                     header: 'Content-Disposition',
-                    description: 'Attachment filename',
-                    schema: new OA\Schema(type: 'string', example: 'attachment; filename="rr"'),
+                    description: 'Attachment filename based on target platform',
+                    schema: new OA\Schema(type: 'string', example: 'attachment; filename="roadrunner-linux-amd64"'),
                 ),
                 new OA\Header(
                     header: 'Content-Length',
-                    description: 'File size in bytes',
+                    description: 'Binary size in bytes (only for cache hits)',
                     schema: new OA\Schema(type: 'integer', example: 52428800),
+                ),
+                new OA\Header(
+                    header: 'X-Build-Request-ID',
+                    description: 'Unique build request identifier for tracing',
+                    schema: new OA\Schema(type: 'string', format: 'uuid'),
+                ),
+                new OA\Header(
+                    header: 'X-Cache-Status',
+                    description: 'Cache hit/miss status',
+                    schema: new OA\Schema(type: 'string', enum: ['HIT', 'MISS']),
+                ),
+                new OA\Header(
+                    header: 'X-Cache-Age',
+                    description: 'Age of cached binary in seconds (cache hits only)',
+                    schema: new OA\Schema(type: 'integer', example: 3600),
+                ),
+                new OA\Header(
+                    header: 'X-Build-Time',
+                    description: 'Build duration in seconds (cache misses only)',
+                    schema: new OA\Schema(type: 'number', example: 58.3),
                 ),
             ],
             content: [
                 'application/octet-stream' => new OA\MediaType(
                     mediaType: 'application/octet-stream',
                     schema: new OA\Schema(
+                        description: 'RoadRunner binary executable',
                         type: 'string',
                         format: 'binary',
                     ),
@@ -53,22 +76,22 @@ use OpenApi\Attributes as OA;
         ),
         new OA\Response(
             response: 422,
-            description: 'Validation error - invalid plugins, OS, or architecture specified',
+            description: 'Validation error - invalid plugins, dependency conflicts, or unsupported platform',
             content: new OA\JsonContent(
                 properties: [
                     new OA\Property(
                         property: 'error',
                         type: 'string',
-                        example: 'Plugin validation failed',
+                        example: 'Dependency resolution failed',
                     ),
                     new OA\Property(
                         property: 'details',
                         properties: [
                             new OA\Property(
-                                property: 'plugins',
+                                property: 'conflicts',
                                 type: 'array',
                                 items: new OA\Items(type: 'string'),
-                                example: ['Unknown plugin: invalid-plugin'],
+                                example: ['Circular dependency detected: plugin-a -> plugin-b -> plugin-a'],
                             ),
                         ],
                         type: 'object',
@@ -77,33 +100,47 @@ use OpenApi\Attributes as OA;
             ),
         ),
         new OA\Response(
-            response: 500,
-            description: 'Binary build failed',
+            response: 502,
+            description: 'Velox server error (handled by middleware)',
             content: new OA\JsonContent(
                 properties: [
                     new OA\Property(
                         property: 'error',
                         type: 'string',
-                        example: 'Build failed: compilation error',
+                        example: 'build_failed',
                     ),
                     new OA\Property(
-                        property: 'logs',
-                        type: 'array',
-                        items: new OA\Items(type: 'string'),
-                        example: ['Build error on line 45', 'Missing dependency'],
+                        property: 'message',
+                        type: 'string',
+                        example: 'velox server returned: plugin version conflict',
+                    ),
+                    new OA\Property(
+                        property: 'request_id',
+                        type: 'string',
+                        format: 'uuid',
                     ),
                 ],
             ),
         ),
         new OA\Response(
-            response: 503,
-            description: 'Velox server unavailable',
+            response: 504,
+            description: 'Build timeout (handled by middleware)',
             content: new OA\JsonContent(
                 properties: [
                     new OA\Property(
                         property: 'error',
                         type: 'string',
-                        example: 'Velox server is not available',
+                        example: 'timeout',
+                    ),
+                    new OA\Property(
+                        property: 'message',
+                        type: 'string',
+                        example: 'build exceeded 5m timeout',
+                    ),
+                    new OA\Property(
+                        property: 'request_id',
+                        type: 'string',
+                        format: 'uuid',
                     ),
                 ],
             ),
@@ -112,10 +149,6 @@ use OpenApi\Attributes as OA;
 )]
 final readonly class GenerateBinaryAction
 {
-    public function __construct(
-        private FilesInterface $files,
-    ) {}
-
     #[Route(
         route: 'v1/binary/generate',
         name: 'binary.generate',
@@ -123,8 +156,8 @@ final readonly class GenerateBinaryAction
         group: 'api',
     )]
     public function __invoke(
-        BinaryBuilderService $binaryBuilder,
         ConfigurationBuilder $configBuilder,
+        ConfigToRequestConverter $converter,
         GenerateBinaryFilter $filter,
         ResponseWrapper $response,
     ): ResponseInterface {
@@ -154,6 +187,9 @@ final readonly class GenerateBinaryAction
             ),
         ]);
 
+        // Build VeloxConfig from all plugins
+        $config = $configBuilder->buildConfiguration($allPluginNames);
+
         // Parse target platform
         $currentPlatform = TargetPlatform::current();
         $targetPlatform = new TargetPlatform(
@@ -161,35 +197,24 @@ final readonly class GenerateBinaryAction
             arch: $filter->targetArch ?? $currentPlatform->arch,
         );
 
-        try {
-            // Build binary
-            $buildResult = $binaryBuilder->buildFromPluginSelection(
-                selectedPlugins: $allPluginNames,
-                outputDirectory: '/tmp/velox-api-builds',
-                targetPlatform: $targetPlatform,
-            );
+        // Convert to BuildRequest for Velox middleware
+        $buildRequest = $converter->convert(
+            config: $config,
+            targetPlatform: $targetPlatform,
+            forceRebuild: $filter->forceRebuild,
+            requestId: Uuid::uuid4()->toString(),
+        );
 
-            // Read file
-            $size = $this->files->size($buildResult->binaryPath);
-            $filename = \basename($buildResult->binaryPath);
-
-            // Return binary response
-            return $response
-                ->create(200)
-                ->withHeader('Content-Type', 'application/octet-stream')
-                ->withHeader('Content-Disposition', "attachment; filename=\"{$filename}\"")
-                ->withHeader('Content-Length', (string) $size)
-                ->withHeader('Cache-Control', 'no-cache, no-store, must-revalidate')
-                ->withHeader('X-Sendfile', $buildResult->binaryPath);
-        } catch (BuildException $e) {
-            return $response->json([
-                'error' => $e->getMessage(),
-                'logs' => $e->buildLogs,
-            ], 500);
-        } catch (\Exception $e) {
-            return $response->json([
-                'error' => 'Build failed: ' . $e->getMessage(),
-            ], 500);
-        }
+        // Return BuildRequest JSON with X-Velox-Build header
+        // Velox middleware will intercept this response and handle:
+        // 1. Cache lookup (SHA256-based)
+        // 2. Build via Velox server (if cache miss)
+        // 3. Stream binary to client
+        // 4. Cache result
+        //
+        // PHP worker is released immediately (< 100ms)
+        return $response
+            ->json($buildRequest->toArray())
+            ->withHeader('X-Velox-Build', 'true');
     }
 }
