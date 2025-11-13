@@ -20,6 +20,10 @@ x-common-spiral-variables: &common-spiral-variables
   AWS_DEFAULT_REGION: ${AWS_DEFAULT_REGION:-fra1}
   AWS_BUCKET: ${AWS_BUCKET:-rr-builds}
   AWS_ENDPOINT: ${AWS_ENDPOINT:-https://fra1.digitaloceanspaces.com}
+  RR_CORS_ALLOWED_ORIGIN: ${RR_CORS_ALLOWED_ORIGIN:-*.vx.localhost}
+  RR_CORS_ALLOWED_HEADERS: ${RR_CORS_ALLOWED_HEADERS:-*}
+  RR_CORS_ALLOWED_METHODS: ${RR_CORS_ALLOWED_METHODS:-GET,POST,PUT,DELETE}
+  RR_CORS_EXPOSED_HEADERS: ${RR_CORS_EXPOSED_HEADERS:-Cache-Control,Content-Language,Content-Type,Expires,Last-Modified,Pragma,Content-Disposition,X-RateLimit-Remaining,X-RateLimit-Retry-After,X-RateLimit-Limit,X-Captcha}
 
 x-php-service:
   &php
@@ -67,6 +71,10 @@ services:
       GITHUB_TOKEN: ${GITHUB_TOKEN}
     volumes:
       - rr:/tmp
+    deploy:
+      resources:
+        limits:
+          cpus: 2
     networks:
       - vx-network
     restart: always
