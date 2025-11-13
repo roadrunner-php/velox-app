@@ -79,8 +79,24 @@ services:
       - vx-network
     restart: always
 
+  vx-prometheus:
+    container_name: vx-prometheus
+    image: prom/prometheus:v2.36.2
+    volumes:
+      - ./.docker/prometheus/:/etc/prometheus/
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+    networks:
+      - vx-network
+    restart: always
+
 volumes:
   rr: { }
+  prometheus_data: { }
 
 networks:
   vx-network:

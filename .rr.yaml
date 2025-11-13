@@ -12,6 +12,7 @@ http:
     - gzip
     - headers
     - sendfile
+    - velox
   headers:
     cors:
       allowed_origin: ${RR_CORS_ALLOWED_ORIGIN:-*}
@@ -25,6 +26,14 @@ http:
     num_workers: ${RR_HTTP_NUM_WORKERS:-4}
     supervisor:
       max_worker_memory: ${RR_HTTP_MAX_WORKER_MEMORY:-128}
+
+velox:
+  server_url: ${VELOX_SERVER_URL:-http://vx-server:9000}
+  build_timeout: "5m"
+  request_timeout: "180s"
+  cache:
+    enabled: true
+    directory: "runtime/velox"
 
 kv:
   memory:

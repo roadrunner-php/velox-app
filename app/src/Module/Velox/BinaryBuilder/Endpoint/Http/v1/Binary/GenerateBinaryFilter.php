@@ -17,7 +17,7 @@ use OpenApi\Attributes as OA;
 
 #[OA\Schema(
     schema: GenerateBinaryFilter::class,
-    description: 'Request body for generating RoadRunner binary from plugins',
+    description: 'Request body for generating RoadRunner binary from plugins via Velox middleware',
     required: ['plugins'],
     properties: [
         new OA\Property(
@@ -58,10 +58,12 @@ final class GenerateBinaryFilter extends Filter implements HasFilterDefinition
     public array $plugins = [];
 
     #[Post(key: 'target_os')]
-    public OS $targetOs = OS::Linux;
+    public ?OS $targetOs = null;
 
     #[Post(key: 'target_arch')]
-    public Architecture $targetArch = Architecture::AMD64;
+    public ?Architecture $targetArch = null;
+
+    public bool $forceRebuild = false;
 
     public function __construct(
         private readonly PluginProviderInterface $provider,
