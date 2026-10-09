@@ -28,9 +28,10 @@ final readonly class DependencyResolverService
     {
         $resolved = [];
         $conflicts = [];
-        $visited = [];
 
         foreach ($selectedPlugins as $plugin) {
+            $visited = [];
+
             try {
                 $this->resolveDependenciesRecursive($plugin, $resolved, $visited);
             } catch (DependencyConflictException $e) {
