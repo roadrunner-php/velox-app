@@ -67,7 +67,7 @@ final readonly class ConfigToRequestConverter
     {
         $basePath = match ($plugin->repositoryType) {
             PluginRepository::Github => "github.com/{$plugin->owner}/{$plugin->repository}",
-            PluginRepository::GitLab => "gitlab.com/{$plugin->owner}/{$plugin->repository}",
+            PluginRepository::Gitlab => "gitlab.com/{$plugin->owner}/{$plugin->repository}",
         };
 
         // Extract major version from ref (e.g., v5.2.7 -> v5)
