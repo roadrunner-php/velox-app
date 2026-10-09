@@ -8,7 +8,6 @@ use App\Module\Velox\Version\Service\VersionComparisonService;
 use Testo\Assert;
 use Testo\Codecov\Covers;
 use Testo\Data\DataSet;
-use Testo\Skip;
 use Testo\Test;
 
 #[Test]
@@ -33,13 +32,11 @@ final class VersionComparisonServiceTest
         Assert::same($this->service->compareVersions($left, $right), $expected);
     }
 
-    #[Skip('Bug: branches normalize to 999.999.999, which is older than calendar releases such as v2025.1.1')]
     public function branchIsNewerThanCalendarRelease(): void
     {
         Assert::same($this->service->compareVersions('master', 'v2025.1.1'), 1);
     }
 
-    #[Skip('Bug: the lowercased version is compared with "HEAD", so HEAD is never treated as a branch')]
     public function headIsTreatedAsBranch(): void
     {
         Assert::same($this->service->compareVersions('HEAD', 'v5.0.0'), 1);
