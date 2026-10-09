@@ -106,6 +106,10 @@ final readonly class PresetMergerService
         $recommendations = [];
 
         foreach ($allPresets as $preset) {
+            if ($preset->pluginNames === []) {
+                continue;
+            }
+
             $matchingPlugins = \array_intersect($preset->pluginNames, $selectedPlugins);
             $matchPercentage = \count($matchingPlugins) / \count($preset->pluginNames);
 

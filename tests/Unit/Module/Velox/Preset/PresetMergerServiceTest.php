@@ -11,7 +11,6 @@ use App\Module\Velox\Preset\Service\PresetMergerService;
 use Testo\Assert;
 use Testo\Codecov\Covers;
 use Testo\Expect;
-use Testo\Skip;
 use Testo\Test;
 
 #[Test]
@@ -78,7 +77,6 @@ final class PresetMergerServiceTest
         Assert::same($this->merger->getRecommendedPresets(['server', 'http']), []);
     }
 
-    #[Skip('Bug: a preset without plugins makes getRecommendedPresets() divide by zero')]
     public function recommendationSkipsEmptyPreset(): void
     {
         $merger = new PresetMergerService(new ConfigPresetProvider([
