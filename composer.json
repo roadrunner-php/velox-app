@@ -27,7 +27,7 @@
     "spiral/validator": "^1.5"
   },
   "require-dev": {
-    "spiral/code-style": "^2.2",
+    "spiral/code-style": "^2.3.1",
     "spiral/testing": "^2.3",
     "vimeo/psalm": "^6.10",
     "rector/rector": "^2.0",
@@ -69,6 +69,7 @@
     ],
     "rr:download": "rr get-binary",
     "rr:download-protoc": "rr download-protoc-binary",
+    "cs:diff": "php-cs-fixer fix --dry-run -v --diff",
     "cs:fix": "php-cs-fixer fix -v",
     "psalm": "psalm",
     "psalm:baseline": "psalm --set-baseline=psalm-baseline.xml",
