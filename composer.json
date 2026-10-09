@@ -52,6 +52,12 @@
     "allow-plugins": {
       "spiral/composer-publish-plugin": true,
       "php-http/discovery": true
+    },
+    "audit": {
+      "ignore": {
+        "GHSA-g9pc-8g42-g6vq": "False positive: the range < 2025.1.0 also matches RoadRunner 3.x, which is not affected",
+        "GHSA-vvj3-c3rp-c85p": "Dev-only: spiral/testing 2.x pins phpunit/phpunit 10.5.45, and the app has no PHPT tests"
+      }
     }
   },
   "scripts": {
