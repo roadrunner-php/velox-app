@@ -13,6 +13,12 @@ final readonly class VersionComparisonService
      */
     public function compareVersions(string $version1, string $version2): int
     {
+        $isBranch1 = $this->isBranch($version1);
+        $isBranch2 = $this->isBranch($version2);
+        if ($isBranch1 || $isBranch2) {
+            return $isBranch1 <=> $isBranch2;
+        }
+
         $v1 = $this->normalizeVersion($version1);
         $v2 = $this->normalizeVersion($version2);
 
@@ -146,7 +152,7 @@ final readonly class VersionComparisonService
         $normalized = \ltrim($version, 'v');
 
         // Handle special cases like 'master', 'main', 'latest'
-        if (\in_array(\strtolower($normalized), ['master', 'main', 'latest', 'HEAD'])) {
+        if ($this->isBranch($normalized)) {
             return '999.999.999'; // Treat as very high version for comparison
         }
 
@@ -157,5 +163,10 @@ final readonly class VersionComparisonService
         }
 
         return \implode('.', \array_slice($parts, 0, 3));
+    }
+
+    private function isBranch(string $version): bool
+    {
+        return \in_array(\strtolower($version), ['master', 'main', 'latest', 'head'], true);
     }
 }
