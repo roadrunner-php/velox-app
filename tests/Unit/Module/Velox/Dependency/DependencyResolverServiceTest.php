@@ -14,7 +14,6 @@ use App\Module\Velox\Plugin\Service\ConfigPluginProvider;
 use Tests\Unit\Fixture\PluginFactory;
 use Testo\Assert;
 use Testo\Codecov\Covers;
-use Testo\Skip;
 use Testo\Test;
 
 #[Test]
@@ -77,7 +76,6 @@ final class DependencyResolverServiceTest
         Assert::array($result->conflicts[0]->conflictingPlugins)->sameElementsAs(['a', 'b']);
     }
 
-    #[Skip('Bug: a failed resolution leaves its plugin in $visited, so a later plugin depending on it is reported as circular')]
     public function failedResolutionDoesNotAffectNextPlugin(): void
     {
         $broken = PluginFactory::plugin('broken', ['missing']);
