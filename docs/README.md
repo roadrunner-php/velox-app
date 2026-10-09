@@ -264,7 +264,7 @@ php app.php velox:version:update
 1. **Setup**: Clone repository, install dependencies
 2. **Explore**: Read this documentation
 3. **Develop**: Follow patterns in Development Guide
-4. **Test**: Write unit and integration tests
+4. **Test**: Write unit tests
 5. **Review**: Code review and quality checks
 6. **Deploy**: Merge and deploy
 

@@ -27,11 +27,11 @@
     "spiral/validator": "^1.5"
   },
   "require-dev": {
-    "spiral/code-style": "^2.3.1",
-    "spiral/testing": "^2.3",
-    "vimeo/psalm": "^6.10",
+    "buggregator/trap": "^1.13",
     "rector/rector": "^2.0",
-    "buggregator/trap": "^1.13"
+    "spiral/code-style": "^2.3.1",
+    "testo/testo": "^0.10.55",
+    "vimeo/psalm": "^6 || ^7"
   },
   "autoload": {
     "psr-4": {
@@ -73,8 +73,7 @@
     "cs:fix": "php-cs-fixer fix -v",
     "psalm": "psalm",
     "psalm:baseline": "psalm --set-baseline=psalm-baseline.xml",
-    "test": "phpunit",
-    "test-coverage": "phpunit --coverage",
+    "test": "testo",
     "refactor": "rector process --config=rector.php",
     "refactor:ci": "rector process --config=rector.php --dry-run --ansi"
   },
