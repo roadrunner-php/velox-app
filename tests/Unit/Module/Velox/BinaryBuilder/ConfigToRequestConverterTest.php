@@ -16,7 +16,6 @@ use App\Module\Velox\Plugin\DTO\PluginRepository;
 use Tests\Unit\Fixture\PluginFactory;
 use Testo\Assert;
 use Testo\Codecov\Covers;
-use Testo\Skip;
 use Testo\Test;
 
 #[Test]
@@ -65,7 +64,6 @@ final class ConfigToRequestConverterTest
         Assert::same($request->plugins, []);
     }
 
-    #[Skip('Bug: the match arm refers to PluginRepository::GitLab, but the enum case is Gitlab, so GitLab plugins throw an Error')]
     public function convertsGitlabPlugin(): void
     {
         $config = new VeloxConfig(gitlab: new GitLabConfig(plugins: [
