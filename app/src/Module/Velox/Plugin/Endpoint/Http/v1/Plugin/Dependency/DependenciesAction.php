@@ -6,9 +6,9 @@ namespace App\Module\Velox\Plugin\Endpoint\Http\v1\Plugin\Dependency;
 
 use App\Application\HTTP\Response\ResourceInterface;
 use App\Module\Velox\ConfigurationBuilder;
+use OpenApi\Attributes as OA;
 use Spiral\Http\Exception\ClientException\NotFoundException;
 use Spiral\Router\Annotation\Route;
-use OpenApi\Attributes as OA;
 
 #[OA\Get(
     path: '/api/v1/plugin/{name}/dependencies',

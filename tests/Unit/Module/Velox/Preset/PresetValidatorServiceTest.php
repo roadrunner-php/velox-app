@@ -8,10 +8,10 @@ use App\Module\Velox\Plugin\Service\ConfigPluginProvider;
 use App\Module\Velox\Preset\DTO\PresetDefinition;
 use App\Module\Velox\Preset\Service\ConfigPresetProvider;
 use App\Module\Velox\Preset\Service\PresetValidatorService;
-use Tests\Unit\Fixture\PluginFactory;
 use Testo\Assert;
 use Testo\Codecov\Covers;
 use Testo\Test;
+use Tests\Unit\Fixture\PluginFactory;
 
 #[Test]
 #[Covers(PresetValidatorService::class)]

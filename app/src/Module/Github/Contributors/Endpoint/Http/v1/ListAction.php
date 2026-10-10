@@ -6,8 +6,8 @@ namespace App\Module\Github\Contributors\Endpoint\Http\v1;
 
 use App\Application\HTTP\Response\ResourceInterface;
 use App\Module\Github\Contributors\ContributorsRepositoryInterface;
-use Spiral\Router\Annotation\Route;
 use OpenApi\Attributes as OA;
+use Spiral\Router\Annotation\Route;
 
 #[OA\Get(
     path: '/api/v1/contributors',

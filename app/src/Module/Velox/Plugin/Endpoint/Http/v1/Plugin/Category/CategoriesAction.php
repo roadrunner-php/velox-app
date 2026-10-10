@@ -6,8 +6,8 @@ namespace App\Module\Velox\Plugin\Endpoint\Http\v1\Plugin\Category;
 
 use App\Application\HTTP\Response\ResourceInterface;
 use App\Module\Velox\Plugin\DTO\PluginCategory;
-use Spiral\Router\Annotation\Route;
 use OpenApi\Attributes as OA;
+use Spiral\Router\Annotation\Route;
 
 #[OA\Get(
     path: '/api/v1/plugins/categories',

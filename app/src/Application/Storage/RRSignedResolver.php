@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Application\Storage;
 
+use Nyholm\Psr7\Uri;
 use Psr\Http\Message\UriInterface;
 use Spiral\Distribution\Resolver\ExpirationAwareResolver;
 use Spiral\Goridge\RPC\Exception\ServiceException;
 use Spiral\Goridge\RPC\RPCInterface;
-use Nyholm\Psr7\Uri;
 
 final class RRSignedResolver extends ExpirationAwareResolver
 {

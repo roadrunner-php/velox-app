@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Module\Velox\Plugin;
 
+use App\Module\Velox\Plugin\Discovery\Service\GitHubDiscoveryPluginProvider;
 use App\Module\Velox\Plugin\DTO\Plugin;
 use App\Module\Velox\Plugin\DTO\PluginCategory;
 use App\Module\Velox\Plugin\DTO\PluginRepository;
 use App\Module\Velox\Plugin\DTO\PluginSource;
-use App\Module\Velox\Plugin\Discovery\Service\GitHubDiscoveryPluginProvider;
 use App\Module\Velox\Plugin\Service\CompositePluginProvider;
 use App\Module\Velox\Plugin\Service\ConfigPluginProvider;
 use App\Module\Velox\Plugin\Service\PluginProviderInterface;

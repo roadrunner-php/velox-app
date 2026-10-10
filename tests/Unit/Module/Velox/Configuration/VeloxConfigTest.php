@@ -10,10 +10,10 @@ use App\Module\Velox\Configuration\DTO\GitHubToken;
 use App\Module\Velox\Configuration\DTO\GitLabConfig;
 use App\Module\Velox\Configuration\DTO\GitLabToken;
 use App\Module\Velox\Configuration\DTO\VeloxConfig;
-use Tests\Unit\Fixture\PluginFactory;
 use Testo\Assert;
 use Testo\Codecov\Covers;
 use Testo\Test;
+use Tests\Unit\Fixture\PluginFactory;
 
 #[Test]
 #[Covers(VeloxConfig::class)]

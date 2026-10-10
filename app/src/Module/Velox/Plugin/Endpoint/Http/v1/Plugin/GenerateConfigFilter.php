@@ -6,12 +6,12 @@ namespace App\Module\Velox\Plugin\Endpoint\Http\v1\Plugin;
 
 use App\Module\Velox\Plugin\DTO\Plugin;
 use App\Module\Velox\Plugin\Service\PluginProviderInterface;
+use OpenApi\Attributes as OA;
 use Spiral\Filters\Attribute\Input\Post;
 use Spiral\Filters\Model\Filter;
 use Spiral\Filters\Model\FilterDefinitionInterface;
 use Spiral\Filters\Model\HasFilterDefinition;
 use Spiral\Validator\FilterDefinition;
-use OpenApi\Attributes as OA;
 
 #[OA\Schema(
     schema: GenerateConfigFilter::class,

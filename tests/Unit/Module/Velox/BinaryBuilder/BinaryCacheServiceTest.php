@@ -12,12 +12,12 @@ use App\Module\Velox\Configuration\DTO\RoadRunnerConfig;
 use App\Module\Velox\Configuration\DTO\VeloxConfig;
 use Psr\Log\NullLogger;
 use Spiral\Files\Files;
-use Tests\Unit\Fixture\PluginFactory;
 use Testo\Assert;
 use Testo\Codecov\Covers;
 use Testo\Lifecycle\AfterTest;
 use Testo\Lifecycle\BeforeTest;
 use Testo\Test;
+use Tests\Unit\Fixture\PluginFactory;
 
 #[Test]
 #[Covers(BinaryCacheService::class)]

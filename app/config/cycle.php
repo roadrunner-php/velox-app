@@ -34,7 +34,7 @@ return [
 
         'collections' => [
             'default' => 'array',
-            'factories' => ['array' => new Cycle\ORM\Collection\ArrayCollectionFactory()],
+            'factories' => ['array' => new \Cycle\ORM\Collection\ArrayCollectionFactory()],
         ],
 
         /**

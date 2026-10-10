@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Module\Velox\Endpoint\Console;
 
-use App\Module\Velox\ConfigurationBuilder;
 use App\Module\Velox\Configuration\Exception\ValidationException;
+use App\Module\Velox\ConfigurationBuilder;
 use App\Module\Velox\Preset\Exception\PresetException;
 use Spiral\Boot\DirectoriesInterface;
 use Spiral\Console\Attribute\AsCommand;

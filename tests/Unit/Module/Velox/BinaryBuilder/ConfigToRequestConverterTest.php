@@ -13,10 +13,10 @@ use App\Module\Velox\Configuration\DTO\GitLabConfig;
 use App\Module\Velox\Configuration\DTO\RoadRunnerConfig;
 use App\Module\Velox\Configuration\DTO\VeloxConfig;
 use App\Module\Velox\Plugin\DTO\PluginRepository;
-use Tests\Unit\Fixture\PluginFactory;
 use Testo\Assert;
 use Testo\Codecov\Covers;
 use Testo\Test;
+use Tests\Unit\Fixture\PluginFactory;
 
 #[Test]
 #[Covers(ConfigToRequestConverter::class)]

@@ -8,11 +8,11 @@ use App\Module\Velox\Plugin\DTO\Plugin;
 use App\Module\Velox\Plugin\DTO\PluginCategory;
 use App\Module\Velox\Plugin\DTO\PluginSource;
 use App\Module\Velox\Plugin\Service\ConfigPluginProvider;
-use Tests\Unit\Fixture\PluginFactory;
 use Testo\Assert;
 use Testo\Codecov\Covers;
 use Testo\Data\DataSet;
 use Testo\Test;
+use Tests\Unit\Fixture\PluginFactory;
 
 #[Test]
 #[Covers(ConfigPluginProvider::class)]

@@ -11,10 +11,10 @@ use App\Module\Velox\Plugin\DTO\Plugin;
 use App\Module\Velox\Plugin\DTO\PluginRepository;
 use App\Module\Velox\Plugin\DTO\PluginSource;
 use App\Module\Velox\Plugin\Service\ConfigPluginProvider;
-use Tests\Unit\Fixture\PluginFactory;
 use Testo\Assert;
 use Testo\Codecov\Covers;
 use Testo\Test;
+use Tests\Unit\Fixture\PluginFactory;
 
 #[Test]
 #[Covers(ConfigurationGeneratorService::class)]

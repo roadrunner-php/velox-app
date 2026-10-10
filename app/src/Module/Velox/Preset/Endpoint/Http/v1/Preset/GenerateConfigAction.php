@@ -7,11 +7,11 @@ namespace App\Module\Velox\Preset\Endpoint\Http\v1\Preset;
 use App\Module\Velox\ConfigurationBuilder;
 use App\Module\Velox\Plugin\Endpoint\Http\v1\Plugin\ConfigFormat;
 use Nyholm\Psr7\Stream;
+use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface;
 use Spiral\Http\Exception\ClientException;
 use Spiral\Http\ResponseWrapper;
 use Spiral\Router\Annotation\Route;
-use OpenApi\Attributes as OA;
 
 #[OA\Post(
     path: '/api/v1/presets/generate-config',

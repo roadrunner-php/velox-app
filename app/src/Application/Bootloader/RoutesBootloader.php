@@ -4,19 +4,19 @@ declare(strict_types=1);
 
 namespace App\Application\Bootloader;
 
+use Spiral\Bootloader as Framework;
 use Spiral\Bootloader\Http\HttpBootloader;
 use Spiral\Bootloader\Http\RoutesBootloader as BaseRoutesBootloader;
 use Spiral\Debug\StateCollector\HttpCollector;
 use Spiral\Filter\ValidationHandlerMiddleware;
 use Spiral\Http\Middleware\ErrorHandlerMiddleware;
 use Spiral\Http\Middleware\JsonPayloadMiddleware;
+use Spiral\Nyholm\Bootloader\NyholmBootloader;
 use Spiral\OpenApi\Bootloader\SwaggerBootloader;
 use Spiral\OpenApi\Controller\DocumentationController;
+use Spiral\RoadRunnerBridge\Bootloader as RoadRunnerBridge;
 use Spiral\Router\Bootloader\AnnotatedRoutesBootloader;
 use Spiral\Router\GroupRegistry;
-use Spiral\Bootloader as Framework;
-use Spiral\RoadRunnerBridge\Bootloader as RoadRunnerBridge;
-use Spiral\Nyholm\Bootloader\NyholmBootloader;
 use Spiral\Router\Loader\Configurator\RoutingConfigurator;
 use Spiral\Validation\Bootloader\ValidationBootloader;
 use Spiral\Validator\Bootloader\ValidatorBootloader;
