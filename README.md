@@ -1,4 +1,42 @@
-# Velox Configuration Builder
+<p align="center">
+    <a href="https://roadrunner.dev"><picture>
+        <source media="(prefers-color-scheme: dark)" srcset="https://github.com/roadrunner-server/.github/assets/8040338/e6bde856-4ec6-4a52-bd5b-bfe78736c1ff">
+        <img alt="RoadRunner" src="https://github.com/roadrunner-server/.github/assets/8040338/040fb694-1dd3-4865-9d29-8e0748c2c8b8" style="width: 6in; display: block">
+    </picture></a>
+</p>
+
+<p align="center">Velox Configuration Builder — build a custom RoadRunner binary in a few clicks</p>
+
+<div align="center">
+
+[![Documentation](https://img.shields.io/badge/Documentation-blue?style=for-the-badge&logo=gitbook&logoColor=white)](https://docs.roadrunner.dev)
+[![Sponsor](https://img.shields.io/static/v1?style=for-the-badge&label=&message=Sponsor&logo=githubsponsors&logoColor=white&color=%23EA4AAA)](https://github.com/sponsors/roadrunner-server)
+
+[![Mutation testing badge](https://img.shields.io/endpoint?style=flat&url=https%3A%2F%2Fbadge-api.stryker-mutator.io%2Fgithub.com%2Froadrunner-php%2Fvelox-app%2Fmaster)](https://dashboard.stryker-mutator.io/reports/github.com/roadrunner-php/velox-app/master)
+
+</div>
+
+<br />
+
+A Spiral application with a SPA frontend that helps you pick RoadRunner plugins, resolves their dependencies and
+generates a ready-to-use Velox configuration, Dockerfile or a prebuilt binary.
+
+## Get Started
+
+### Installation
+
+The development stack runs in Docker Compose behind Traefik:
+
+```bash
+make up
+```
+
+On the first run `make` creates `.env` from `.env.example` — set `GITHUB_TOKEN` there to avoid GitHub API rate limits.
+The API is then available at `http://app.vx.localhost` and the SPA at `http://spa.vx.localhost`.
+
+### Documentation
+
+See the [application documentation](docs/README.md) for the architecture, modules, API endpoints and development guide.
 
 ## 🧭 Purpose of the Component
 
@@ -116,7 +154,7 @@ sequenceDiagram
   resolution
 - **Version Compatibility**: Only plugins with compatible major versions can be selected together
 - **Dependency Enforcement**: Required dependencies must be automatically included when a plugin is selected
-- **GitHub Rate Limiting**: Anonymous GitHub access is limited to 50 requests/hour; authenticated access is required for
+- **GitHub Rate Limiting**: Anonymous GitHub access is limited to 60 requests/hour; authenticated access is required for
   production use
 
 ### Configuration Validation Rules
@@ -126,7 +164,6 @@ sequenceDiagram
 - **Token Validation**: GitHub/GitLab tokens are recommended when using respective platform plugins to avoid rate
   limiting
 - **Master Branch Warning**: Using 'master' branch in production configurations triggers validation warnings
-- **Plugin Count Limits**: Configurations with excessive plugins (>20) receive performance warnings
 
 ### Preset Management Rules
 
@@ -137,10 +174,8 @@ sequenceDiagram
 
 ### Binary Building Rules
 
-- **Build Timeout**: Binary builds automatically timeout after 300 seconds (configurable)
-- **Clean Build Environment**: Each build uses an isolated temporary directory
-- **Size Optimization**: Generated binaries exclude debug symbols unless explicitly enabled
-- **Velox Dependency**: Binary building requires the 'vx' command-line tool to be available
+- **Remote Build**: Binaries are built by a Velox server (`VELOX_SERVER_URL`), not inside the PHP worker
+- **Build Timeout**: A build that takes longer than 5 minutes is aborted
 
 | Rule Category         | Validation Type | Action              | Business Impact                                |
 |-----------------------|-----------------|---------------------|------------------------------------------------|

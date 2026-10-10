@@ -7,8 +7,8 @@ namespace App\Module\Velox\Plugin\Endpoint\Http\v1\Plugin;
 use App\Application\HTTP\Response\ErrorResource;
 use App\Application\HTTP\Response\ResourceInterface;
 use App\Module\Velox\ConfigurationBuilder;
-use Spiral\Router\Annotation\Route;
 use OpenApi\Attributes as OA;
+use Spiral\Router\Annotation\Route;
 
 #[OA\Get(
     path: '/api/v1/plugin/{name}',

@@ -27,11 +27,11 @@
     "spiral/validator": "^1.5"
   },
   "require-dev": {
-    "spiral/code-style": "^2.2",
-    "spiral/testing": "^2.3",
-    "vimeo/psalm": "^6.10",
+    "buggregator/trap": "^1.13",
     "rector/rector": "^2.0",
-    "buggregator/trap": "^1.13"
+    "spiral/code-style": "^2.3.1",
+    "testo/testo": "^0.10.55",
+    "vimeo/psalm": "^6 || ^7"
   },
   "autoload": {
     "psr-4": {
@@ -52,6 +52,12 @@
     "allow-plugins": {
       "spiral/composer-publish-plugin": true,
       "php-http/discovery": true
+    },
+    "audit": {
+      "ignore": {
+        "GHSA-g9pc-8g42-g6vq": "False positive: the range < 2025.1.0 also matches RoadRunner 3.x, which is not affected",
+        "GHSA-vvj3-c3rp-c85p": "Dev-only: spiral/testing 2.x pins phpunit/phpunit 10.5.45, and the app has no PHPT tests"
+      }
     }
   },
   "scripts": {
@@ -63,11 +69,11 @@
     ],
     "rr:download": "rr get-binary",
     "rr:download-protoc": "rr download-protoc-binary",
+    "cs:diff": "php-cs-fixer fix --dry-run -v --diff",
     "cs:fix": "php-cs-fixer fix -v",
     "psalm": "psalm",
     "psalm:baseline": "psalm --set-baseline=psalm-baseline.xml",
-    "test": "phpunit",
-    "test-coverage": "phpunit --coverage",
+    "test": "testo",
     "refactor": "rector process --config=rector.php",
     "refactor:ci": "rector process --config=rector.php --dry-run --ansi"
   },

@@ -7,13 +7,13 @@ namespace App\Module\Velox\Preset\Endpoint\Http\v1\Preset;
 use App\Module\Velox\Plugin\Endpoint\Http\v1\Plugin\ConfigFormat;
 use App\Module\Velox\Preset\DTO\PresetDefinition;
 use App\Module\Velox\Preset\Service\PresetProviderInterface;
+use OpenApi\Attributes as OA;
 use Spiral\Filters\Attribute\Input\Data;
 use Spiral\Filters\Attribute\Input\Post;
 use Spiral\Filters\Model\Filter;
 use Spiral\Filters\Model\FilterDefinitionInterface;
 use Spiral\Filters\Model\HasFilterDefinition;
 use Spiral\Validator\FilterDefinition;
-use OpenApi\Attributes as OA;
 
 #[OA\Schema(schema: GenerateConfigFromPresetsFilter::class)]
 final class GenerateConfigFromPresetsFilter extends Filter implements HasFilterDefinition

@@ -8,11 +8,11 @@ use App\Module\Velox\BinaryBuilder\Converter\ConfigToRequestConverter;
 use App\Module\Velox\BinaryBuilder\DTO\TargetPlatform;
 use App\Module\Velox\ConfigurationBuilder;
 use App\Module\Velox\Plugin\DTO\Plugin;
+use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface;
 use Ramsey\Uuid\Uuid;
 use Spiral\Http\ResponseWrapper;
 use Spiral\Router\Annotation\Route;
-use OpenApi\Attributes as OA;
 
 #[OA\Post(
     path: '/api/v1/binary/generate',

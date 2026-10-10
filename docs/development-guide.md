@@ -844,22 +844,24 @@ return [
 
 ## 8. Testing Guidelines
 
+Tests run on [Testo](https://php-testo.github.io): test classes live in `tests/Unit`, the suite is configured in `testo.php`.
+
 ### Unit Testing Services
 
 ```php
-use PHPUnit\Framework\TestCase;
+use Testo\Assert;
+use Testo\Test;
 
-final class DependencyResolverServiceTest extends TestCase
+final class DependencyResolverServiceTest
 {
-    public function testResolvesSimpleDependencies(): void
+    #[Test]
+    public function resolvesSimpleDependencies(): void
     {
         // Arrange
-        $pluginProvider = $this->createMock(PluginProviderInterface::class);
-        $pluginProvider->method('getPluginByName')
-            ->willReturnMap([
-                ['http', new Plugin(name: 'http', dependencies: ['logger'])],
-                ['logger', new Plugin(name: 'logger', dependencies: [])],
-            ]);
+        $pluginProvider = new ConfigPluginProvider([
+            new Plugin(name: 'http', dependencies: ['logger']),
+            new Plugin(name: 'logger', dependencies: []),
+        ]);
 
         $resolver = new DependencyResolverService($pluginProvider);
 
@@ -869,13 +871,14 @@ final class DependencyResolverServiceTest extends TestCase
         ]);
 
         // Assert
-        $this->assertTrue($result->isValid);
-        $this->assertCount(2, $result->requiredPlugins);
-        $this->assertEquals('logger', $result->requiredPlugins[0]->name);
-        $this->assertEquals('http', $result->requiredPlugins[1]->name);
+        Assert::true($result->isValid);
+        Assert::count($result->requiredPlugins, 2);
+        Assert::same($result->requiredPlugins[0]->name, 'logger');
+        Assert::same($result->requiredPlugins[1]->name, 'http');
     }
 
-    public function testDetectsCircularDependencies(): void
+    #[Test]
+    public function detectsCircularDependencies(): void
     {
         // Test circular dependency detection
         // ...
@@ -883,39 +886,7 @@ final class DependencyResolverServiceTest extends TestCase
 }
 ```
 
-### Integration Testing HTTP Endpoints
-
-```php
-use Spiral\Testing\TestCase;
-
-final class PluginListActionTest extends TestCase
-{
-    public function testListPlugins(): void
-    {
-        $response = $this->get('/api/v1/plugins');
-
-        $response->assertOk();
-        $response->assertBodyContains('data');
-        $response->assertJsonStructure([
-            'data' => [
-                '*' => ['name', 'version', 'description'],
-            ],
-        ]);
-    }
-
-    public function testFilterByCategory(): void
-    {
-        $response = $this->get('/api/v1/plugins?category=http');
-
-        $response->assertOk();
-
-        $data = json_decode($response->getBody()->__toString(), true);
-        foreach ($data['data'] as $plugin) {
-            $this->assertEquals('http', $plugin['category']);
-        }
-    }
-}
-```
+Note the argument order: Testo assertions take the actual value first and the expected value second.
 
 ---
 
@@ -1066,7 +1037,6 @@ When creating a new feature:
 - [ ] Add OpenAPI documentation
 - [ ] Create console command (if CLI needed)
 - [ ] Add unit tests
-- [ ] Add integration tests
 - [ ] Update this documentation
 
 ### Common Commands
