@@ -1,14 +1,12 @@
 /.*/
-!/.github
-!/.docker
-/vendor
+!/.github/
+!/.docker/
 /runtime/
-*/runtime/
+/vendor/
+/.env
+*.log
 
 /rr*
-/vx**
-/temporal**
+/vx*
+/temporal*
 /protoc-gen-php-grpc*
-
-/.env
-/*.cache
