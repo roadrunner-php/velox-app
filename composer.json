@@ -28,7 +28,9 @@
   },
   "require-dev": {
     "buggregator/trap": "^1.13",
+    "llm/skills": "^1.14",
     "rector/rector": "^2.0",
+    "roxblnfk/unpoly": "^1.8",
     "spiral/code-style": "^2.3.1",
     "testo/testo": "^0.10.55",
     "vimeo/psalm": "^6 || ^7"
@@ -50,6 +52,7 @@
   "config": {
     "sort-packages": true,
     "allow-plugins": {
+      "llm/skills": true,
       "spiral/composer-publish-plugin": true,
       "php-http/discovery": true
     },
